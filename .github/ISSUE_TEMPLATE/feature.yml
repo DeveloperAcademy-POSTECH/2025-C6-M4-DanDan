@@ -1,7 +1,7 @@
 name: 기능 개발
 description: 기능 관련 이슈
 title: "✨ Feature: "
-labels: ["Feature"]
+labels: ["✨ feature"]
 body:
   - type: textarea
     id: summary
