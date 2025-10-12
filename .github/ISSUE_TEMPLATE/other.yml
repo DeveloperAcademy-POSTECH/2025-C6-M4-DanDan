@@ -1,7 +1,7 @@
 name: 🍀 기타 작업
 description: 분류되지 않는 기타 작업을 관리할 때 사용합니다.
 title: "🍀 ETC: "
-labels: ["Chore"]
+labels: ["🍀 chore"]
 body:
   - type: textarea
     id: description
