@@ -1,21 +1,41 @@
 # 2025-C6-M4-DanDan
-## DANDAN
-[Logo/Cover Image]
+# DANDAN
 
-[App statement]
+![배너 이미지 또는 로고](링크)
 
-## Screenshots
-Attach photos if you are available
+> 간단한 한 줄 소개 – 프로젝트의 핵심 가치 또는 기능
 
-## Demo (optional)
+[![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)]()
+[![Xcode](https://img.shields.io/badge/Xcode-15.0-blue.svg)]()
+[![License](https://img.shields.io/badge/license-MIT-green.svg)]()
 
-Attach videos if you are available
+---
 
-## Features
+## 목차
+- [소개](#소개)
+- [프로젝트 기간](#프로젝트-기간)
+- [기술 스택](#기술-스택)
+- [기능](#기능)
+- [시연](#시연)
+- [폴더 구조](#폴더-구조)
+- [팀 소개](#팀-소개)
+- [Git 컨벤션](#git-컨벤션)
+- [테스트 방법](#테스트-방법)
+- [프로젝트 문서](#프로젝트-문서)
+- [라이선스](#lock_with_ink_pen-license)
 
-- Feature 1
-- Feature 2
-- Feature 3
+---
+
+## 소개
+
+> 프로젝트의 주요 목적과 사용자가 얻게 될 경험을 설명해주세요.
+
+[🔗 앱스토어/웹 링크](https://example.com)
+
+
+## 프로젝트 기간
+- 전체 기간: `2025.09.01 - YYYY.MM.DD`
+- 개발 기간: `YYYY.MM.DD - YYYY.MM.DD`
 
 
 ## Skills & Tech Stack
@@ -33,6 +53,36 @@ Attach videos if you are available
 [![GitHub Projects](https://img.shields.io/badge/GitHub_Projects-181717?style=for-the-badge&logo=github&logoColor=white)]()
 [![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)]()
 
+
+## 주요 기능
+
+- 기능 1
+- 기능 2
+- 기능 3
+
+> 필요시 이미지, GIF, 혹은 링크 삽입
+
+
+## 화면 구성 및 시연
+
+| 기능 | 설명 | 이미지 |
+|------|------|--------|
+| 예시1 | 기능 요약 | ![gif](링크) |
+| 예시2 | 기능 요약 | ![gif](링크) |
+
+
+## 폴더 구조
+
+```
+📦ProjectName
+┣ 📂Feature
+┃ ┣ 📂SceneA
+┃ ┗ 📂SceneB
+┣ 📂Core
+┣ 📂UI
+┣ 📂Test
+┗ 📂Resources
+```
 
 ## Authors
 
@@ -76,3 +126,30 @@ Attach videos if you are available
     </td>
   </tr>
 </table>
+
+
+## 협업 컨벤션
+자세한 내용은 문서를 확인해주세요
+
+
+## 테스트 방법
+
+1. 이 저장소를 클론합니다.
+```bash
+git clone https://github.com/yourteam/project.git
+```
+2. `Xcode`로 `.xcodeproj` 또는 `.xcworkspace` 열기
+3. 시뮬레이터 환경 설정: iPhone 15 / iOS 17
+4. `Cmd + R`로 실행 / `Cmd + U`로 테스트 실행
+
+
+## 프로젝트 문서
+
+- [기획 히스토리](링크)
+- [디자인 히스토리](링크)
+- [기술 문서 (아키텍처 등)](링크)
+
+
+## 📝 License
+
+This project is licensed under the ~~[CHOOSE A LICENSE](https://choosealicense.com). and update this line~~
