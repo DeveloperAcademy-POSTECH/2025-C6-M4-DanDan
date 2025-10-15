@@ -129,7 +129,7 @@
 
 
 ## 협업 컨벤션
-자세한 내용은 문서를 확인해주세요
+자세한 내용은 [CONTRIBUTING.md](.github/CONTRIBUTING.md)를 참고해주세요.
 
 
 ## 테스트 방법
