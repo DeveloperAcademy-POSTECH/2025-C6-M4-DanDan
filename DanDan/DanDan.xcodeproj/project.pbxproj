@@ -10,33 +10,9 @@
 		690DD6F12EACB758005EB019 /* DanDan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DanDan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		690DD8802EACB92F005EB019 /* Exceptions for "DanDan" folder in "DanDan" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Sources/DesignSystem/.gitkeep,
-			);
-			target = 690DD6F02EACB758005EB019 /* DanDan */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		690DD8812EACB92F005EB019 /* Exceptions for "DanDan" folder in "Compile Sources" phase from "DanDan" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 690DD6ED2EACB758005EB019 /* Sources */;
-			membershipExceptions = (
-				Sources/DesignSystem/.gitkeep,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		690DD6F32EACB758005EB019 /* DanDan */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				690DD8802EACB92F005EB019 /* Exceptions for "DanDan" folder in "DanDan" target */,
-				690DD8812EACB92F005EB019 /* Exceptions for "DanDan" folder in "Compile Sources" phase from "DanDan" target */,
-			);
 			path = DanDan;
 			sourceTree = "<group>";
 		};
@@ -275,6 +251,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NBC28VW8Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -302,6 +279,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NBC28VW8Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
