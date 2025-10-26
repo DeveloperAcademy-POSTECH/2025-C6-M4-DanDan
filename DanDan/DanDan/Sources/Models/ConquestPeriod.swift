@@ -28,4 +28,8 @@ struct ConquestPeriod {
     func isWithinPeriod(date: Date = Date()) -> Bool {
         (startDate...endDate).contains(date)
     }
+    
+    var hasEended: Bool {
+        Date() > endDate
+    }
 }
