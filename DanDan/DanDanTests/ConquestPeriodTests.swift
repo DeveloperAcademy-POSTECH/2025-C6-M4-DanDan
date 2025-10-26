@@ -57,7 +57,7 @@ final class ConquestPeriodTests: XCTestCase {
         let midDate = Calendar.current.date(byAdding: .day, value: 3, to: start)!
         let overDate = Calendar.current.date(byAdding: .day, value: 10, to: start)!
 
-        logger.info("🧪 daysLeft")
+        logger.info("🧪daysLeft")
         logger.info(" - from start: \(period.daysLeft(from: start), privacy: .public)")
         logger.info(" - from end: \(period.daysLeft(from: period.endDate), privacy: .public)")
         logger.info(" - from mid (3일 후): \(period.daysLeft(from: midDate), privacy: .public)")
