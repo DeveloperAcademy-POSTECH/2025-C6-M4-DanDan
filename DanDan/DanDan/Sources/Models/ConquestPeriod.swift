@@ -25,22 +25,4 @@ struct ConquestPeriod {
 
         self.endDate = calculatedEndDate
     }
-
-    func isWithinPeriod(date: Date = Date()) -> Bool {
-        (startDate...endDate).contains(date)
-    }
-
-    var hasEnded: Bool {
-        Date() > endDate
-    }
-
-    func daysLeft(from date: Date = Date()) -> Int {
-        let remaining = Calendar.current.dateComponents(
-            [.day],
-            from: date,
-            to: endDate
-        ).day ?? 0
-        
-        return max(0, remaining)
-    }
 }
