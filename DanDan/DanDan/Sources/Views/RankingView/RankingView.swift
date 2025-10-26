@@ -11,6 +11,10 @@ struct RankingView: View {
     @StateObject var viewModel = RankingViewModel()
 
     var body: some View {
+        VStack {
+            List(viewModel.conquestStatuses) { status in
+                Text("Zone \(status.zoneId): \(status.teamName ?? "무승부")")
+            }
 
             Button {
                 viewModel.tapMainButton()
@@ -23,5 +27,15 @@ struct RankingView: View {
 }
 
 #Preview {
-    RankingView()
+    let previewViewModel = RankingViewModel()
+    let dummyScores: [ZoneScore] = [
+        ZoneScore(zoneId: 1, teamId: 1, teamName: "Team A", score: 5),
+        ZoneScore(zoneId: 1, teamId: 2, teamName: "Team B", score: 3),
+        ZoneScore(zoneId: 2, teamId: 1, teamName: "Team A", score: 2),
+        ZoneScore(zoneId: 2, teamId: 2, teamName: "Team B", score: 2),
+        ZoneScore(zoneId: 3, teamId: 2, teamName: "Team B", score: 7),
+    ]
+    previewViewModel.updateConquestStatuses(with: dummyScores)
+
+    return RankingView(viewModel: previewViewModel)
 }
