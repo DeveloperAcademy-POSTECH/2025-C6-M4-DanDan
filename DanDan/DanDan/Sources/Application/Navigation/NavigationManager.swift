@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 class NavigationManager: ObservableObject {
     @Published var path = NavigationPath()
-    @Published var root: AppDestination?
+    @Published var root: AppDestination = .main
     @Published var hasCompletedOnboarding: Bool = true
 
     static let shared = NavigationManager()
@@ -47,6 +47,6 @@ class NavigationManager: ObservableObject {
     }
 
     func getRootView() -> some View {
-        return root?.view()
+        return root.view()
     }
 }
