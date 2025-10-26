@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var navigationMnager = NavigationManager.shared
+    @StateObject private var navigationManager = NavigationManager.shared
     
     var body: some View {
-        NavigationStack(path: $navigationMnager.path) {
-            navigationMnager.getRootView()
+        NavigationStack(path: $navigationManager.path) {
+            navigationManager.getRootView()
                 .navigationDestination(for: AppDestination.self) { destination in
                     destination.view()
             }
