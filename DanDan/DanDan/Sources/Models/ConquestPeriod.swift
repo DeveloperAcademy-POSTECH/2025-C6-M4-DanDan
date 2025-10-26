@@ -20,7 +20,7 @@ struct ConquestPeriod {
                 to: startDate
             )
         else {
-            fatalError("endDate 계산 실패")
+            fatalError("ConquestPeriod 초기화 실패: startDate로부터 endDate 계산 불가")
         }
 
         self.endDate = calculatedEndDate
@@ -30,7 +30,7 @@ struct ConquestPeriod {
         (startDate...endDate).contains(date)
     }
 
-    var hasEended: Bool {
+    var hasEnded: Bool {
         Date() > endDate
     }
 
