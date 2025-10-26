@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var navigationManager = NavigationManager.shared
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack(path: $navigationManager.path) {
+            navigationManager.getRootView()
+                .navigationDestination(for: AppDestination.self) { destination in
+                    destination.view()
+            }
         }
-        .padding()
     }
 }
 
