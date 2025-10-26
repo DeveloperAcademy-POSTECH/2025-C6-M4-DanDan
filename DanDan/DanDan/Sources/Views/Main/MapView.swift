@@ -38,8 +38,8 @@ struct MapView: UIViewRepresentable {
     // MARK: - Constants
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표
     private let bounds = Bounds(
-        start: .init(latitude: 36.018254, longitude: 129.316296),
-        end: .init(latitude: 36.030950, longitude: 129.360462)
+        start: .init(latitude: 36.001279, longitude: 129.314454),
+        end: .init(latitude: 36.057920, longitude: 129.361197)
     )
     
     /// 지도 경계 제한 설정 (지도 중심이 철길숲 영역 밖으로 나가지 않도록)
