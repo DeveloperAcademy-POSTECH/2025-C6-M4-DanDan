@@ -34,8 +34,7 @@ class NavigationManager: ObservableObject {
     }
 
     func popToRoot() {
-        guard !path.isEmpty else { return }
-        path.removeLast(path.count)
+        path = NavigationPath()
     }
     
     func setRootView() {
