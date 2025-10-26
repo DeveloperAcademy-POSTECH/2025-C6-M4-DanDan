@@ -8,16 +8,17 @@
 import SwiftUI
 
 struct RankingView: View {
-    private let navigationManeger = NavigationManager.shared
-    
+    @StateObject var viewModel = RankingViewModel()
+
     var body: some View {
-        Text("랭킹")
-        
-        Button {
-            navigationManeger.popToRoot()
-        } label: {
-            Text("홈")
+
+            Button {
+                viewModel.tapMainButton()
+            } label: {
+                Text("홈")
+            }
         }
+        .padding()
     }
 }
 
