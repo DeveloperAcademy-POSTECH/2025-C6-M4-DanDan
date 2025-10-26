@@ -16,7 +16,6 @@ struct MapView: UIViewRepresentable {
     private struct Bounds {
         let start: CLLocationCoordinate2D
         let end: CLLocationCoordinate2D
-        let margin: Double = 1.01
         
         var center: CLLocationCoordinate2D {
             CLLocationCoordinate2D(
@@ -26,8 +25,8 @@ struct MapView: UIViewRepresentable {
         }
         
         var region: MKCoordinateRegion {
-            let spanLat = abs(end.latitude - start.latitude) * margin
-            let spanLon = abs(end.longitude - start.longitude) * margin
+            let spanLat = abs(end.latitude - start.latitude)
+            let spanLon = abs(end.longitude - start.longitude)
             return MKCoordinateRegion(
                 center: self.center,
                 span: MKCoordinateSpan(latitudeDelta: spanLat, longitudeDelta: spanLon)
@@ -44,7 +43,30 @@ struct MapView: UIViewRepresentable {
     
     /// 지도 경계 제한 설정 (지도 중심이 철길숲 영역 밖으로 나가지 않도록)
     private func applyBoundary(to map: MKMapView) {
-        let boundary = MKMapView.CameraBoundary(coordinateRegion: bounds.region)
+        let startPoint = MKMapPoint(bounds.start)
+        let endPoint = MKMapPoint(bounds.end)
+        
+        let expansionFactor: Double = 0.1
+        
+        let minX = min(startPoint.x, endPoint.x)
+        let minY = min(startPoint.y, endPoint.y)
+        let width = abs(endPoint.x - startPoint.x)
+        let height = abs(endPoint.y - startPoint.y)
+        
+        let expandedWidth = width * (1.0 + expansionFactor * 2)
+        let expandedHeight = height * (1.0 + expansionFactor * 2)
+        
+        let expandedOriginX = minX - width * expansionFactor
+        let expandedOriginY = minY - height * expansionFactor
+        
+        let expandedMapRect = MKMapRect(
+            x: expandedOriginX,
+            y: expandedOriginY,
+            width: expandedWidth,
+            height: expandedHeight
+        )
+        
+        let boundary = MKMapView.CameraBoundary(mapRect: expandedMapRect)
         map.setCameraBoundary(boundary, animated: false)
     }
     
@@ -54,7 +76,7 @@ struct MapView: UIViewRepresentable {
         let metersPerDegLon: CLLocationDistance = cos(region.center.latitude * .pi/180) * 111_000
         let widthMeters  = region.span.longitudeDelta * metersPerDegLon
         let heightMeters = region.span.latitudeDelta  * metersPerDegLat
-        let maxDistance = max(widthMeters, heightMeters) * 5
+        let maxDistance = max(widthMeters, heightMeters) * 3
 
         let zoomRange = MKMapView.CameraZoomRange(maxCenterCoordinateDistance: maxDistance)
         map.setCameraZoomRange(zoomRange, animated: false)
