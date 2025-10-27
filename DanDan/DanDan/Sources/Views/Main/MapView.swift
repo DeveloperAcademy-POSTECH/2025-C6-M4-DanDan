@@ -11,22 +11,21 @@ import MapKit
 struct MapView: UIViewRepresentable {
     
     // MARK: - Bounds
-    /// 철길숲의 남서쪽(start)과 북동쪽(end) 좌표를 기준으로
-    /// 지도 표시 범위를 계산하는 내부 구조체
+    /// 철길숲의 남서쪽과 북동쪽 좌표를 기준으로 지도 표시 범위를 계산하는 내부 구조체
     private struct Bounds {
-        let start: CLLocationCoordinate2D
-        let end: CLLocationCoordinate2D
+        let southWest: CLLocationCoordinate2D
+        let northEast: CLLocationCoordinate2D
         
         var center: CLLocationCoordinate2D {
             CLLocationCoordinate2D(
-                latitude: (start.latitude + end.latitude) / 2.0,
-                longitude: (start.longitude + end.longitude) / 2.0
+                latitude: (southWest.latitude + northEast.latitude) / 2.0,
+                longitude: (southWest.longitude + northEast.longitude) / 2.0
             )
         }
         
         var region: MKCoordinateRegion {
-            let spanLat = abs(end.latitude - start.latitude)
-            let spanLon = abs(end.longitude - start.longitude)
+            let spanLat = abs(northEast.latitude - southWest.latitude)
+            let spanLon = abs(northEast.longitude - southWest.longitude)
             return MKCoordinateRegion(
                 center: self.center,
                 span: MKCoordinateSpan(latitudeDelta: spanLat, longitudeDelta: spanLon)
@@ -37,21 +36,21 @@ struct MapView: UIViewRepresentable {
     // MARK: - Constants
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표
     private let bounds = Bounds(
-        start: .init(latitude: 36.001279, longitude: 129.314454),
-        end: .init(latitude: 36.057920, longitude: 129.361197)
+        southWest: .init(latitude: 36.001279, longitude: 129.314454),
+        northEast: .init(latitude: 36.057920, longitude: 129.361197)
     )
     
     /// 지도 경계 제한 설정 (지도 중심이 철길숲 영역 밖으로 나가지 않도록)
     private func applyBoundary(to map: MKMapView) {
-        let startPoint = MKMapPoint(bounds.start)
-        let endPoint = MKMapPoint(bounds.end)
+        let southWestPoint = MKMapPoint(bounds.southWest)
+        let northEastPoint = MKMapPoint(bounds.northEast)
         
         let expansionFactor: Double = 0.1
         
-        let minX = min(startPoint.x, endPoint.x)
-        let minY = min(startPoint.y, endPoint.y)
-        let width = abs(endPoint.x - startPoint.x)
-        let height = abs(endPoint.y - startPoint.y)
+        let minX = min(southWestPoint.x, northEastPoint.x)
+        let minY = min(southWestPoint.y, northEastPoint.y)
+        let width = abs(northEastPoint.x - southWestPoint.x)
+        let height = abs(northEastPoint.y - southWestPoint.y)
         
         let expandedWidth = width * (1.0 + expansionFactor * 2)
         let expandedHeight = height * (1.0 + expansionFactor * 2)
