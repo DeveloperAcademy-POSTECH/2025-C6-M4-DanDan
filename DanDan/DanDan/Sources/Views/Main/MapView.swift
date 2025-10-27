@@ -41,19 +41,11 @@ struct MapView: UIViewRepresentable {
         northEast: .init(latitude: 36.057920, longitude: 129.361197)
     )
     
-    }
-    
-    final class Coordinator: NSObject, CLLocationManagerDelegate, MKMapViewDelegate {
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            guard let ann = annotation as? ZoneAnnotation else { return nil }
-
-        }
-    }
-    
     func makeCoordinator() -> Coordinator { Coordinator() }
     
     func makeUIView(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
+        
         map.isScrollEnabled = false
         map.isZoomEnabled = false
         map.isRotateEnabled = false
@@ -66,11 +58,12 @@ struct MapView: UIViewRepresentable {
         
         let region = bounds.region
         map.setRegion(region, animated: false)
-        map.showsUserLocation = true
         
+        map.showsUserLocation = true
+    
         return map
     }
-    
+        
     func updateUIView(_ uiView: MKMapView, context: Context) { }
 }
 
