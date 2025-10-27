@@ -17,8 +17,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		696486C32EAE15F800D90B73 /* DanDan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = DanDan.app; path = "/Users/jay/Documents/GitHub/2025-C6-M4-DanDan/DanDan/build/Debug-iphoneos/DanDan.app"; sourceTree = "<absolute>"; };
-		696486C42EAE15F800D90B73 /* DanDanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DanDanTests.xctest; path = "/Users/jay/Documents/GitHub/2025-C6-M4-DanDan/DanDan/build/Debug-iphoneos/DanDan.app/PlugIns/DanDanTests.xctest"; sourceTree = "<absolute>"; };
+		B169A6A32EAE1E22008AFDD8 /* DanDan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DanDan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B169A6A42EAE1E22008AFDD8 /* DanDanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DanDanTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -57,6 +57,8 @@
 			children = (
 				690DD6F32EACB758005EB019 /* DanDan */,
 				690DD8EE2EADF6B1005EB019 /* DanDanTests */,
+				B169A6A32EAE1E22008AFDD8 /* DanDan.app */,
+				B169A6A42EAE1E22008AFDD8 /* DanDanTests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -82,7 +84,7 @@
 			packageProductDependencies = (
 			);
 			productName = DanDan;
-			productReference = 696486C32EAE15F800D90B73 /* DanDan.app */;
+			productReference = B169A6A32EAE1E22008AFDD8 /* DanDan.app */;
 			productType = "com.apple.product-type.application";
 		};
 		690DD8D82EADF478005EB019 /* DanDanTests */ = {
@@ -105,7 +107,7 @@
 			packageProductDependencies = (
 			);
 			productName = DanDanTests;
-			productReference = 696486C42EAE15F800D90B73 /* DanDanTests.xctest */;
+			productReference = B169A6A42EAE1E22008AFDD8 /* DanDanTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -321,6 +323,7 @@
 				DEVELOPMENT_TEAM = NBC28VW8Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"Show your location on the map\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -349,6 +352,7 @@
 				DEVELOPMENT_TEAM = NBC28VW8Q2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"Show your location on the map\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
