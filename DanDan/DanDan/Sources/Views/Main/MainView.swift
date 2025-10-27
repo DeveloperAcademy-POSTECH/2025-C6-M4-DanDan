@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct MainView: View {
-    private let navigationManager = NavigationManager.shared
+    @StateObject var viewModel = MainViewModel()
     
     var body: some View {
         Button {
-            navigationManager.navigate(to: .ranking)
+            viewModel.tapRankingButton()
         } label: {
             Text("메인")
         }
