@@ -59,9 +59,13 @@ struct MapView: UIViewRepresentable {
         map.isRotateEnabled = false
         map.isPitchEnabled = false
         
+        let config = MKStandardMapConfiguration(elevationStyle: .flat)
+        config.pointOfInterestFilter = .excludingAll
+        config.showsTraffic = false
+        map.preferredConfiguration = config
+        
         let region = bounds.region
         map.setRegion(region, animated: false)
-        
         map.showsUserLocation = true
         
         return map
