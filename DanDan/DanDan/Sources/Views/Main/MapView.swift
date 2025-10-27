@@ -15,6 +15,7 @@ struct MapView: UIViewRepresentable {
     private struct Bounds {
         let southWest: CLLocationCoordinate2D
         let northEast: CLLocationCoordinate2D
+        let margin: Double = 1.15
         
         var center: CLLocationCoordinate2D {
             CLLocationCoordinate2D(
@@ -24,8 +25,8 @@ struct MapView: UIViewRepresentable {
         }
         
         var region: MKCoordinateRegion {
-            let spanLat = abs(northEast.latitude - southWest.latitude)
-            let spanLon = abs(northEast.longitude - southWest.longitude)
+            let spanLat = abs(northEast.latitude - southWest.latitude) * margin
+            let spanLon = abs(northEast.longitude - southWest.longitude) * margin
             return MKCoordinateRegion(
                 center: self.center,
                 span: MKCoordinateSpan(latitudeDelta: spanLat, longitudeDelta: spanLon)
@@ -40,57 +41,12 @@ struct MapView: UIViewRepresentable {
         northEast: .init(latitude: 36.057920, longitude: 129.361197)
     )
     
-    /// 지도 경계 제한 설정 (지도 중심이 철길숲 영역 밖으로 나가지 않도록)
-    private func applyBoundary(to map: MKMapView) {
-        let southWestPoint = MKMapPoint(bounds.southWest)
-        let northEastPoint = MKMapPoint(bounds.northEast)
-        
-        let expansionFactor: Double = 0.1
-        
-        let minX = min(southWestPoint.x, northEastPoint.x)
-        let minY = min(southWestPoint.y, northEastPoint.y)
-        let width = abs(northEastPoint.x - southWestPoint.x)
-        let height = abs(northEastPoint.y - southWestPoint.y)
-        
-        let expandedWidth = width * (1.0 + expansionFactor * 2)
-        let expandedHeight = height * (1.0 + expansionFactor * 2)
-        
-        let expandedOriginX = minX - width * expansionFactor
-        let expandedOriginY = minY - height * expansionFactor
-        
-        let expandedMapRect = MKMapRect(
-            x: expandedOriginX,
-            y: expandedOriginY,
-            width: expandedWidth,
-            height: expandedHeight
-        )
-        
-        let boundary = MKMapView.CameraBoundary(mapRect: expandedMapRect)
-        map.setCameraBoundary(boundary, animated: false)
     }
     
-    /// 지도 축소 한도 설정 (철길숲 전체가 보일 정도까지만 축소)
-    private func applyZoomOutLimit(to map: MKMapView, for region: MKCoordinateRegion) {
-        let metersPerDegLat: CLLocationDistance = 111_000
-        let metersPerDegLon: CLLocationDistance = cos(region.center.latitude * .pi/180) * 111_000
-        let widthMeters  = region.span.longitudeDelta * metersPerDegLon
-        let heightMeters = region.span.latitudeDelta  * metersPerDegLat
-        let maxDistance = max(widthMeters, heightMeters) * 3
+    final class Coordinator: NSObject, CLLocationManagerDelegate, MKMapViewDelegate {
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard let ann = annotation as? ZoneAnnotation else { return nil }
 
-        let zoomRange = MKMapView.CameraZoomRange(maxCenterCoordinateDistance: maxDistance)
-        map.setCameraZoomRange(zoomRange, animated: false)
-    }
-    
-    // MARK: - Location Authorization
-    /// CLLocationManager를 사용해 권한 요청을 수행하는 Coordinator
-    final class Coordinator: NSObject, CLLocationManagerDelegate {
-        let manager = CLLocationManager()
-        override init() {
-            super.init()
-            manager.delegate = self
-        }
-        func request() {
-            manager.requestWhenInUseAuthorization()
         }
     }
     
@@ -98,13 +54,14 @@ struct MapView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
+        map.isScrollEnabled = false
+        map.isZoomEnabled = false
+        map.isRotateEnabled = false
+        map.isPitchEnabled = false
         
         let region = bounds.region
         map.setRegion(region, animated: false)
-        applyBoundary(to: map)
-        applyZoomOutLimit(to: map, for: region)
         
-        context.coordinator.request()
         map.showsUserLocation = true
         
         return map
