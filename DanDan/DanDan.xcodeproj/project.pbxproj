@@ -17,8 +17,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		690DD6F12EACB758005EB019 /* DanDan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = DanDan.app; path = "/Users/jay/Documents/GitHub/2025-C6-M4-DanDan/DanDan/build/Debug-iphoneos/DanDan.app"; sourceTree = "<absolute>"; };
-		690DD8F22EADF755005EB019 /* DanDanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DanDanTests.xctest; path = "/Users/jay/Documents/GitHub/2025-C6-M4-DanDan/DanDan/build/Debug-iphoneos/DanDan.app/PlugIns/DanDanTests.xctest"; sourceTree = "<absolute>"; };
+		696486C32EAE15F800D90B73 /* DanDan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = DanDan.app; path = "/Users/jay/Documents/GitHub/2025-C6-M4-DanDan/DanDan/build/Debug-iphoneos/DanDan.app"; sourceTree = "<absolute>"; };
+		696486C42EAE15F800D90B73 /* DanDanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DanDanTests.xctest; path = "/Users/jay/Documents/GitHub/2025-C6-M4-DanDan/DanDan/build/Debug-iphoneos/DanDan.app/PlugIns/DanDanTests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -82,7 +82,7 @@
 			packageProductDependencies = (
 			);
 			productName = DanDan;
-			productReference = 690DD6F12EACB758005EB019 /* DanDan.app */;
+			productReference = 696486C32EAE15F800D90B73 /* DanDan.app */;
 			productType = "com.apple.product-type.application";
 		};
 		690DD8D82EADF478005EB019 /* DanDanTests */ = {
@@ -105,7 +105,7 @@
 			packageProductDependencies = (
 			);
 			productName = DanDanTests;
-			productReference = 690DD8F22EADF755005EB019 /* DanDanTests.xctest */;
+			productReference = 696486C42EAE15F800D90B73 /* DanDanTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -137,7 +137,6 @@
 			mainGroup = 690DD6E82EACB758005EB019;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				690DD8E42EADF4F3005EB019 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 690DD6E82EACB758005EB019;
@@ -435,17 +434,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		690DD8E42EADF4F3005EB019 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.4;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 690DD6E92EACB758005EB019 /* Project object */;
 }
