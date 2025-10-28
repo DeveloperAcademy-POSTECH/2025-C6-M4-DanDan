@@ -6,6 +6,6 @@
 //
 
 enum TeamType: String, Codable, CaseIterable {
-    case red
+    case white
     case blue
 }
