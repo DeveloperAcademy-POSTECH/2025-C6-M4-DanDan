@@ -9,6 +9,7 @@ import Foundation
 
 struct UserStatus: Identifiable, Codable {
     var id: UUID
+    var userTeam: String
     var userWeekScore: Int
     var userDailyScore: Int
     var isZoneChecked: Bool
