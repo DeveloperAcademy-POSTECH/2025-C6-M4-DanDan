@@ -46,6 +46,11 @@ class StatusManager {
         userStatus.zoneCheckeStatus[zoneId] = checked
         save()
     }
+    
+    /// 하루가 지나면 전체 구간의 체크 상태를 초기화합니다.
+    func resetDailyStatus() {
+        userStatus.userDailyScore = 0
+        userStatus.zoneCheckeStatus = [:]
         save()
     }
 
