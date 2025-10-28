@@ -30,6 +30,15 @@ class StatusManager {
             save()
         }
     }
+    
+    /// 사용자의 일일 및 주간 점수를 획득한 점수만큼 증가시킵니다.
+    func incrementDailyScore() {
+        userStatus.userDailyScore += 1
+        userStatus.userWeekScore += 1
+        save()
+    }
+        save()
+    }
 
     /// 랜덤으로 팀을 배정합니다.
     func assignRandomTeamForThisWeek() {
