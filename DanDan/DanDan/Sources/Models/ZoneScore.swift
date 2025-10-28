@@ -5,9 +5,12 @@
 //  Created by Jay on 10/26/25.
 //
 
-struct ZoneScore {
-    let zoneId: Int
-    let teamId: Int
-    let teamName: String
-    let score: Int
+import Foundation
+
+struct ZoneScore: Identifiable, Codable {
+    var id: Int { zoneId }
+    var zoneId: Int
+    var teamId: Int
+    var teamName: String
+    var teamScore: Int
 }

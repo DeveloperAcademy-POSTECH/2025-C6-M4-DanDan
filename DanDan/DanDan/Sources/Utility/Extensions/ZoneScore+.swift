@@ -12,8 +12,8 @@ extension ZoneScore {
         var results: [ZoneConquestStatus] = []
 
         for (zoneId, zoneScores) in grouped {
-            let maxScore = zoneScores.map { $0.score }.max() ?? 0
-            let winners = zoneScores.filter { $0.score == maxScore }
+            let maxScore = zoneScores.map { $0.teamScore }.max() ?? 0
+            let winners = zoneScores.filter { $0.teamScore == maxScore }
 
             let status: ZoneConquestStatus
 
@@ -22,15 +22,14 @@ extension ZoneScore {
                     zoneId: zoneId,
                     teamId: winner.teamId,
                     teamName: winner.teamName,
-                    isConquered: false
+                    teamScore: winner.teamScore
                 )
             } else {
                 status = ZoneConquestStatus(
                     zoneId: zoneId,
                     teamId: nil,
                     teamName: nil,
-                    isConquered: true
-                )
+                    teamScore: nil)
             }
             
             results.append(status)

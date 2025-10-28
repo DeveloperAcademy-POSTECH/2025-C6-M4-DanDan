@@ -29,11 +29,11 @@ struct RankingView: View {
 #Preview {
     let previewViewModel = RankingViewModel()
     let dummyScores: [ZoneScore] = [
-        ZoneScore(zoneId: 1, teamId: 1, teamName: "Team A", score: 5),
-        ZoneScore(zoneId: 1, teamId: 2, teamName: "Team B", score: 3),
-        ZoneScore(zoneId: 2, teamId: 1, teamName: "Team A", score: 2),
-        ZoneScore(zoneId: 2, teamId: 2, teamName: "Team B", score: 2),
-        ZoneScore(zoneId: 3, teamId: 2, teamName: "Team B", score: 7),
+        ZoneScore(zoneId: 1, teamId: 1, teamName: "Team A", teamScore: 5),
+        ZoneScore(zoneId: 1, teamId: 2, teamName: "Team B", teamScore: 3),
+        ZoneScore(zoneId: 2, teamId: 1, teamName: "Team A", teamScore: 2),
+        ZoneScore(zoneId: 2, teamId: 2, teamName: "Team B", teamScore: 2),
+        ZoneScore(zoneId: 3, teamId: 2, teamName: "Team B", teamScore: 7),
     ]
     previewViewModel.updateConquestStatuses(with: dummyScores)
 

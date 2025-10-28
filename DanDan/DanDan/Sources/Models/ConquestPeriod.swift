@@ -7,12 +7,19 @@
 
 import Foundation
 
-struct ConquestPeriod {
+struct ConquestPeriod: Identifiable, Codable {
+    var id: UUID
     let startDate: Date
     let endDate: Date
-
-    init(startDate: Date, durationInDays: Int = 7) {
+    var weekIndex: Int
+    var winningTeam: String
+    
+    // TODO: - '점령전 기간 재설정' 로직 구현 후 이사 예정
+    init(startDate: Date, durationInDays: Int = 7, weekIndex: Int = 1, winningTeam: String = "") {
+        self.id = UUID()
         self.startDate = startDate
+        self.weekIndex = weekIndex
+        self.winningTeam = winningTeam
 
         guard let calculatedEndDate = Calendar.current.date(
                 byAdding: .day,
