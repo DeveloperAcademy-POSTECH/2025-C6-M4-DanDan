@@ -12,7 +12,7 @@ class TeamManager {
     
     @AppStorage("userTeam") var storedTeamRawValue: String?
     
-    @Published var userTeam: Team?
+    @Published var userTeam: TeamType?
     
     init() {
         loadTeam()
@@ -20,7 +20,7 @@ class TeamManager {
     
     func loadTeam() {
         if let raw = storedTeamRawValue,
-           let team = Team(rawValue: raw) {
+           let team = TeamType(rawValue: raw) {
             self.userTeam = team
         } else {
             self.userTeam = nil
@@ -29,7 +29,7 @@ class TeamManager {
     
     func assignRandomTeamIfNeeded() {
         guard userTeam == nil else { return }
-        let random = Team.allCases.randomElement()!
+        let random = TeamType.allCases.randomElement()!
         userTeam = random
         storedTeamRawValue = random.rawValue
     }
