@@ -21,6 +21,7 @@ class StatusManager {
         } else {
             self.userStatus = UserStatus(
                 id: UUID(),
+                userTeam: "",
                 userWeekScore: 0,
                 userDailyScore: 0,
                 isZoneChecked: false,
@@ -30,6 +31,15 @@ class StatusManager {
         }
     }
 
+    /// 랜덤으로 팀을 배정합니다.
+    func assignRandomTeamForThisWeek() {
+        guard userStatus.userTeam.isEmpty else { return }
+        let random = TeamType.allCases.randomElement()!
+        userStatus.userTeam = random.rawValue
+        save()
+    }
+    
+    /// 주간/일일 점령전 상태 (UserStatus)를 저장합니다.
     private func save() {
         if let data = try? JSONEncoder().encode(userStatus) {
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
