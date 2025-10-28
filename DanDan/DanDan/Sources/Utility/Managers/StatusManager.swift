@@ -7,7 +7,7 @@
 
 import Foundation
 
-class StatusManager {
+class StatusManager: ObservableObject {
     static let shared = StatusManager()
 
     @Published var userStatus: UserStatus
