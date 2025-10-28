@@ -37,6 +37,15 @@ class StatusManager {
         userStatus.userWeekScore += 1
         save()
     }
+    
+    /// 사용자가 오늘 해당 구간을 지나갔다면, 체크 상태로 저장합니다.
+    /// - Parameters:
+    ///     - zoneId: 체크할 구간의 고유 ID
+    ///     - checked: 구간을 지났는지 여부 (true: 지나감)
+    func setZoneChecked(zoneId: Int, checked: Bool) {
+        userStatus.zoneCheckeStatus[zoneId] = checked
+        save()
+    }
         save()
     }
 
