@@ -10,25 +10,32 @@ import Foundation
 class UserManager {
     static let shared = UserManager()
 
-    private let idkey = "userUUID"
-    private let nameKey = "userName"
-
-    var id: String {
-        if let saved = UserDefaults.standard.string(forKey: idkey) {
-            return saved
+    @Published var userInfo: UserInfo
+    
+    private let userDefaultsKey = "userInfo"
+    
+    // TODO: - 백엔드 연동시 삭제 예정
+    init() {
+        if let data = UserDefaults.standard.data(forKey: userDefaultsKey),
+           let saved = try? JSONDecoder().decode(UserInfo.self, from: data) {
+            self.userInfo = saved
         } else {
-            let uuid = UUID().uuidString
-            UserDefaults.standard.set(uuid, forKey: idkey)
-            return uuid
+            self.userInfo = UserInfo(
+                id: UUID(),
+                userName: "익명 사용자",
+                userTeam: "",
+                userVictoryCnt: 0,
+                userTotalScore: 0,
+                userImage: [],
+                rankHistory: []
+            )
+            save()
         }
     }
     
-    var name: String {
-        get {
-            UserDefaults.standard.string(forKey: nameKey) ?? "익명 사용자"
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: nameKey)
+    private func save() {
+        if let data = try? JSONEncoder().encode(userInfo) {
+            UserDefaults.standard.set(data, forKey: userDefaultsKey)
         }
     }
 }
