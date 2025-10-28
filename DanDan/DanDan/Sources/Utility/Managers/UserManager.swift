@@ -23,7 +23,6 @@ class UserManager {
             self.userInfo = UserInfo(
                 id: UUID(),
                 userName: "익명 사용자",
-                userTeam: "",
                 userVictoryCnt: 0,
                 userTotalScore: 0,
                 userImage: [],
