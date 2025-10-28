@@ -12,6 +12,6 @@ struct UserStatus: Identifiable, Codable {
     var userTeam: String
     var userWeekScore: Int
     var userDailyScore: Int
-    var isZoneChecked: Bool
+    var zoneCheckeStatus: [Int: Bool]
     var rank: Int
 }

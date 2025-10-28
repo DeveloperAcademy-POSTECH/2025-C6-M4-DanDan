@@ -24,7 +24,7 @@ class StatusManager {
                 userTeam: "",
                 userWeekScore: 0,
                 userDailyScore: 0,
-                isZoneChecked: false,
+                zoneCheckeStatus: [0: false],
                 rank: 0
             )
             save()

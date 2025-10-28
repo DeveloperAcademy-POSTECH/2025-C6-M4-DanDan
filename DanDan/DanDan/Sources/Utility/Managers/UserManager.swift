@@ -32,6 +32,7 @@ class UserManager {
         }
     }
     
+    /// 유저의 정보를 저장합니다.
     private func save() {
         if let data = try? JSONEncoder().encode(userInfo) {
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
