@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 class MainViewModel: ObservableObject {
     @ObservedObject var statusManager = StatusManager.shared
+    
     private let navigationManager = NavigationManager.shared
 
     // TODO: 구간 지나감 로직 구현 시 수정 필요
