@@ -7,7 +7,7 @@
 
 import Foundation
 
-class UserManager {
+class UserManager: ObservableObject {
     static let shared = UserManager()
 
     @Published var userInfo: UserInfo
