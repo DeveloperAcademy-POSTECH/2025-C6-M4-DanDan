@@ -15,7 +15,9 @@ struct ZoneBadgeView: View {
         ZStack {
             Circle()
                 .fill(teamColor)
-                .stroke(.white, lineWidth: 2)
+                .overlay(
+                    Circle().stroke(.white, lineWidth: 2)
+                )
                 .frame(width: 30, height: 30)
             Text("\(number)")
                 .font(.system(size: 15, weight: .bold))
