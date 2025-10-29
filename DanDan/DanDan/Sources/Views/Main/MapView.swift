@@ -37,7 +37,7 @@ struct MapView: UIViewRepresentable {
     private struct Bounds {
         let southWest: CLLocationCoordinate2D
         let northEast: CLLocationCoordinate2D
-        let margin: Double = 0.5
+        let margin: Double = 1.35
         
         var center: CLLocationCoordinate2D {
             CLLocationCoordinate2D(
@@ -97,25 +97,6 @@ struct MapView: UIViewRepresentable {
         return MKMapView.CameraBoundary(mapRect: rect)!
     }
     
-    /// 확대/축소 가능한 거리 범위 설정
-    private func applyZoomRange(to map: MKMapView, region: MKCoordinateRegion) {
-        let metersPerDegLat: CLLocationDistance = 111_000
-        let metersPerDegLon: CLLocationDistance = cos(region.center.latitude * .pi / 180) * 111_000
-
-        let widthMeters = region.span.longitudeDelta * metersPerDegLon
-        let heightMeters = region.span.latitudeDelta * metersPerDegLat
-
-        // maxDistance = 전체 숲을 다 보는 정도
-        let maxDistance = max(widthMeters, heightMeters) * 2.5   // 축소 한도 (조금 여유)
-        let minDistance = maxDistance / 25                       // 확대 한도
-
-        let zoomRange = MKMapView.CameraZoomRange(
-            minCenterCoordinateDistance: minDistance,
-            maxCenterCoordinateDistance: maxDistance
-        )
-        map.setCameraZoomRange(zoomRange, animated: false)
-    }
-    
     final class ColoredPolyline: MKPolyline {
         var color: UIColor = .white
     }
@@ -149,8 +130,10 @@ struct MapView: UIViewRepresentable {
             if let line = overlay as? ColoredPolyline {
                 let r = MKPolylineRenderer(overlay: line)
                 r.strokeColor = line.color
-                r.lineWidth = 14
-                r.lineCap = .round
+                r.lineWidth = 16
+            
+                r.lineCap = .butt
+                r.lineJoin = .round
                 return r
             }
             return MKOverlayRenderer()
@@ -162,10 +145,11 @@ struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
         
-//        map.isScrollEnabled = true
+        map.isScrollEnabled = false
         map.isZoomEnabled = false
         map.isRotateEnabled = false
         map.isPitchEnabled = false
+        //        map.showsCompass = false
         
         let config = MKStandardMapConfiguration(elevationStyle: .flat)
         config.pointOfInterestFilter = .excludingAll
@@ -177,9 +161,7 @@ struct MapView: UIViewRepresentable {
         
         let boundary = verticalBandBoundary(bandMeters: 150)
         map.setCameraBoundary(boundary, animated: false)
-        
-        applyZoomRange(to: map, region: region)
-        
+                
         context.coordinator.request()
         map.showsUserLocation = true
         
@@ -192,12 +174,12 @@ struct MapView: UIViewRepresentable {
         )
         map.addAnnotation(badge)
         
-//        for zone in zones {
-//            let coords = [zone.start, zone.end]
-//            let polyline = ColoredPolyline(coordinates: coords, count: 2)
-//            polyline.color = zone.color
-//            map.addOverlay(polyline)
-//        }
+        for zone in zones {
+            let coords = [zone.zoneStartPoint, zone.zoneEndPoint]
+            let polyline = ColoredPolyline(coordinates: coords, count: 2)
+            polyline.color = zone.zoneColor
+            map.addOverlay(polyline)
+        }
         
         return map
     }
