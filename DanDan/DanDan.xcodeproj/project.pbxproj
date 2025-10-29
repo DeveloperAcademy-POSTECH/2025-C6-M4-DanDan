@@ -92,7 +92,6 @@
 			packageProductDependencies = (
 			);
 			productName = DanDan;
-			productReference = 6983C4572EB0EB9100687A73 /* DanDan.app */;
 			productReference = B169A8F52EAF97F3008AFDD8 /* DanDan.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -116,7 +115,6 @@
 			packageProductDependencies = (
 			);
 			productName = DanDanTests;
-			productReference = 6983C4582EB0EB9100687A73 /* DanDanTests.xctest */;
 			productReference = B169A8F62EAF97F3008AFDD8 /* DanDanTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
@@ -333,6 +331,7 @@
 				DEVELOPMENT_TEAM = 5VA2L3436C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"Show your location on the map\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -361,6 +360,7 @@
 				DEVELOPMENT_TEAM = 5VA2L3436C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"Show your location on the map\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
