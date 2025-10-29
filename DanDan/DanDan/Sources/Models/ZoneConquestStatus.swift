@@ -7,8 +7,8 @@
 
 struct ZoneConquestStatus: Identifiable {
     var id: Int { zoneId }
-    let zoneId: Int
-    let teamId: Int?
-    let teamName: String?
-    let isConquered: Bool
+    var zoneId: Int
+    var teamId: Int?
+    var teamName: String?
+    var teamScore: Int?
 }
