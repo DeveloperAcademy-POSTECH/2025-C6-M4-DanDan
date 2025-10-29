@@ -10,7 +10,6 @@ import Foundation
 struct UserInfo: Identifiable, Codable {
     var id: UUID
     var userName: String
-    var userTeam: String
     var userVictoryCnt: Int
     var userTotalScore: Int
     var userImage: [Data]
