@@ -20,7 +20,7 @@ struct ZoneBadgeView: View {
                 )
                 .frame(width: 30, height: 30)
             Text("\(number)")
-                .font(.system(size: 15, weight: .bold))
+                .font(.system(size: 15))
                 .foregroundStyle(.white)
         }
         .contentShape(Circle())
