@@ -9,6 +9,6 @@ import Foundation
 
 struct Team: Identifiable, Codable {
     let id: UUID
-    let teamName: String
-    let teamColor: String
+    var teamName: String
+    var teamColor: String
 }
