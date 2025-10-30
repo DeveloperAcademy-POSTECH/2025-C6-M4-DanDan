@@ -10,13 +10,13 @@ import CoreLocation
 
 /// 타원 게이트 정의
 /// - bearingDeg: 구간 진행방향 θ (deg)
-/// - a_perp: 장축(횡방향) 반경 [m]
+/// - a_perp: 장축(횡방향) 반경 [m] (고정값 100m)
 /// - b_along: 단축(진행방향) 반경 [m]
 /// - inScale/outScale: 히스테리시스 스케일 (입장/퇴장 문턱)
 struct Gate {
     let center: CLLocationCoordinate2D // 기준 좌표가 되는 부분
     let bearingDeg: Double       // 구간 진행방향 θ
-    let a_perp: Double           // 장축: 횡방향 반경 (meters)
+    let a_perp: Double = 100     // 장축: 횡방향 반경 (meters) — 고정값 100m
     let b_along: Double          // 단축: 진행방향 반경 (meters)
     let inScale: Double = 0.9    // IN 문턱(작게) → 더 안쪽까지 들어와야 인정
     let outScale: Double = 1.1   // OUT 문턱(크게) → 조금 흔들려도 유지
