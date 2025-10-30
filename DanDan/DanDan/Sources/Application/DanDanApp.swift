@@ -11,7 +11,8 @@ import SwiftUI
 struct DanDanApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MapView()
+                .ignoresSafeArea()
         }
     }
 }
