@@ -14,5 +14,24 @@ struct UserStatus: Identifiable, Codable {
     var userDailyScore: Int
     var zoneCheckeStatus: [Int: Bool]
     var rank: Int
+
+    init() {
+        self.id = UUID()
+        self.userTeam = ""
+        self.userWeekScore = 0
+        self.userDailyScore = 0
+        self.zoneCheckeStatus = [:]
+        self.rank = 0
+    }
+    
+    /// 기존 유저의 ID를 유지하면서 상태를 초기화할 때 사용합니다.
+    /// - Parameter old: 이전 유저 상태
+    init(from old: UserStatus) {
+        self.id = old.id
+        self.userTeam = ""
+        self.userWeekScore = 0
+        self.userDailyScore = 0
+        self.zoneCheckeStatus = [:]
+        self.rank = 0
+    }
 }
- 

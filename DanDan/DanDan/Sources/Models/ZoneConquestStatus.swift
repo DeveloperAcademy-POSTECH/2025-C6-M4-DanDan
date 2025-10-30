@@ -11,4 +11,11 @@ struct ZoneConquestStatus: Identifiable {
     var teamId: Int?
     var teamName: String?
     var teamScore: Int?
+    
+    init(zoneId: Int) {
+        self.zoneId = zoneId
+        self.teamId = nil
+        self.teamName = nil
+        self.teamScore = nil
+    }
 }
