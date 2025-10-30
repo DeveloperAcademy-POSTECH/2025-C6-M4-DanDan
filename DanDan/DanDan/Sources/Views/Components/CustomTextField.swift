@@ -26,7 +26,7 @@ struct CustomTextField: View {
             prompt: Text(prompt)
                 .foregroundStyle(Color(hex: "#A2A9B0")) // 🍭 추후 컬러 Assets 추가 후 변경
         )
-//            .prText(Font.PR.body2)  // 추후 Font 디자인 시스템 추가 후 추가
+//        .font(.PR.body2) // 추후 Font 디자인 시스템 추가 후 추가
         .padding(.vertical, 15)
         .padding(.horizontal, 20)
         .tint(Color(hex: "#262626")) // 커서 색 - 🍭 추후 컬러 Assets 추가 후 변경
