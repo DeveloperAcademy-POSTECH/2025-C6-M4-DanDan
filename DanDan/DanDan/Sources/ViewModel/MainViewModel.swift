@@ -13,6 +13,8 @@ class MainViewModel: ObservableObject {
     @ObservedObject var userManager = UserManager.shared
     
     private let navigationManager = NavigationManager.shared
+    private let conquestResultManager = ConquestResultManager.shared
+    private let rankingManager = RankingManager.shared
 
     // TODO: 구간 지나감 로직 구현 시 수정 필요
     let zoneId: Int = 1

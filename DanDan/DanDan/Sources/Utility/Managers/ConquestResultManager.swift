@@ -9,6 +9,7 @@ import Foundation
 
 /// 전체 구간의 점령 상태를 기반으로 팀별 점령 결과를 종합하는 매니저
 class ConquestResultManager {
+    static let shared = ConquestResultManager()
     
     /// 팀별로 점령한 구역 수를 계산합니다
     /// - Parameter zones: 현재 모든 구간의 점령 상태 배열
