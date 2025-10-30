@@ -13,4 +13,11 @@ struct ZoneScore: Identifiable, Codable {
     var teamId: Int
     var teamName: String
     var teamScore: Int
+    
+    init(zoneId: Int) {
+        self.zoneId = zoneId
+        self.teamId = 0
+        self.teamName = ""
+        self.teamScore = 0
+    }
 }
