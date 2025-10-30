@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 class MainViewModel: ObservableObject {
     @ObservedObject var statusManager = StatusManager.shared
+    @ObservedObject var userManager = UserManager.shared
     
     private let navigationManager = NavigationManager.shared
 
