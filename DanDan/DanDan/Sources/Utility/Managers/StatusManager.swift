@@ -12,6 +12,8 @@ class StatusManager: ObservableObject {
 
     @Published var userStatus: UserStatus
     @Published var zoneStatuese: [ZoneConquestStatus] = []
+    @Published var currentPeriod: ConquestPeriod = ConquestPeriod(startDate: Date())
+
 
     private let userDefaultsKey = "userStatus"
 
@@ -73,5 +75,11 @@ class StatusManager: ObservableObject {
     /// 모든 구간의 점령 상태를 초기화합니다.
     func resetZoneConquestStatus() {
         zoneStatuese = zoneStatuese.map { ZoneConquestStatus(zoneId: $0.zoneId) }
+    }
+    
+    /// 새로운 점령 기간을 생성합니다.
+    func startNewConquestPeriod() {
+        let today = Date()
+        currentPeriod = ConquestPeriod(startDate: today)
     }
 }

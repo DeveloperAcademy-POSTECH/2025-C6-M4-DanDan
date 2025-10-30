@@ -36,7 +36,7 @@ class MainViewModel: ObservableObject {
         statusManager.setZoneChecked(zoneId: zoneId, checked: true)
     }
     
-    /// 현재 점령 기간이 종료되었는지 확인하고 전체 게임 상태를 초기화합니다.
+    /// 현재 점령 기간이 종료되면 전체 게임 상태를 초기화하고 새로운 점령 기간을 생성합니다.
     /// - Parameters:
     ///   - currentPeriod: 현재 점령전 기간 정보
     ///   - zones: 현재 모든 구간의 점령 상태 배열
@@ -44,7 +44,8 @@ class MainViewModel: ObservableObject {
         guard currentPeriod.hasEnded else { return }
         
         statusManager.resetUserStatus()
-        zoneScoreManager.resetZoneScore()
         statusManager.resetZoneConquestStatus()
+        zoneScoreManager.resetZoneScore()
+        statusManager.startNewConquestPeriod()
     }
 }
