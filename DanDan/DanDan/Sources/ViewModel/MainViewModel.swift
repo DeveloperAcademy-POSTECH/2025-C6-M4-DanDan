@@ -11,6 +11,7 @@ import SwiftUI
 class MainViewModel: ObservableObject {
     @ObservedObject var statusManager = StatusManager.shared
     @ObservedObject var userManager = UserManager.shared
+    @ObservedObject var zoneScoreManager = ZoneScoreManager.shared
     
     private let navigationManager = NavigationManager.shared
     private let conquestResultManager = ConquestResultManager.shared
@@ -33,5 +34,17 @@ class MainViewModel: ObservableObject {
     func handleScoreButtonTapped(zoneId: Int) {
         statusManager.incrementDailyScore()
         statusManager.setZoneChecked(zoneId: zoneId, checked: true)
+    }
+    
+    /// 현재 점령 기간이 종료되었는지 확인하고 전체 게임 상태를 초기화합니다.
+    /// - Parameters:
+    ///   - currentPeriod: 현재 점령전 기간 정보
+    ///   - zones: 현재 모든 구간의 점령 상태 배열
+    func checkAndHandleConquestEnd(currentPeriod: ConquestPeriod, zones: [ZoneConquestStatus]) {
+        guard currentPeriod.hasEnded else { return }
+        
+        statusManager.resetUserStatus()
+        zoneScoreManager.resetZoneScore()
+        statusManager.resetZoneConquestStatus()
     }
 }
