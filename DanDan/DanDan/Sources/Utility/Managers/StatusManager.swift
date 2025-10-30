@@ -54,6 +54,7 @@ class StatusManager: ObservableObject {
         save()
     }
 
+    // TODO: 팀 균형 배정을 위한 로직으로 개선 예정 (현재는 단순 무작위 배정)
     /// 랜덤으로 팀을 배정합니다.
     func assignRandomTeamForThisWeek() {
         guard userStatus.userTeam.isEmpty else { return }
