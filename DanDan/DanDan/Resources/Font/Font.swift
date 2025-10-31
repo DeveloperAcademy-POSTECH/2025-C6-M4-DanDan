@@ -23,7 +23,11 @@ extension Font {
         static let title2 = Font.custom("Pretendard-SemiBold", size: 20, relativeTo: .title2)
         static let body1 = Font.custom("Pretendard-SemiBold", size: 16, relativeTo: .body)
         static let body2 = Font.custom("Pretendard-Medium", size: 16, relativeTo: .body)
-        static let caption1 = Font.custom("Pretendard-Regular", size: 15, relativeTo: .caption)
+        static let body3 = Font.custom("Pretendard-Medium", size: 14, relativeTo: .body)
+        static let caption1 = Font.custom("Pretendard-Medium", size: 22, relativeTo: .caption)
+        static let caption2 = Font.custom("Pretendard-Regular", size: 16, relativeTo: .caption)
+        static let caption3 = Font.custom("Pretendard-Regular", size: 15, relativeTo: .caption)
+        static let caption4 = Font.custom("Pretendard-Medium", size: 14, relativeTo: .caption)
     }
 
 }
