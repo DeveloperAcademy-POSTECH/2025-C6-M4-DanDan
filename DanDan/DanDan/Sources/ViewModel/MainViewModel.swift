@@ -9,10 +9,10 @@ import SwiftUI
 
 @MainActor
 class MainViewModel: ObservableObject {
-    @ObservedObject var statusManager = StatusManager.shared
-    @ObservedObject var userManager = UserManager.shared
-    @ObservedObject var zoneScoreManager = ZoneScoreManager.shared
     
+    private let statusManager = StatusManager.shared
+    private let userManager = UserManager.shared
+    private let zoneScoreManager = ZoneScoreManager.shared
     private let navigationManager = NavigationManager.shared
     private let conquestResultManager = ConquestResultManager.shared
     private let rankingManager = RankingManager.shared
