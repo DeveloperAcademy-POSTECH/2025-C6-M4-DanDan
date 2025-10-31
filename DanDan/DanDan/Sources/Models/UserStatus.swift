@@ -12,14 +12,6 @@ struct UserStatus: Identifiable, Codable {
     var userTeam: String
     var userWeekScore: Int
     var userDailyScore: Int
-    var zoneCheckeStatus: [Int: Bool]
-    
-    // Correctly spelled alias for read/write access
-    var zoneCheckedStatus: [Int: Bool] {
-        get { zoneCheckeStatus }
-        set { zoneCheckeStatus = newValue }
-    }
-    
+    var zoneCheckedStatus: [Int: Bool]
     var rank: Int
 }
- 
