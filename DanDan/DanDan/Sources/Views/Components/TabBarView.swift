@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-enum AppTab: Hashable {
-    case ranking
-    case main
-    case my
-}
-
 struct TabBarView: View {
     @State private var selection: AppTab = .main
     
@@ -26,7 +20,7 @@ struct TabBarView: View {
                     .ignoresSafeArea()
             }
             Tab("마이페이지", systemImage: "person.fill", value: .my){
-                // TODO: 뷰 구현 후 주석 풀기
+                // TODO: 마이페이지 뷰 구현 후 주석 풀기
                 // MyPageView()
             }
         }
