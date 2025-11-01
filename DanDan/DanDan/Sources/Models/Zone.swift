@@ -13,8 +13,9 @@ struct Zone: Identifiable {
     var id: Int { zoneId }
     var zoneId: Int
     var zoneName: String
-    var zoneStartPoint: CLLocationCoordinate2D
-    var zoneEndPoint: CLLocationCoordinate2D
+    var coordinates: [CLLocationCoordinate2D]
+    var zoneStartPoint: CLLocationCoordinate2D { coordinates.first! }
+    var zoneEndPoint: CLLocationCoordinate2D { coordinates.last! }
     var zoneColor: UIColor
 }
 
