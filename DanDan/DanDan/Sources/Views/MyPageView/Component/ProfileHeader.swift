@@ -46,7 +46,6 @@ struct ProfileHeader: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("김소원")
                     .font(.pretendard(.semiBold, size: 22))
-//                    .padding(.bottom, 16)
                 
                 HStack(spacing: 24) {
                     VStack(alignment: .center, spacing: 8) {
