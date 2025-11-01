@@ -74,6 +74,8 @@ struct ProfileHeader: View {
 
         }
         .padding(.leading, 36)
+        .padding(.bottom, 45)
+        .padding(.top, 60)
     }
 }
 

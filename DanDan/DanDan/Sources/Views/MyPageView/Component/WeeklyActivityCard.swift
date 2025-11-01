@@ -57,6 +57,7 @@ struct WeeklyActivityCard: View {
                 .fill(.quinary)
         )
         .padding(.horizontal, 20)
+        .padding(.bottom, 12)
     }
 }
 
