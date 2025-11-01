@@ -12,6 +12,7 @@ struct RankingItemView: View {
     var userName: String
     var userImage: UIImage?
     var userConqueredZone: Int
+    var userTeam: String
     
     // MARK: - Initializer (도메인 모델 -> 뷰 데이터로 매핑)
     /// 실제 모델(UserStatus, UserInfo)을 받아서 UI에 필요한 값만 분리해 저장
@@ -27,14 +28,16 @@ struct RankingItemView: View {
         }
         
         self.userConqueredZone = status.userDailyScore
+        self.userTeam = status.userTeam
     }
     
     /// Preview를 위한 편의 init
-    init(ranking: Int, userName: String, userImage: UIImage? = nil, userConqueredZone: Int) {
+    init(ranking: Int, userName: String, userImage: UIImage? = nil, userConqueredZone: Int, userTeam: String = "none") {
         self.ranking = ranking
         self.userName = userName
         self.userImage = userImage
         self.userConqueredZone = userConqueredZone
+        self.userTeam = userTeam
     }
     
     // TODO: 폰트셋 추가 후 수정
@@ -61,8 +64,22 @@ struct RankingItemView: View {
         }
         .frame(maxWidth: 353, maxHeight: 78)
         // TODO: 컬러셋 추가 후 수정
-        .background(.blue.opacity(0.1))
+        .background(backgroundColor)
         .cornerRadius(12)
+    }
+    
+    // TODO: 팀명 및 컬러셋 확정 후 수정
+    // MARK: - Background Logic by Team
+    /// 팀에 따라 랭킹 아이템 배경색을 다르게 지정
+    private var backgroundColor: Color {
+        switch userTeam.lowercased() {
+        case "blue":
+            return Color.blue.opacity(0.1)
+        case "yellow":
+            return Color.yellow.opacity(0.1)
+        default:
+            return Color.gray.opacity(0.1)
+        }
     }
     
     // MARK: - Subview: 유저 프로필 이미지
@@ -74,7 +91,6 @@ struct RankingItemView: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                // 이미지가 없을 때 대체 아이콘
                 Image(systemName: "person.fill")
                     .resizable()
                     .scaledToFit()
@@ -87,11 +103,11 @@ struct RankingItemView: View {
     }
 }
 
-#Preview {
-    VStack(spacing: 8) {
-        RankingItemView(ranking: 8, userName: "소연수", userConqueredZone: 12)
-        RankingItemView(ranking: 9, userName: "김소원", userConqueredZone: 9)
-        RankingItemView(ranking: 10, userName: "허찬욱", userConqueredZone: 7)
-    }
-    .padding()
-}
+//#Preview {
+//    VStack(spacing: 8) {
+//        RankingItemView(ranking: 8, userName: "소연수", userConqueredZone: 12, userTeam: "blue")
+//        RankingItemView(ranking: 9, userName: "김소원", userConqueredZone: 9, userTeam: "blue")
+//        RankingItemView(ranking: 10, userName: "허찬욱", userConqueredZone: 7, userTeam: "yellow")
+//    }
+//    .padding()
+//}
