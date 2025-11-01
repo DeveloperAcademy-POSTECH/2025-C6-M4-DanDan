@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct ProfileHeader: View {
+    var action: () -> Void
     private let navigationManager = NavigationManager.shared
     
     var body: some View {
         HStack(spacing: 40) {
-            Button(action: {
-                navigationManager.navigate(to: .profileEdit)
-            }){
+            Button(action: action) {
                 ZStack(alignment: .bottomTrailing) {
                     Image("testImage")
                         .resizable()
@@ -79,5 +78,7 @@ struct ProfileHeader: View {
 }
 
 #Preview {
-    ProfileHeader()
+    ProfileHeader(){
+        print("profile edit view")
+    }
 }
