@@ -1,5 +1,5 @@
 //
-//  NavigationCardButton.swift
+//  HistoryCardButton.swift
 //  DanDan
 //
 //  Created by Hwnag Seyeon on 11/1/25.
@@ -7,14 +7,13 @@
 
 import SwiftUI
 
-struct NavigationCardButton: View {
-    var cardTitle: String
+struct HistoryCardButton: View {
     var action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 0) {
-                Text(cardTitle)
+                Text("시즌 히스토리")
                     .font(.PR.body2)
                     .foregroundColor(.black)
                 
@@ -37,7 +36,7 @@ struct NavigationCardButton: View {
 
 
 #Preview {
-    NavigationCardButton(cardTitle: "시즌 히스토리") {
+    HistoryCardButton() {
         print("시즌 히스토리 버튼 탭됨")
     }
 }
