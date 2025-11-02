@@ -9,6 +9,12 @@ import SwiftUI
 
 struct TeamRankView: View {
     var body: some View {
-        Text("TeamRankView")
+        VStack(spacing: 0) {
+            Spacer()
+            
+            Text("팀 랭킹 내용")
+            
+            Spacer()
+        }
     }
 }
