@@ -26,10 +26,6 @@ struct RankingView: View {
             )
 
             if isRightSelected {
-                Spacer()
-                
-                // TODO: 개인 랭킹 뷰
-                Text("개인 랭킹 뷰 (다음 이슈 때 구현)")
                 PersonalRankView(
                     rankingItems: viewModel.getRankingItemDataList()
                 )

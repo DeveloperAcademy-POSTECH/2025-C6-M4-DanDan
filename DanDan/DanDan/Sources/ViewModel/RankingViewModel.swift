@@ -37,12 +37,39 @@ class RankingViewModel: ObservableObject {
     }
 }
 
+// MARK: - View 전용 모델 및 데이터 변환
 
 extension RankingViewModel {
 
+    // 뷰 전용 단순 데이터
+    struct RankingItemData: Identifiable {
+        let id = UUID()
+        let ranking: Int
+        let userName: String
+        let userImage: UIImage?
+        let userWeekScore: Int
+        let userTeam: String
+        let backgroundColor: Color
+    }
+
+    /// 사용자 상태 배열(rankedUsers)을 바탕으로 뷰에 필요한 사용자 정보와 스타일 데이터를 구성하여 반환합니다.
+    /// - Returns: [RankingItemData] 형식의 배열 (UserStatus, UserInfo, 스타일 포함)
+    func getRankingItemDataList() -> [RankingItemData] {
+        rankedUsers.compactMap { status in
+            guard let info = userInfo.first(where: { $0.id == status.id })
+            else { return nil }
+
+            let image: UIImage? = info.userImage.first.flatMap {
+                UIImage(data: $0)
+            }
+
+            let color: Color
+            switch status.userTeam.lowercased() {
             case "blue": color = .blue.opacity(0.1)
             case "yellow": color = .yellow.opacity(0.1)
             default: color = .gray.opacity(0.1)
+            }
+
             return RankingItemData(
                 ranking: status.rank,
                 userName: info.userName,
