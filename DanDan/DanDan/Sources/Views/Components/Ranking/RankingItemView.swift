@@ -48,6 +48,7 @@ struct RankingItemView: View {
                 .font(.PR.title2)
                 .frame(width: 36)
                 .padding(.horizontal, 12)
+                .foregroundStyle(.darkGreen)
             
             ProfileImageView(image: userImage)
             
@@ -55,7 +56,7 @@ struct RankingItemView: View {
                 .font(.PR.body3)
                 .lineLimit(1)
                 .padding(.leading, 12)
-                .foregroundStyle(.darkGreen)
+                .foregroundStyle(.steelBlack)
             
             Spacer()
             
