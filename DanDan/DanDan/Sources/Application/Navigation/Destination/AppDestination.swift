@@ -11,6 +11,9 @@ enum AppDestination: Hashable {
     case onboarding
     case main
     case ranking
+    case myPage
+    case seasonHistory
+    case profileEdit
 }
 
 extension AppDestination {
@@ -23,6 +26,12 @@ extension AppDestination {
             MainView()
         case .ranking:
             RankingView()
+        case .myPage:
+            MyPageView()
+        case .seasonHistory:
+            SeasonHistoryView()
+        case .profileEdit:
+            ProfileEditView()
         }
     }
 }

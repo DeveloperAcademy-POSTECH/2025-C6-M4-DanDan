@@ -25,9 +25,22 @@
 		B169A8F62EAF97F3008AFDD8 /* DanDanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DanDanTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0AC655B32EB6886600F9DAEA /* Exceptions for "DanDan" folder in "DanDan" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 690DD6F02EACB758005EB019 /* DanDan */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		690DD6F32EACB758005EB019 /* DanDan */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0AC655B32EB6886600F9DAEA /* Exceptions for "DanDan" folder in "DanDan" target */,
+			);
 			path = DanDan;
 			sourceTree = "<group>";
 		};
@@ -328,9 +341,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5VA2L3436C;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DanDan/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"Show your location on the map\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -357,9 +371,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5VA2L3436C;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DanDan/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"Show your location on the map\"";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
