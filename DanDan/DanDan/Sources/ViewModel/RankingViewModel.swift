@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import SwiftUI
+import UIKit
 
 @MainActor
 class RankingViewModel: ObservableObject {
@@ -30,5 +32,46 @@ class RankingViewModel: ObservableObject {
     /// 메인 화면으로 이동합니다.
     func tapMainButton() {
         navigationManager.popToRoot()
+    }
+}
+
+// 뷰 전용 단순 데이터
+struct RankingItemData: Identifiable {
+    let id = UUID()
+    let ranking: Int
+    let userName: String
+    let userImage: UIImage?
+    let userConqueredZone: Int
+    let userTeam: String
+    let backgroundColor: Color
+}
+
+extension RankingViewModel {
+    /// UserStatus + UserInfo → RankingItemData 변환 (기존 initializer 로직을 그대로 이전)
+    func makeItemData(status: UserStatus, info: UserInfo) -> RankingItemData {
+        let image: UIImage?
+        if let firstData = info.userImage.first,
+           let uiImage = UIImage(data: firstData) {
+            image = uiImage
+        } else {
+            image = nil
+        }
+        
+        let color: Color
+        // TODO: 컬러셋 확정시 수정
+        switch status.userTeam.lowercased() {
+            case "blue": color = .blue.opacity(0.1)
+            case "yellow": color = .yellow.opacity(0.1)
+            default: color = .gray.opacity(0.1)
+        }
+        
+        return RankingItemData(
+            ranking: status.rank,
+            userName: info.userName,
+            userImage: image,
+            userConqueredZone: status.userDailyScore,
+            userTeam: status.userTeam,
+            backgroundColor: color
+        )
     }
 }
