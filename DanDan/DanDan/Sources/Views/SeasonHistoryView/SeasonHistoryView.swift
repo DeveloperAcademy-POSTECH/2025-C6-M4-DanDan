@@ -8,8 +8,19 @@
 import SwiftUI
 
 struct SeasonHistoryView: View {
+    @StateObject private var viewModel = SeasonHistoryViewModel()
+
     var body: some View {
-        Text("시즌 히스토리 뷰")
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 20) {
+                    ActiveSeasonCard(viewModel: viewModel)
+                    ForEach(viewModel.completedWeeks) { item in
+                        CompletedSeasonCard(item: item)
+                    }
+                }
+            }
+        }
     }
 }
 
