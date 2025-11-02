@@ -14,7 +14,6 @@ class UserManager: ObservableObject {
     
     private let userDefaultsKey = "userInfo"
     
-    // TODO: - 백엔드 연동시 삭제 예정
     init() {
         if let data = UserDefaults.standard.data(forKey: userDefaultsKey),
            let saved = try? JSONDecoder().decode(UserInfo.self, from: data) {

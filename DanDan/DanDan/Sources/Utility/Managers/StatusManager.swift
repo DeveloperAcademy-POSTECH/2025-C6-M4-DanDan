@@ -11,6 +11,9 @@ class StatusManager: ObservableObject {
     static let shared = StatusManager()
 
     @Published var userStatus: UserStatus
+    @Published var zoneStatuese: [ZoneConquestStatus] = []
+    @Published var currentPeriod: ConquestPeriod = ConquestPeriod(startDate: Date())
+
 
     private let userDefaultsKey = "userStatus"
 
@@ -19,14 +22,7 @@ class StatusManager: ObservableObject {
            let saved = try? JSONDecoder().decode(UserStatus.self, from: data) {
             self.userStatus = saved
         } else {
-            self.userStatus = UserStatus(
-                id: UUID(),
-                userTeam: "",
-                userWeekScore: 0,
-                userDailyScore: 0,
-                zoneCheckeStatus: [:],
-                rank: 0
-            )
+            self.userStatus = UserStatus()
             save()
         }
     }
@@ -68,5 +64,22 @@ class StatusManager: ObservableObject {
         if let data = try? JSONEncoder().encode(userStatus) {
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
         }
+    }
+    
+    /// 기존 유저의 ID를 유지한 채 UserStatus 상태를 초기화합니다.
+    func resetUserStatus() {
+        userStatus = UserStatus(from: userStatus)
+        save()
+    }
+    
+    /// 모든 구간의 점령 상태를 초기화합니다.
+    func resetZoneConquestStatus() {
+        zoneStatuese = zoneStatuese.map { ZoneConquestStatus(zoneId: $0.zoneId) }
+    }
+    
+    /// 새로운 점령 기간을 생성합니다.
+    func startNewConquestPeriod() {
+        let today = Date()
+        currentPeriod = ConquestPeriod(startDate: today)
     }
 }
