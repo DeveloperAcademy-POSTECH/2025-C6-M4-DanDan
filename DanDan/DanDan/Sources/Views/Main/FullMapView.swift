@@ -104,10 +104,3 @@ struct FullMapView: UIViewRepresentable {
         
     func updateUIView(_ uiView: MKMapView, context: Context) { }
 }
-
-struct ForailFullMapScreen: View {
-    var body: some View {
-        FullMapView()
-            .ignoresSafeArea()
-    }
-}

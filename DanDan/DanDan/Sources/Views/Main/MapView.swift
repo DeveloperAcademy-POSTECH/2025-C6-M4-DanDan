@@ -151,10 +151,3 @@ struct MapView: UIViewRepresentable {
     
     func updateUIView(_ uiView: MKMapView, context: Context) { }
 }
-
-struct ForailMapScreen: View {
-    var body: some View {
-        MapView()
-            .ignoresSafeArea()
-    }
-}
