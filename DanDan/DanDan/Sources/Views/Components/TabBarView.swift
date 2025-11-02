@@ -13,10 +13,10 @@ struct TabBarView: View {
     var body: some View {
         TabView(selection: $selection){
             Tab("랭킹", systemImage: "trophy.fill", value: .ranking){
-                 RankingView()
+                RankingView()
             }
             Tab("지도", systemImage: "map.fill", value: .main){
-                MapView()
+                MapToggleView()
                     .ignoresSafeArea()
             }
             Tab("마이페이지", systemImage: "person.fill", value: .my){
