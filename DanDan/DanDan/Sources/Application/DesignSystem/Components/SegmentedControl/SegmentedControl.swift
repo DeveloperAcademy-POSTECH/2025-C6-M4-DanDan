@@ -29,11 +29,12 @@
 import SwiftUI
 
 struct SegmentedControl: View {
+    @Binding var isRightSelected: Bool
+    
     var leftTitle: String
     var rightTitle: String
-    @Binding var isRightSelected: Bool
     var onSelectionChanged: (Bool) -> Void
-
+    
     init(
         leftTitle: String,
         rightTitle: String,
@@ -44,6 +45,8 @@ struct SegmentedControl: View {
         self.rightTitle = rightTitle
         self._isRightSelected = isRightSelected
         self.onSelectionChanged = onSelectionChanged
+        
+        Self.configureAppearance()
     }
 
     var body: some View {
@@ -62,5 +65,15 @@ struct SegmentedControl: View {
 
         .pickerStyle(.segmented)
         .padding(.horizontal, 20)
+    }
+}
+
+extension SegmentedControl {
+    private static func configureAppearance() {
+        let appearance = UISegmentedControl.appearance()
+        appearance.selectedSegmentTintColor = UIColor.systemGreen  // 선택된 배경
+        appearance.backgroundColor = UIColor.systemGray5           // 전체 배경
+        appearance.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)   // 선택 텍스트
+        appearance.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)     // 비선택 텍스트
     }
 }
