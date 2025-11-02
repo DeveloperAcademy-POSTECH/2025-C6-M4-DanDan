@@ -1,0 +1,28 @@
+//
+//  StatusTag.swift
+//  DanDan
+//
+//  Created by Hwnag Seyeon on 11/2/25.
+//
+
+import SwiftUI
+
+struct StatusTag: View {
+    var text: String
+    
+    var body: some View {
+        Text(text)
+            .font(.PR.caption4)
+            .foregroundColor(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 2)
+            .background(Color.red) // 추후 색상 변경
+            .clipShape(Capsule())
+    }
+}
+
+#Preview {
+    VStack(spacing: 20) {
+        StatusTag(text: "진행 중")
+    }
+}
