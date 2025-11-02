@@ -32,10 +32,7 @@ struct MapToggleView: View {
                     } label: {
                         Image(systemName: "globe.central.south.asia.fill")
                             .font(.system(size: 22, weight: .semibold))
-                        
-                            // TODO: 컬러셋 추가 후 활성화 시 아이콘 색상 변경
-                        
-                            .foregroundStyle(isFullMap ? .red : .black)
+                            .foregroundStyle(isFullMap ? .primaryGreen : .black)
                             .frame(width: 56, height: 56)
                     }
                     .buttonStyle(.plain)
