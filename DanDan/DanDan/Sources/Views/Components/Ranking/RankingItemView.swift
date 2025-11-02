@@ -30,7 +30,7 @@ struct RankingItemView: View {
         self.userConqueredZone = status.userDailyScore
         self.userTeam = status.userTeam
     }
-    
+
     /// Preview를 위한 편의 init
     init(ranking: Int, userName: String, userImage: UIImage? = nil, userConqueredZone: Int, userTeam: String = "none") {
         self.ranking = ranking
@@ -48,7 +48,7 @@ struct RankingItemView: View {
                 .frame(width: 36)
                 .padding(.horizontal, 12)
             
-            profileImage
+            ProfileImageView(image: userImage)
             
             Text(userName)
                 .font(.system(size: 16))
@@ -80,26 +80,6 @@ struct RankingItemView: View {
         default:
             return Color.gray.opacity(0.1)
         }
-    }
-    
-    // MARK: - Subview: 유저 프로필 이미지
-    
-    private var profileImage: some View {
-        Group {
-            if let uiImage = userImage {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                Image(systemName: "person.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(.gray)
-            }
-        }
-        .frame(width: 46, height: 46)
-        .clipShape(Circle())
-        .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
     }
 }
 
