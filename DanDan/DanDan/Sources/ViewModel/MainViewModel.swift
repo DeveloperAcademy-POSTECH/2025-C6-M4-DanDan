@@ -22,7 +22,7 @@ class MainViewModel: ObservableObject {
 
     /// 오늘 이 구간에서 점수를 아직 안 얻었으면 버튼을 보여준다
     var shouldShowScoreButton: Bool {
-        return statusManager.userStatus.zoneCheckeStatus[zoneId] != true
+        return statusManager.userStatus.zoneCheckedStatus[zoneId] != true
     }
 
     /// 랭킹 페이지로 이동합니다.

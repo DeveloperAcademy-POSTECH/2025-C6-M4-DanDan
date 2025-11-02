@@ -39,14 +39,14 @@ class StatusManager: ObservableObject {
     ///     - zoneId: 체크할 구간의 고유 ID
     ///     - checked: 구간을 지났는지 여부 (true: 지나감)
     func setZoneChecked(zoneId: Int, checked: Bool) {
-        userStatus.zoneCheckeStatus[zoneId] = checked
+        userStatus.zoneCheckedStatus[zoneId] = checked
         save()
     }
     
     /// 하루가 지나면 전체 구간의 체크 상태를 초기화합니다.
     func resetDailyStatus() {
         userStatus.userDailyScore = 0
-        userStatus.zoneCheckeStatus = [:]
+        userStatus.zoneCheckedStatus = [:]
         save()
     }
 
