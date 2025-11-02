@@ -15,4 +15,3 @@ struct UserStatus: Identifiable, Codable {
     var zoneCheckeStatus: [Int: Bool]
     var rank: Int
 }
- 
