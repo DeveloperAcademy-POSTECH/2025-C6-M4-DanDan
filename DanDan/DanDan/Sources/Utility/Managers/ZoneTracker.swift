@@ -34,6 +34,11 @@ final class ZoneTracker {
         return Gate(center: params.center, bearingDeg: params.bearingDeg, b_along: params.b_along)
     }
 
+    /// 좌표로부터 Gate 생성 (임시 기본값 사용)
+    private func makeGate(from coordinate: CLLocationCoordinate2D) -> Gate {
+        Gate(center: coordinate, bearingDeg: 0.0, b_along: 0.0)
+    }
+
     /// 임시 게이트 파라미터 반환 함수 (실제 구현 전용 더미 데이터)
     private func gateParams(for pointId: Int) -> (center: CLLocationCoordinate2D, bearingDeg: Double, b_along: Double) {
         // TODO: 실제 게이트 좌표 매핑 로직으로 교체 필요
