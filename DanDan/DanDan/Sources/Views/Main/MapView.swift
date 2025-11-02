@@ -8,28 +8,7 @@
 import SwiftUI
 import MapKit
 
-final class HostingAnnotationView: MKAnnotationView {
-    private var host: UIHostingController<AnyView>?
-
-    func setSwiftUIView<Content: View>(_ view: Content) {
-        if host == nil {
-            let controller = UIHostingController(rootView: AnyView(view))
-            controller.view.backgroundColor = .clear
-            host = controller
-            addSubview(controller.view)
-            controller.view.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                controller.view.topAnchor.constraint(equalTo: topAnchor),
-                controller.view.bottomAnchor.constraint(equalTo: bottomAnchor),
-                controller.view.leadingAnchor.constraint(equalTo: leadingAnchor),
-                controller.view.trailingAnchor.constraint(equalTo: trailingAnchor)
-            ])
-        } else {
-            host?.rootView = AnyView(view)
-        }
-    }
-}
-
+// 부분 3D 지도(메인)
 struct MapView: UIViewRepresentable {
     
     // MARK: - Bounds
@@ -37,7 +16,7 @@ struct MapView: UIViewRepresentable {
     private struct Bounds {
         let southWest: CLLocationCoordinate2D
         let northEast: CLLocationCoordinate2D
-        let margin: Double = 1.35
+        let margin: Double = 0.55
         
         var center: CLLocationCoordinate2D {
             CLLocationCoordinate2D(
@@ -65,73 +44,62 @@ struct MapView: UIViewRepresentable {
         northEast: .init(latitude: 36.057920, longitude: 129.361197)
     )
     
-    final class ZoneAnnotation: NSObject, MKAnnotation {
-        let coordinate: CLLocationCoordinate2D
-        let number: Int
-        let color: UIColor
-        init(coordinate: CLLocationCoordinate2D, number: Int, color: UIColor) {
-            self.coordinate = coordinate
-            self.number = number
-            self.color = color
-        }
-    }
-    
-    /// 경도 이동을 얇게 제한한 '세로 띠' 형태의 CameraBoundary 생성
-    private func verticalBandBoundary(bandMeters: Double = 120) -> MKMapView.CameraBoundary {
-        let sw = MKMapPoint(bounds.southWest)
-        let ne = MKMapPoint(bounds.northEast)
-
-        // 전체 높이는 철길숲 전체 (여유 10%)
-        let minY = min(sw.y, ne.y)
-        let maxY = max(sw.y, ne.y)
-        let height = (maxY - minY) * 1.1
-        let originY = minY - (0.05 * (maxY - minY))
-
-        // 중심 경도를 기준으로 bandMeters 폭만큼의 얇은 띠
-        let metersPerPoint = MKMetersPerMapPointAtLatitude(bounds.center.latitude)
-        let bandPoints = bandMeters / metersPerPoint
-        let centerX = MKMapPoint(bounds.center).x
-        let originX = centerX - bandPoints / 2.0
-
-        let rect = MKMapRect(x: originX, y: originY, width: bandPoints, height: height)
-        return MKMapView.CameraBoundary(mapRect: rect)!
-    }
-    
+    // MARK: - Overlays
     final class ColoredPolyline: MKPolyline {
         var color: UIColor = .white
     }
     
+    // MARK: - Coordinator
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
+        weak var mapView: MKMapView?
+        
         override init() {
             super.init()
             manager.delegate = self
         }
         
-        /// 위치 접근 권한 요청
         func request() {
-            manager.requestWhenInUseAuthorization()
+            manager.requestWhenInUseAuthorization() // 위치 정보 접근 권한 요청
+            manager.startUpdatingLocation() // 위치 업데이트 시작
+            manager.startUpdatingHeading() // 나침반(방향) 업데이트 시작
         }
         
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            guard let ann = annotation as? MapView.ZoneAnnotation else { return nil }
+        // 사용자의 위치에 따라 카메라 중심 이동
+        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+            guard let mapView = mapView,
+                  let location = locations.last else { return }
             
-            let id = "zone.badge"
-            let view = (mapView.dequeueReusableAnnotationView(withIdentifier: id) as? HostingAnnotationView)
-                ?? HostingAnnotationView(annotation: annotation, reuseIdentifier: id)
-
-            view.annotation = annotation
-            view.setSwiftUIView( ZoneBadgeView(number: ann.number, teamColor: Color(ann.color)) )
-            view.centerOffset = CGPoint(x: 0, y: -15)
-            return view
+            let camera = MKMapCamera(
+                lookingAtCenter: location.coordinate,
+                fromDistance: 800,
+                pitch: 80,
+                heading: mapView.camera.heading
+            )
+            mapView.setCamera(camera, animated: true)
         }
-
+        
+        // 유저의 방향(heading) 변경에 따라 지도 회전
+        func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+            guard let mapView = mapView else { return }
+            
+            let currentCenter = mapView.camera.centerCoordinate
+            let camera = MKMapCamera(
+                lookingAtCenter: currentCenter,
+                fromDistance: 800,
+                pitch: 80,
+                heading: newHeading.trueHeading
+            )
+            mapView.setCamera(camera, animated: true)
+        }
+        
+        // Polyline renderer
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let line = overlay as? ColoredPolyline {
                 let r = MKPolylineRenderer(overlay: line)
                 r.strokeColor = line.color
-                r.lineWidth = 16
-            
+                r.lineWidth = 20
+                
                 r.lineCap = .butt
                 r.lineJoin = .round
                 return r
@@ -149,41 +117,39 @@ struct MapView: UIViewRepresentable {
         map.isZoomEnabled = false
         map.isRotateEnabled = false
         map.isPitchEnabled = false
-        //        map.showsCompass = false
+        map.showsCompass = false
         
-        let config = MKStandardMapConfiguration(elevationStyle: .flat)
+        let config = MKStandardMapConfiguration(elevationStyle: .realistic)
         config.pointOfInterestFilter = .excludingAll
         config.showsTraffic = false
         map.preferredConfiguration = config
         
-        let region = bounds.region
-        map.setRegion(region, animated: true)
-        
-        let boundary = verticalBandBoundary(bandMeters: 150)
-        map.setCameraBoundary(boundary, animated: false)
-                
-        context.coordinator.request()
-        map.showsUserLocation = true
-        
         map.delegate = context.coordinator
-        
-        let badge = ZoneAnnotation(
-            coordinate: CLLocationCoordinate2D(latitude: 36.012460, longitude: 129.340923),
-            number: 3,
-            color: .blue
-        )
-        map.addAnnotation(badge)
+        context.coordinator.mapView = map
         
         for zone in zones {
             let coords = [zone.zoneStartPoint, zone.zoneEndPoint]
             let polyline = ColoredPolyline(coordinates: coords, count: 2)
             polyline.color = zone.zoneColor
-            map.addOverlay(polyline)
+            map.addOverlay(polyline, level: .aboveRoads)
         }
+        
+        let region = bounds.region
+        map.setRegion(region, animated: true)
+        let camera = MKMapCamera(
+            lookingAtCenter: bounds.center,
+            fromDistance: 800,
+            pitch: 80,
+            heading: 0
+        )
+        map.setCamera(camera, animated: false)
+        
+        map.showsUserLocation = true
+        context.coordinator.request()
         
         return map
     }
-        
+    
     func updateUIView(_ uiView: MKMapView, context: Context) { }
 }
 
