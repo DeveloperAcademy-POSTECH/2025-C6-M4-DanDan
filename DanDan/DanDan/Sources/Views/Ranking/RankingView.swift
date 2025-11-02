@@ -9,8 +9,13 @@ import SwiftUI
 
 struct RankingView: View {
     @StateObject private var viewModel = RankingViewModel()
-    
+
     @State private var isRightSelected: Bool = false
+    
+    // TODO: 더미데이터 수정
+    init(viewModel: RankingViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,24 +24,25 @@ struct RankingView: View {
                 rightTitle: "개인",
                 isRightSelected: $isRightSelected
             )
-            
+
             if isRightSelected {
                 Spacer()
                 
                 // TODO: 개인 랭킹 뷰
                 Text("개인 랭킹 뷰 (다음 이슈 때 구현)")
-                
-                Spacer()
+                PersonalRankView(
+                    rankingItems: viewModel.getRankingItemDataList()
+                )
             } else {
                 TeamRankView()
             }
         }
         .padding(.top, 45)
-        
+
         Spacer()
     }
 }
 
 #Preview {
-    RankingView()
+    RankingView(viewModel: .dummy)
 }
