@@ -10,13 +10,9 @@ import SwiftUI
 @main
 struct DanDanApp: App {
     
-    init() {
-        AppAppearance.configure()
-    }
-    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabBarView()
         }
     }
 }
