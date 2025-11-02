@@ -20,7 +20,7 @@ struct UserStatus: Identifiable, Codable {
         self.userTeam = ""
         self.userWeekScore = 0
         self.userDailyScore = 0
-        self.zoneCheckeStatus = [:]
+        self.zoneCheckedStatus = [:]
         self.rank = 0
     }
     
@@ -31,7 +31,7 @@ struct UserStatus: Identifiable, Codable {
         self.userTeam = ""
         self.userWeekScore = 0
         self.userDailyScore = 0
-        self.zoneCheckeStatus = [:]
+        self.zoneCheckedStatus = [:]
         self.rank = 0
     }
 }
