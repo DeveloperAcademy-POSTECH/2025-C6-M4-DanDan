@@ -55,9 +55,9 @@ struct SegmentedControl: View {
             }
         )) {
             Text(leftTitle).tag(false as Bool)
-//                .font(.PR.body2) // - 🍭 추후 폰트셋 추가 후 반영
+                .font(.PR.body2)
             Text(rightTitle).tag(true as Bool)
-//                .font(.PR.body2) // - 🍭 추후 폰트셋 추가 후 반영
+                .font(.PR.body2)
         }
 
         .pickerStyle(.segmented)
