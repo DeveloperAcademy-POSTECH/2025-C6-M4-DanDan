@@ -96,13 +96,12 @@ struct MapView: UIViewRepresentable {
         // Polyline renderer
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let line = overlay as? ColoredPolyline {
-                let r = MKPolylineRenderer(overlay: line)
-                r.strokeColor = line.color
-                r.lineWidth = 20
-                
-                r.lineCap = .butt
-                r.lineJoin = .round
-                return r
+                let renderer = MKPolylineRenderer(overlay: line)
+                renderer.strokeColor = line.color
+                renderer.lineWidth = 20
+                renderer.lineCap = .butt
+                renderer.lineJoin = .round
+                return renderer
             }
             return MKOverlayRenderer()
         }
