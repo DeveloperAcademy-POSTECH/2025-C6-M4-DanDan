@@ -1,0 +1,87 @@
+//
+//  CompletedSeasonCard.swift
+//  DanDan
+//
+//  Created by Hwnag Seyeon on 11/2/25.
+//
+
+import SwiftUI
+
+/// 과거 주간 기록 1장을 표현
+struct CompletedSeasonCard: View {
+    let item: CompletedSeasonItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // 헤더 (주차 / 기간 / 완료 태그)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.week.label)
+                        .font(.PR.body2)
+                    Text(item.week.range)
+                        .font(.PR.caption4)
+                }
+                Spacer()
+                StatusTag(text: "완료")
+            }
+            .padding(.bottom, 32)
+
+            // 간단 통계
+            HStack(spacing: 0) {
+                Image(systemName: "flag.fill")
+                    .font(.system(size: 48))
+
+                Spacer()
+
+                HStack(spacing: 20) {
+                    VStack(spacing: 8) {
+                        Text("거리")
+                            .font(.PR.body4)
+                            .foregroundStyle(.secondary)
+                        Text("\(String(format: "%.1f", item.stats.distanceKm))km")
+                            .font(.PR.title2)
+                    }
+                    VStack(spacing: 8) {
+                        Text("점수")
+                            .font(.PR.body4)
+                            .foregroundStyle(.secondary)
+                        Text("\(item.stats.score)")
+                            .font(.PR.title2)
+                    }
+                    VStack(spacing: 8) {
+                        Text("팀 내 순위")
+                            .font(.PR.body4)
+                            .foregroundStyle(.secondary)
+                        Text("\(item.stats.teamRank)위")
+                            .font(.PR.title2)
+                    }
+                }
+            }
+            .padding(.bottom, 28)
+
+            Text("내가 얻은 구역")
+                .font(.PR.body4)
+                .padding(.bottom, 8)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.yellow.opacity(0.9))
+                .frame(height: 160)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 24)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.green))
+        )
+        .padding(.horizontal, 20)
+    }
+}
+
+#Preview {
+    let previewItem = CompletedSeasonItem(
+        week: WeekDisplay(label: "2025년 10월 4주차",
+                          range: "2025.10.20 ~ 2025.10.26"),
+        period: ConquestPeriod(startDate: Date(), durationInDays: 6, weekIndex: 4),
+        stats: SeasonStats(flags: 2, distanceKm: 7.4, score: 1420, teamRank: 2)
+    )
+    return CompletedSeasonCard(item: previewItem)
+}
