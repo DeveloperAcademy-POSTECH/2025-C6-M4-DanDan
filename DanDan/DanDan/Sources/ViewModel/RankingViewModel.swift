@@ -58,11 +58,11 @@ extension RankingViewModel {
         }
         
         let color: Color
-        // TODO: 컬러셋 확정시 수정
+        // TODO: 팀명 확정시 수정
         switch status.userTeam.lowercased() {
-            case "blue": color = .blue.opacity(0.1)
-            case "yellow": color = .yellow.opacity(0.1)
-            default: color = .gray.opacity(0.1)
+            case "blue": color = .subA20
+            case "yellow": color = .subB20
+            default: color = .gray5
         }
         
         return RankingItemData(

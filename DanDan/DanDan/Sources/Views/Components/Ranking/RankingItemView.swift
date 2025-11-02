@@ -45,23 +45,24 @@ struct RankingItemView: View {
     var body: some View {
         HStack {
             Text("\(ranking)")
-                .font(.system(size: 18, weight: .bold))
+                .font(.PR.title2)
                 .frame(width: 36)
                 .padding(.horizontal, 12)
             
             ProfileImageView(image: userImage)
             
             Text(userName)
-                .font(.system(size: 16))
+                .font(.PR.body3)
                 .lineLimit(1)
                 .padding(.leading, 12)
+                .foregroundStyle(.darkGreen)
             
             Spacer()
             
             Text("\(userConqueredZone)")
                 .padding(.trailing, 24)
                 .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.gray)
+                .foregroundStyle(.gray2)
         }
         .frame(maxWidth: 353, maxHeight: 78)
         .background(backgroundColor)
