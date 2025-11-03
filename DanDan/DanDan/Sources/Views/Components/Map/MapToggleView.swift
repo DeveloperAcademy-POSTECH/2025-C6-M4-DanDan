@@ -11,13 +11,22 @@ import MapKit
 struct MapToggleView: View {
     @State private var isFullMap = false
     
+    var conquestStatuses: [ZoneConquestStatus]
+    var teams: [Team]
+    
     var body: some View {
         ZStack {
             Group {
                 if isFullMap {
-                    FullMapView() // 2D 전체 지도뷰
+                    FullMapView(
+                        conquestStatuses: conquestStatuses,
+                        teams: teams
+                    ) // 2D 전체 지도뷰
                 } else {
-                    MapView() // 3D 부분 지도뷰
+                    MapView(
+                        conquestStatuses: conquestStatuses,
+                        teams: teams
+                    ) // 3D 부분 지도뷰
                 }
             }
             .ignoresSafeArea()
@@ -32,7 +41,7 @@ struct MapToggleView: View {
                     } label: {
                         Image(systemName: "globe.central.south.asia.fill")
                             .font(.system(size: 22, weight: .semibold))
-                            .foregroundStyle(isFullMap ? .primaryGreen : .black)
+                            .foregroundStyle(isFullMap ? .primaryGreen : .steelBlack)
                             .frame(width: 56, height: 56)
                     }
                     .buttonStyle(.plain)
@@ -50,8 +59,4 @@ struct MapToggleView: View {
             }
         }
     }
-}
-
-#Preview{
-    MapToggleView()
 }
