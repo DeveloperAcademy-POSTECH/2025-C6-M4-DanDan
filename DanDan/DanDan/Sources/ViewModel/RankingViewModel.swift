@@ -14,6 +14,12 @@ class RankingViewModel: ObservableObject {
     @Published var conquestStatuses: [ZoneConquestStatus] = []
     @Published var rankedUsers: [UserStatus] = []
     
+    // TODO: 팀명 확정 후 수정
+    @Published var teams: [Team] = [
+        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
+        Team(id: UUID(), teamName: "Yellow", teamColor: "B")
+    ]
+    
     private let navigationManager = NavigationManager.shared
     private let rankingManager = RankingManager.shared
     
