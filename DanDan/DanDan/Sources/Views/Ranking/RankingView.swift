@@ -27,7 +27,8 @@ struct RankingView: View {
 
             if isRightSelected {
                 PersonalRankView(
-                    rankingItems: viewModel.getRankingItemDataList()
+                    rankingItems: viewModel.getRankingItemDataList(),
+                    myUserId: viewModel.currentUserId
                 )
             } else {
                 TeamRankView()

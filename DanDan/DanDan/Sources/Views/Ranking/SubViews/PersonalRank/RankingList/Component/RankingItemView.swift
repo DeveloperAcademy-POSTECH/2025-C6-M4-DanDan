@@ -9,9 +9,11 @@ import SwiftUI
 
 struct RankingItemView: View {
     var rank: RankingViewModel.RankingItemData
+    var isMyRank: Bool
 
-    init(rank: RankingViewModel.RankingItemData) {
+    init(rank: RankingViewModel.RankingItemData, isMyRank: Bool = false) {
         self.rank = rank
+        self.isMyRank = isMyRank
     }
 
     // TODO: 폰트셋 추가 후 수정
@@ -39,6 +41,10 @@ struct RankingItemView: View {
         .padding(.vertical, 16)
         .background(rank.backgroundColor)
         .cornerRadius(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+            // TODO: 컬러 변경
+                .strokeBorder(Color("PointGreen01"), lineWidth: isMyRank ? 3 : 0)
         )
     }
 }
