@@ -16,7 +16,7 @@ import CoreLocation
 struct Gate {
     let center: CLLocationCoordinate2D // 기준 좌표가 되는 부분
     let bearingDeg: Double       // 구간 진행방향 θ
-    let a_perp: Double = 100     // 장축: 횡방향 반경 (meters) — 고정값 100m
+    let a_perp: Double = 80      // 장축: 횡방향 반경 (meters)
     let b_along: Double          // 단축: 진행방향 반경 (meters)
     let inScale: Double = 0.9    // IN 문턱(작게) → 더 안쪽까지 들어와야 인정
     let outScale: Double = 1.1   // OUT 문턱(크게) → 조금 흔들려도 유지
