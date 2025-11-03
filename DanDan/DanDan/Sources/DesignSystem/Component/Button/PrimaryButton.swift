@@ -41,7 +41,7 @@ struct PrimaryButton: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 30)
-                        .fill(.pointGreen01)
+                        .fill(.primaryGreen)
                 )
         }
         .padding(.horizontal)

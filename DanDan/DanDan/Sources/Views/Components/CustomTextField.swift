@@ -24,14 +24,14 @@ struct CustomTextField: View {
             "",
             text: $text,
             prompt: Text(prompt)
-                .foregroundStyle(Color(hex: "#A2A9B0")) // 🍭 추후 컬러 Assets 추가 후 변경
+                .foregroundStyle(.gray4)
         )
-//        .font(.PR.body2) // 추후 Font 디자인 시스템 추가 후 추가
+        .font(.PR.body2)
         .padding(.vertical, 15)
         .padding(.horizontal, 20)
-        .tint(Color(hex: "#262626")) // 커서 색 - 🍭 추후 컬러 Assets 추가 후 변경
-        .foregroundColor(Color(hex: "#121212")) // 입력 텍스트 색 - 🍭 추후 컬러 Assets 추가 후 변경
-        .background(Color(hex: "#F5F8F2")) // 배경 색 - 🍭 추후 컬러 Assets 추가 후 변경
+        .tint(.steelBlack)
+        .foregroundColor(.steelBlack)
+        .background(.lightGreen)
         .cornerRadius(12)
     }
 }
