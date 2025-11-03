@@ -10,6 +10,8 @@ import MapKit
 
 // 전체 2D 지도
 struct FullMapView: UIViewRepresentable {
+    let conquestStatuses: [ZoneConquestStatus]
+    let teams: [Team]
     
     // MARK: - Bounds
     /// 철길숲의 남서쪽과 북동쪽 좌표를 기준으로 지도 표시 범위를 계산하는 내부 구조체
@@ -46,10 +48,15 @@ struct FullMapView: UIViewRepresentable {
     
     final class ColoredPolyline: MKPolyline {
         var color: UIColor = .white
+        var isOutline: Bool = false
+        var zoneId: Int = 0
     }
     
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
+        
+        var conquestStatuses: [ZoneConquestStatus] = []
+        var teams: [Team] = []
         
         override init() {
             super.init()
@@ -63,7 +70,14 @@ struct FullMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             guard let line = overlay as? ColoredPolyline else { return MKOverlayRenderer() }
             let renderer = MKPolylineRenderer(overlay: line)
-            renderer.strokeColor = line.color
+
+            let stroke = ZoneColorResolver.leadingColorOrDefault(
+                for: line.zoneId,
+                in: conquestStatuses,
+                teams: teams,
+                defaultColor: .primaryGreen // line.color
+            )
+            renderer.strokeColor = stroke
             renderer.lineWidth = 16
             renderer.lineCap = .round
             renderer.lineJoin = .round
@@ -92,9 +106,13 @@ struct FullMapView: UIViewRepresentable {
         map.delegate = context.coordinator
         context.coordinator.request()
         
+        context.coordinator.conquestStatuses = conquestStatuses
+        context.coordinator.teams = teams
+        
         for zone in zones {
             let coords = zone.coordinates
             let polyline = ColoredPolyline(coordinates: coords, count: coords.count)
+            polyline.zoneId = zone.zoneId
             polyline.color = zone.zoneColor
             map.addOverlay(polyline)
         }
