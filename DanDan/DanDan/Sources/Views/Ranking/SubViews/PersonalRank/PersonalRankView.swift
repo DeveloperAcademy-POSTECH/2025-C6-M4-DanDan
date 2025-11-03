@@ -16,14 +16,7 @@ struct PersonalRankView: View {
                 .padding(.top, 52)
                 .padding(.bottom, 36)
             
-            ScrollView {
-                VStack(spacing: 8) {
-                    ForEach(rankingItems) { item in
-                        RankingItemView(rank: item)
-                    }
-                }
-                .padding(.top, 16)
-            }
+            RankingListView(rankingItems: rankingItems)
         }
         .padding(.horizontal, 20)
     }

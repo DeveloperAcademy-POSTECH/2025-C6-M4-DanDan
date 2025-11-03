@@ -39,6 +39,7 @@ struct RankingItemView: View {
         .padding(.vertical, 16)
         .background(rank.backgroundColor)
         .cornerRadius(12)
+        )
     }
 }
 
