@@ -1,5 +1,5 @@
 //
-//  ZoneTracker.swift
+//  ZoneTrackerManager.swift
 //  DanDan
 //
 //  Created by Hwnag Seyeon on 10/30/25.
@@ -8,9 +8,9 @@
 import CoreLocation
 import Foundation
 
-/// ZoneTracker는 사용자의 위치를 기반으로 각 Zone의 시작/종료 게이트 통과와 전진 거리를 판단하여
+/// ZoneTrackerManager는 사용자의 위치를 기반으로 각 Zone의 시작/종료 게이트 통과와 전진 거리를 판단하여
 /// 완료 여부를 **UserStatus.zoneCheckedStatus[zoneId]** 로 관리합니다.
-final class ZoneTracker {
+final class ZoneTrackerManager {
     struct Runtime {
         var entryIsStart: Bool? = nil           // 첫 진입이 시작 게이트인지 종료 게이트인지
         var startedAlongRef: Double? = nil      // 진입 시점의 진행 위치(x 축 기준)

@@ -12,7 +12,7 @@ import CoreLocation
 struct MapToggleView: View {
     @State private var isFullMap = false
     @StateObject private var locationService = LocationService()
-    @State private var tracker: ZoneTracker?
+    @State private var tracker: ZoneTrackerManager?
     @State private var lastChecked: [Int: Bool] = [:]
     
     
@@ -30,7 +30,7 @@ struct MapToggleView: View {
                 if tracker == nil {
                     // 현재 저장된 사용자 상태로 트래커 초기화
                     let status = StatusManager.shared.userStatus
-                    let t = ZoneTracker(zones: zones, userStatus: status)
+                    let t = ZoneTrackerManager(zones: zones, userStatus: status)
                     self.tracker = t
                     self.lastChecked = status.zoneCheckedStatus
                 }
