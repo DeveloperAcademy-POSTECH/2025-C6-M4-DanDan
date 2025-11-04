@@ -1,0 +1,41 @@
+//
+//  TeamLabelView.swift
+//  DanDan
+//
+//  Created by soyeonsoo on 11/4/25.
+//
+
+import SwiftUI
+
+enum TeamSide { case left, right }
+
+/// 팀 라벨(이름·점수)을 한 줄로 표시.
+/// - side: .left이면 "이름 점수", .right이면 "점수 이름" 순서
+struct TeamLabel: View {
+    let name: String
+    let score: Int
+    let side: TeamSide
+    
+    var body: some View {
+        switch side {
+        case .left:
+            HStack(spacing: 8) {
+                Text(name)
+                    .font(.PR.caption5)
+                    .foregroundStyle(.steelBlack)
+                Text("\(score)")
+                    .font(.PR.caption5)
+                    .foregroundStyle(.gray1)
+            }
+        case .right:
+            HStack(spacing: 8) {
+                Text("\(score)")
+                    .font(.PR.caption5)
+                    .foregroundStyle(.gray1)
+                Text(name)
+                    .font(.PR.caption5)
+                    .foregroundStyle(.steelBlack)
+            }
+        }
+    }
+}
