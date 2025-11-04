@@ -39,6 +39,7 @@ struct ZoneStationSignView: View {
         VStack(spacing: 6) {
             // 상단: 구역 번호 + 이름
             ZoneHeaderView(zoneId: zone.zoneId, zoneName: zone.zoneName)
+            // 하단: 팀명 + 팀 점수
             ZoneScoreView(scorePair: scorePair)
         }
         .padding(.horizontal, 16)
