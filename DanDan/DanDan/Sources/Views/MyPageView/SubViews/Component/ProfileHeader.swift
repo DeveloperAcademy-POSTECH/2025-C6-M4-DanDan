@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProfileHeader: View {
+    @ObservedObject var viewModel: MyPageViewModel
     var action: () -> Void
     private let navigationManager = NavigationManager.shared
     
@@ -15,7 +16,7 @@ struct ProfileHeader: View {
         HStack(spacing: 40) {
             Button(action: action) {
                 ZStack(alignment: .bottomTrailing) {
-                    Image("testImage")
+                    viewModel.profileImage
                         .resizable()
                         .scaledToFill()
                         .frame(width: UIScreen.main.bounds.width * 0.25,
@@ -44,7 +45,7 @@ struct ProfileHeader: View {
             }
             
             VStack(alignment: .leading, spacing: 16) {
-                Text("김소원멍청이")
+                Text(viewModel.displayName)
                     .font(.pretendard(.semiBold, size: 22))
                     .foregroundColor(.steelBlack)
                 
@@ -53,7 +54,7 @@ struct ProfileHeader: View {
                         Text("우승")
                             .font(.PR.caption4)
                             .foregroundColor(.gray3)
-                        Text("5")
+                        Text("\(viewModel.winCount)")
                             .font(.PR.title2)
                             .foregroundColor(.steelBlack)
                     }
@@ -61,7 +62,7 @@ struct ProfileHeader: View {
                         Text("총 거리")
                             .font(.PR.caption4)
                             .foregroundColor(.gray3)
-                        Text("2")
+                        Text(viewModel.totalDistanceKmText)
                             .font(.PR.title2)
                             .foregroundColor(.steelBlack)
                     }
@@ -69,7 +70,7 @@ struct ProfileHeader: View {
                         Text("총 점수")
                             .font(.PR.caption4)
                             .foregroundColor(.gray3)
-                        Text("1731")
+                        Text("\(viewModel.totalScore)")
                             .font(.PR.title2)
                             .foregroundColor(.steelBlack)
                     }
@@ -86,7 +87,7 @@ struct ProfileHeader: View {
 }
 
 #Preview {
-    ProfileHeader(){
+    ProfileHeader(viewModel: MyPageViewModel()) {
         print("profile edit view")
     }
 }
