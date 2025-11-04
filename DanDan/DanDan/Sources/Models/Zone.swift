@@ -129,7 +129,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 10,
-        zoneName: "추억의길 1구역",
+        zoneName: "추억의 길 1구역",
         coordinates: [
             .init(latitude: 36.029071, longitude: 129.355408),
             .init(latitude: 36.030591, longitude: 129.356849),
@@ -141,7 +141,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 11,
-        zoneName: "추억의길 2구역",
+        zoneName: "추억의 길 2구역",
         coordinates: [
             .init(latitude: 36.036393, longitude: 129.359417),
             .init(latitude: 36.038895, longitude: 129.361164),
