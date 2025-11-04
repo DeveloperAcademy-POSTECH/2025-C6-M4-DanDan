@@ -20,6 +20,10 @@ class MyPageViewModel: ObservableObject {
     @Published var currentPeriod: ConquestPeriod? = nil
     
     // MARK: - Init
+    /// 사용자 정보 및 상태 매니저를 초기화합니다.
+    /// - Parameters:
+    ///   - userInfo: 사용자 기본 정보(`UserInfo`)
+    ///   - userStatus: 사용자 활동 상태(`UserStatus`)
     init(
         userInfo: UserInfo = UserInfo(
             id: UUID(),
@@ -47,28 +51,34 @@ class MyPageViewModel: ObservableObject {
     var winCount: Int { userInfo.userVictoryCnt }
     var totalScore: Int { userInfo.userTotalScore }
     
+    // FIXME: - 임시 계산 로직 (추후 폴리라인 세분화 및 거리 계산 방식 개선 예정)
+    // TODO: - 완료된 구역들의 폴리라인 길이를 합산하여 총 거리를 계산 (추후 상세화 예정)
     var totalDistanceMeters: Double {
-        // 완료된 구역들의 폴리라인 길이를 합산하여 총 거리를 계산
-        let completedZoneIds: Set<Int> = Set(
-            userStatus.zoneCheckedStatus.compactMap { (key, value) in value ? key : nil }
-        )
-        guard !completedZoneIds.isEmpty else { return 0 }
-        
-        return zones
-            .filter { completedZoneIds.contains($0.zoneId) }
-            .map { zone in
-                let coords = zone.coordinates
-                guard coords.count >= 2 else { return 0.0 }
-                var sum: Double = 0
-                for i in 1..<coords.count {
-                    let a = CLLocation(latitude: coords[i-1].latitude, longitude: coords[i-1].longitude)
-                    let b = CLLocation(latitude: coords[i].latitude, longitude: coords[i].longitude)
-                    sum += a.distance(from: b)
+            // 완료된 Zone ID 수집
+            let completedZoneIds: Set<Int> = Set(
+                userStatus.zoneCheckedStatus.compactMap { (key, value) in value ? key : nil }
+            )
+            // 만약 통과한 Zone이 하나도 없으면 계산할 필요 없이 거리 0 반환
+            guard !completedZoneIds.isEmpty else { return 0 }
+            
+            return zones
+                    // 완료된 Zone만 필터링
+                .filter { completedZoneIds.contains($0.zoneId) }
+                // 각 Zone별 거리 계산
+                .map { zone in
+                    let coords = zone.coordinates
+                    guard coords.count >= 2 else { return 0.0 }
+                    var sum: Double = 0
+                    for i in 1..<coords.count {
+                        let a = CLLocation(latitude: coords[i-1].latitude, longitude: coords[i-1].longitude)
+                        let b = CLLocation(latitude: coords[i].latitude, longitude: coords[i].longitude)
+                        sum += a.distance(from: b)
+                    }
+                    return sum
                 }
-                return sum
-            }
-            .reduce(0, +)
-    }
+                // 모든 Zone의 거리 합산
+                .reduce(0, +)
+        }
     
     var totalDistanceKmText: String {
         let km = totalDistanceMeters / 1000.0
