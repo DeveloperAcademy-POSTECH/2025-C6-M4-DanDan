@@ -1,8 +1,8 @@
 //
-//  TeamPalette.swift
+//  TeamPalette+ZoneColorResolver.swift
 //  DanDan
 //
-//  Created by soyeonsoo on 11/3/25.
+//  Created by soyeonsoo on 11/4/25.
 //
 
 import UIKit
