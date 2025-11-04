@@ -26,6 +26,12 @@ struct ProfileImageView: View {
         }
         .frame(width: isMyRank ? 56 : 48, height: isMyRank ? 56 : 48)
         .clipShape(Circle())
+        .overlay(alignment: .topTrailing) {
+            if isMyRank {
+                    MyRankBadgeView()
+                    .offset(x: 3, y: -4)
+                }
+        }
         .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
     }
 }
