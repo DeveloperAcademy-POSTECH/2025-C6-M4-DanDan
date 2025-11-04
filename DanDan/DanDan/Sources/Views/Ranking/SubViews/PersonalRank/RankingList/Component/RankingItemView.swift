@@ -32,6 +32,7 @@ struct RankingItemView: View {
                 .font(.PR.caption1)
                 .foregroundStyle(.gray2)
         }
+        .background(isMyRank ? Color.lightGreen : rank.backgroundColor)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
