@@ -11,7 +11,7 @@ struct RankingChangeIndicatorView: View {
     let rankDiff: Int
     
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
             Image(rankDiff > 0 ? "rank_up" : "rank_down")
                 .resizable()
                 .frame(width: 8, height: 8)
