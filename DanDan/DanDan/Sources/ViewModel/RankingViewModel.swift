@@ -100,6 +100,13 @@ extension RankingViewModel {
                 userTeam: status.userTeam,
                 backgroundColor: color
             )
+        
+        let color: Color
+        // TODO: 팀명 확정시 수정
+        switch status.userTeam.lowercased() {
+            case "blue": color = .subA20
+            case "yellow": color = .subB20
+            default: color = .gray5
         }
     }
 }

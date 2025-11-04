@@ -25,7 +25,6 @@ struct TabBarView: View {
                 // MyPageView()
             }
         }
-        // TODO: 컬러셋 세팅 후 수정 필요
-        .tint(.teal) // 임의로 넣어둔 색
+        .tint(.primaryGreen)
     }
 }
