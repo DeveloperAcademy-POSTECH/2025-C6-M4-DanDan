@@ -23,7 +23,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: figma
     attributes:
       label: 🎨 Figma 사진
