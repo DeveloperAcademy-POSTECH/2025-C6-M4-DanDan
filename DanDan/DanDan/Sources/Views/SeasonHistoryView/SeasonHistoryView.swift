@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct SeasonHistoryView: View {
-    var body: some View {
-        Text("시즌 히스토리 뷰")
-    }
-}
+    @StateObject private var viewModel = SeasonHistoryViewModel()
 
-#Preview {
-    SeasonHistoryView()
+    var body: some View {
+        ScrollView {
+            SeasonHistoryList(viewModel: viewModel)
+        }
+    }
 }

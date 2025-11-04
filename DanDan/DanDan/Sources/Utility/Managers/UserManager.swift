@@ -37,4 +37,10 @@ class UserManager: ObservableObject {
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
         }
     }
+
+    /// 주차 종료 시 RankRecord 스냅샷을 추가 저장합니다.
+    func appendRankRecord(_ record: RankRecord) {
+        userInfo.rankHistory.append(record)
+        save()
+    }
 }
