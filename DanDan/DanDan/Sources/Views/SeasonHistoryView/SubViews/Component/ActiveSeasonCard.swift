@@ -14,13 +14,13 @@ struct ActiveSeasonCard: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(viewModel.week.label)
+                    Text(viewModel.weekLabel)
                         .font(.PR.body2)
-                    Text(viewModel.week.range)
+                    Text(viewModel.weekRange)
                         .font(.PR.caption4)
                 }
                 Spacer()
-                StatusTag(text: viewModel.status.title)
+                StatusTag(text: viewModel.statusText)
             }
             .padding(.bottom, 16)
 
@@ -38,19 +38,19 @@ struct ActiveSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("거리")
                             .font(.PR.body4)
-                        Text("\(String(format: "%.1f", viewModel.stats.distanceKm))km")
+                        Text("\(String(format: "%.1f", viewModel.currentDistanceKm))km")
                             .font(.PR.title2)
                     }
                     VStack(spacing: 8) {
                         Text("점수")
                             .font(.PR.body4)
-                        Text("\(viewModel.stats.score)")
+                        Text("\(viewModel.currentWeekScore)")
                             .font(.PR.title2)
                     }
                     VStack(spacing: 8) {
                         Text("팀 내 순위")
                             .font(.PR.body4)
-                        Text("\(viewModel.stats.teamRank)위")
+                        Text("\(viewModel.currentTeamRank)위")
                             .font(.PR.title2)
                     }
                 }
@@ -114,7 +114,7 @@ struct RemainingProgressBar: View {
         }
     }
 }
-
-#Preview {
-    ActiveSeasonCard(viewModel: SeasonHistoryViewModel(autoRefresh: false))
-}
+//
+//#Preview {
+//    ActiveSeasonCard(viewModel: SeasonHistoryViewModel(autoRefresh: false))
+//}

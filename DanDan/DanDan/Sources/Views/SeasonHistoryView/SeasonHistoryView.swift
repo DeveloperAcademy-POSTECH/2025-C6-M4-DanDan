@@ -15,15 +15,15 @@ struct SeasonHistoryView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     ActiveSeasonCard(viewModel: viewModel)
-                    ForEach(viewModel.completedWeeks) { item in
-                        CompletedSeasonCard(item: item)
+                    ForEach(viewModel.completed, id: \.id) { record in
+                        CompletedSeasonCard(
+                            record: record,
+                            label: viewModel.completedWeekLabel(for: record),
+                            range: viewModel.completedWeekRange(for: record)
+                        )
                     }
                 }
             }
         }
     }
-}
-
-#Preview {
-    SeasonHistoryView()
 }

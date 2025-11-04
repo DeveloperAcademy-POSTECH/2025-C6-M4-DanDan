@@ -21,8 +21,8 @@ struct StatusTag: View {
     }
 }
 
-#Preview {
-    VStack(spacing: 20) {
-        StatusTag(text: "진행 중")
-    }
-}
+//#Preview {
+//    VStack(spacing: 20) {
+//        StatusTag(text: "진행 중")
+//    }
+//}

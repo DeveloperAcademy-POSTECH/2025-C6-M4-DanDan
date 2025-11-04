@@ -9,16 +9,18 @@ import SwiftUI
 
 /// 과거 주간 기록 1장을 표현
 struct CompletedSeasonCard: View {
-    let item: CompletedSeasonItem
+    let record: RankRecord
+    let label: String
+    let range: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // 헤더 (주차 / 기간 / 완료 태그)
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(item.week.label)
+                    Text(label)
                         .font(.PR.body2)
-                    Text(item.week.range)
+                    Text(range)
                         .font(.PR.caption4)
                 }
                 Spacer()
@@ -38,21 +40,21 @@ struct CompletedSeasonCard: View {
                         Text("거리")
                             .font(.PR.body4)
                             .foregroundStyle(.secondary)
-                        Text("\(String(format: "%.1f", item.stats.distanceKm))km")
+                        Text("\(String(format: "%.1f", record.distanceKm ?? 0))km")
                             .font(.PR.title2)
                     }
                     VStack(spacing: 8) {
                         Text("점수")
                             .font(.PR.body4)
                             .foregroundStyle(.secondary)
-                        Text("\(item.stats.score)")
+                        Text("\(record.weekScore)")
                             .font(.PR.title2)
                     }
                     VStack(spacing: 8) {
                         Text("팀 내 순위")
                             .font(.PR.body4)
                             .foregroundStyle(.secondary)
-                        Text("\(item.stats.teamRank)위")
+                        Text("\(record.rank)위")
                             .font(.PR.title2)
                     }
                 }
@@ -75,13 +77,19 @@ struct CompletedSeasonCard: View {
         .padding(.horizontal, 20)
     }
 }
-
-#Preview {
-    let previewItem = CompletedSeasonItem(
-        week: WeekDisplay(label: "2025년 10월 4주차",
-                          range: "2025.10.20 ~ 2025.10.26"),
-        period: ConquestPeriod(startDate: Date(), durationInDays: 6, weekIndex: 4),
-        stats: SeasonStats(flags: 2, distanceKm: 7.4, score: 1420, teamRank: 2)
-    )
-    return CompletedSeasonCard(item: previewItem)
-}
+//
+//#Preview {
+//    let rr = RankRecord(
+//        periodID: UUID(),
+//        startDate: Date(),
+//        endDate: Date().addingTimeInterval(6*24*3600),
+//        rank: 2,
+//        weekScore: 100,
+//        distanceKm: 7.4
+//    )
+//    return CompletedSeasonCard(
+//        record: rr,
+//        label: "2025년 10월 4주차",
+//        range: "2025.10.20 ~ 2025.10.26"
+//    )
+//}
