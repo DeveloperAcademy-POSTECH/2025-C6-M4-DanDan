@@ -23,12 +23,12 @@ struct ProfileHeader: View {
                         .clipShape(Circle())
                     ZStack {
                         Circle()
-                            .fill(Color.white)
+                            .fill(.white)
                             .frame(width: UIScreen.main.bounds.width * 0.08,
                                    height: UIScreen.main.bounds.width * 0.08)
                         
                         Circle()
-                            .fill(Color.blue)
+                            .fill(.darkGreen)
                             .frame(width: UIScreen.main.bounds.width * 0.07,
                                    height: UIScreen.main.bounds.width * 0.07)
                         
@@ -44,27 +44,34 @@ struct ProfileHeader: View {
             }
             
             VStack(alignment: .leading, spacing: 16) {
-                Text("김소원")
+                Text("김소원멍청이")
                     .font(.pretendard(.semiBold, size: 22))
+                    .foregroundColor(.steelBlack)
                 
                 HStack(spacing: 24) {
                     VStack(alignment: .center, spacing: 8) {
                         Text("우승")
                             .font(.PR.caption4)
-                        Text("3")
+                            .foregroundColor(.gray3)
+                        Text("5")
                             .font(.PR.title2)
+                            .foregroundColor(.steelBlack)
                     }
                     VStack(alignment: .center, spacing: 8) {
-                        Text("총 ??")
+                        Text("총 거리")
                             .font(.PR.caption4)
+                            .foregroundColor(.gray3)
                         Text("2")
                             .font(.PR.title2)
+                            .foregroundColor(.steelBlack)
                     }
                     VStack(alignment: .center, spacing: 8) {
                         Text("총 점수")
                             .font(.PR.caption4)
+                            .foregroundColor(.gray3)
                         Text("1731")
                             .font(.PR.title2)
+                            .foregroundColor(.steelBlack)
                     }
                 }
                 .padding(.leading, 8)
