@@ -17,6 +17,13 @@ struct RankingItemView: View {
             Text("\(rank.ranking)")
                 .font(.PR.title2)
                 .padding(.horizontal, 24)
+                .overlay() {
+                    if isMyRank {
+                        // TODO: 변동 순위 rankDiff에 연동
+                        RankingChangeIndicatorView(rankDiff: 4)
+                            .offset(y: 21)
+                    }
+                }
 
             ProfileImageView(image: rank.userImage, isMyRank: isMyRank)
 
