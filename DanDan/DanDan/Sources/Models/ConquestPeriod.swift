@@ -11,7 +11,7 @@ struct ConquestPeriod: Identifiable, Codable {
     var id: UUID
     let startDate: Date
     let endDate: Date
-    var weekIndex: Int
+    var weekIndex: Int // 주차 표시
     var winningTeam: String
     
     // TODO: - '점령전 기간 재설정' 로직 구현 후 이사 예정
