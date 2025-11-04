@@ -15,6 +15,7 @@ struct RankingChangeIndicatorView: View {
             Image(rankDiff > 0 ? "rank_up" : "rank_down")
                 .resizable()
                 .frame(width: 8, height: 8)
+                .offset(y: rankDiff > 0 ? -4 : 0)
             
             Text("\(abs(rankDiff))")
                 .font(.PR.body1)
