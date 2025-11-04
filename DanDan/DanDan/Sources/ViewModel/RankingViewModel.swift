@@ -20,8 +20,10 @@ class RankingViewModel: ObservableObject {
     private let rankingManager = RankingManager.shared
 
     // TODO: 더미 데이터 - 현재 유저
-    var currentUserId: UUID = UUID(uuidString: "22222222-2222-2222-2222-222222222222")!
-    
+    var currentUserId: UUID = UUID(
+        uuidString: "22222222-2222-2222-2222-222222222222"
+    )!
+
     /// 주어진 점수 배열을 기반으로 각 구역의 점령 상태를 계산하여 업데이트합니다.
     /// - Parameter scores: 구간별 팀 점수 정보 배열
     func updateConquestStatuses(with scores: [ZoneScore]) {
@@ -85,10 +87,11 @@ extension RankingViewModel {
             }
 
             let color: Color
+            
             switch status.userTeam.lowercased() {
-            case "blue": color = .blue.opacity(0.1)
-            case "yellow": color = .yellow.opacity(0.1)
-            default: color = .gray.opacity(0.1)
+            case "blue": color = .subA20
+            case "yellow": color = .subB20
+            default: color = .gray5
             }
 
             return RankingItemData(
@@ -100,17 +103,9 @@ extension RankingViewModel {
                 userTeam: status.userTeam,
                 backgroundColor: color
             )
-        
-        let color: Color
-        // TODO: 팀명 확정시 수정
-        switch status.userTeam.lowercased() {
-            case "blue": color = .subA20
-            case "yellow": color = .subB20
-            default: color = .gray5
         }
     }
 }
-
 // TODO: 더미데이터 수정
 extension RankingViewModel {
     static var dummy: RankingViewModel {
@@ -118,9 +113,8 @@ extension RankingViewModel {
 
         vm.rankedUsers = UserStatus.dummyStatuses
         vm.userInfo = UserInfo.dummyUsers
-        vm.rankingItems = vm.getRankingItemDataList() // 내부 상태 기반 자동 생성
+        vm.rankingItems = vm.getRankingItemDataList()  // 내부 상태 기반 자동 생성
 
         return vm
     }
 }
-
