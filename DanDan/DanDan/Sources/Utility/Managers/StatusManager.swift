@@ -12,28 +12,28 @@ class StatusManager: ObservableObject {
 
     @Published var userStatus: UserStatus
     @Published var zoneStatuese: [ZoneConquestStatus] = []
-    @Published var currentPeriod: ConquestPeriod = ConquestPeriod(startDate: Date())
-
+    @Published var currentPeriod: ConquestPeriod = .init(startDate: Date())
 
     private let userDefaultsKey = "userStatus"
 
     init() {
         if let data = UserDefaults.standard.data(forKey: userDefaultsKey),
-           let saved = try? JSONDecoder().decode(UserStatus.self, from: data) {
+           let saved = try? JSONDecoder().decode(UserStatus.self, from: data)
+        {
             self.userStatus = saved
         } else {
             self.userStatus = UserStatus()
             save()
         }
     }
-    
+
     /// 사용자의 일일 및 주간 점수를 획득한 점수만큼 증가시킵니다.
     func incrementDailyScore() {
         userStatus.userDailyScore += 1
         userStatus.userWeekScore += 1
         save()
     }
-    
+
     /// 사용자가 오늘 해당 구간을 지나갔다면, 체크 상태로 저장합니다.
     /// - Parameters:
     ///     - zoneId: 체크할 구간의 고유 ID
@@ -42,7 +42,7 @@ class StatusManager: ObservableObject {
         userStatus.zoneCheckedStatus[zoneId] = checked
         save()
     }
-    
+
     /// 하루가 지나면 전체 구간의 체크 상태를 초기화합니다.
     func resetDailyStatus() {
         userStatus.userDailyScore = 0
@@ -58,28 +58,54 @@ class StatusManager: ObservableObject {
         userStatus.userTeam = random.rawValue
         save()
     }
-    
+
     /// 주간/일일 점령전 상태 (UserStatus)를 저장합니다.
     private func save() {
         if let data = try? JSONEncoder().encode(userStatus) {
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
         }
     }
-    
+
     /// 기존 유저의 ID를 유지한 채 UserStatus 상태를 초기화합니다.
     func resetUserStatus() {
         userStatus = UserStatus(from: userStatus)
         save()
     }
-    
+
     /// 모든 구간의 점령 상태를 초기화합니다.
     func resetZoneConquestStatus() {
         zoneStatuese = zoneStatuese.map { ZoneConquestStatus(zoneId: $0.zoneId) }
     }
-    
-    /// 새로운 점령 기간을 생성합니다.
+
+    /// 새로운 점령 기간을 시작합니다.
+    ///
+    /// - Note: 이전 주차 데이터를 스냅샷으로 저장한 뒤,
+    ///   새로운 기간(`ConquestPeriod`)을 생성하고 주간 상태를 초기화합니다.
     func startNewConquestPeriod() {
+        // 직전 주차 스냅샷 저장
+        finalizeCurrentWeekSnapshot()
+
+        // 새 기간 생성
         let today = Date()
         currentPeriod = ConquestPeriod(startDate: today)
+
+        // 주간 상태 초기화
+        resetDailyStatus()
+        userStatus.userWeekScore = 0
+    }
+
+    /// 직전 주차의 점령 기록 스냅샷을 생성하여 사용자 이력에 저장합니다.
+    ///
+    /// - Parameter distanceKm: 해당 주차 동안 이동한 거리(km)
+    private func finalizeCurrentWeekSnapshot(distanceKm: Double? = nil) {
+        let snapshot = RankRecord(
+            periodID: currentPeriod.id,
+            startDate: currentPeriod.startDate,
+            endDate: currentPeriod.endDate,
+            rank: userStatus.rank,
+            weekScore: userStatus.userWeekScore,
+            distanceKm: distanceKm
+        )
+        UserManager.shared.appendRankRecord(snapshot)
     }
 }
