@@ -8,44 +8,17 @@
 import Foundation
 import Combine
 
-struct WeekDisplay {
-    let label: String      // 예: "2025년 10월 2주차"
-    let range: String      // 예: "2025.10.06 ~ 2025.10.12"
-}
-
-enum SeasonStatus {
-    case inProgress, completed
-    var title: String {
-        switch self {
-        case .inProgress: return "진행 중"
-        case .completed:  return "완료"
-        }
-    }
-}
-
-struct SeasonStats {
-    let flags: Int                 // (선택) 깃발 수 표시용
-    let distanceKm: Double
-    let score: Int                 // 주간 점수
-    let teamRank: Int              // 팀 내 순위 (1부터 시작)
-}
-
-/// 과거 주차 표시용 DTO
-struct CompletedSeasonItem: Identifiable {
-    var id: UUID = UUID()
-    let week: WeekDisplay
-    let period: ConquestPeriod
-    let stats: SeasonStats
-}
-
 @MainActor
 final class SeasonHistoryViewModel: ObservableObject {
-    @Published private(set) var week: WeekDisplay
-    @Published private(set) var status: SeasonStatus
+    @Published private(set) var weekLabel: String
+    @Published private(set) var weekRange: String
+    @Published private(set) var statusText: String
     @Published private(set) var progress: Double        // 0.0 ~ 1.0
     @Published private(set) var remainingText: String
-    @Published private(set) var stats: SeasonStats
-    @Published private(set) var completedWeeks: [CompletedSeasonItem] = []
+    @Published private(set) var currentDistanceKm: Double
+    @Published private(set) var currentWeekScore: Int
+    @Published private(set) var currentTeamRank: Int
+    @Published private(set) var completed: [RankRecord] = []
 
     private var timerCancellable: AnyCancellable?
     private let calendar: Calendar
@@ -74,30 +47,26 @@ final class SeasonHistoryViewModel: ObservableObject {
         self.period = ConquestPeriod(startDate: monday, durationInDays: 6, weekIndex: weekOfMonth)
 
         // 초기 표시값 세팅 (로컬로 계산 후 한 번에 할당하여 self 접근을 늦춤)
-        let initialWeek = WeekDisplay(
-            label: Self.weekOfMonthLabel(for: monday, calendar: cal),
-            range: "\(df.string(from: monday)) ~ \(df.string(from: sunday))"
-        )
+        let initialWeekLabel = Self.weekOfMonthLabel(for: monday, calendar: cal)
+        let initialWeekRange = "\(df.string(from: monday)) ~ \(df.string(from: sunday))"
         let initialProgress = Self.progress(now: now, in: period, calendar: cal)
         let initialRemaining = Self.remainingText(now: now, to: sunday.endOfDay(calendar: cal), calendar: cal)
-        let initialStatus: SeasonStatus = initialProgress >= 1.0 ? .completed : .inProgress
+        let initialStatusText: String = initialProgress >= 1.0 ? "완료" : "진행 중"
 
-        self.week = initialWeek
+        self.weekLabel = initialWeekLabel
+        self.weekRange = initialWeekRange
         self.progress = initialProgress
         self.remainingText = initialRemaining
-        self.status = initialStatus
+        self.statusText = initialStatusText
 
-        // TODO: 실제 통계 연동 지점
-        self.stats = SeasonStats(flags: 3, distanceKm: 5.2, score: 1200, teamRank: 3)
+        // 현재 주: UserStatus 기반으로 점수/랭킹 반영
+        let currentStatus = StatusManager.shared.userStatus
+        self.currentDistanceKm = 0 // TODO: 주간 거리 집계 연동 시 교체
+        self.currentWeekScore = currentStatus.userWeekScore
+        self.currentTeamRank = currentStatus.rank
 
-        // 과거 주차 목록 구성 (가입 시점부터, 이번 주 이전까지)
-        let signupDate = Self.fetchSignupDate() // TODO: 실제 저장소 연동
-        self.completedWeeks = Self.buildCompletedWeeks(
-            from: signupDate,
-            until: monday.addingTimeInterval(-1), // 이번 주 시작 전날까지
-            calendar: cal,
-            dayFormatter: df
-        )
+        // 과거 주차 RankRecord 스냅샷 기반 목록 구성 (이번 주 제외)
+        self.completed = Self.fetchCompletedRankRecords(before: monday, calendar: cal)
 
         // 분 단위 갱신
         if autoRefresh {
@@ -118,16 +87,24 @@ final class SeasonHistoryViewModel: ObservableObject {
             period = ConquestPeriod(startDate: monday, durationInDays: 6, weekIndex: weekOfMonth)
         }
 
-        week = WeekDisplay(
-            label: Self.weekOfMonthLabel(for: monday, calendar: calendar),
-            range: "\(dayFormatter.string(from: monday)) ~ \(dayFormatter.string(from: sunday))"
-        )
+        weekLabel = Self.weekOfMonthLabel(for: monday, calendar: calendar)
+        weekRange = "\(dayFormatter.string(from: monday)) ~ \(dayFormatter.string(from: sunday))"
         progress = Self.progress(now: now, in: period, calendar: calendar)
         remainingText = Self.remainingText(now: now, to: sunday.endOfDay(calendar: calendar), calendar: calendar)
-        status = progress >= 1.0 ? .completed : .inProgress
+        statusText = progress >= 1.0 ? "완료" : "진행 중"
 
-        // stats = fetchStats(for: period)
+        // 현재 주 점수/랭킹 갱신
+        let currentStatus = StatusManager.shared.userStatus
+        currentWeekScore = currentStatus.userWeekScore
+        currentTeamRank = currentStatus.rank
     }
+
+#if DEBUG
+    /// 프리뷰/디버그 전용: 과거 RankRecord 목록을 주입합니다.
+    func debugSetCompleted(_ records: [RankRecord]) {
+        self.completed = records
+    }
+#endif
 
     /// 실제 앱에서는 Keychain/UserDefaults/서버에서 가입 시점을 가져온다.
     private static func fetchSignupDate() -> Date {
@@ -142,51 +119,45 @@ final class SeasonHistoryViewModel: ObservableObject {
         return startOfWeek
     }
 
-    /// 가입 시점부터 특정 날짜까지의 '완료된 주' 목록을 생성
-    private static func buildCompletedWeeks(
-        from signupDate: Date,
-        until endDate: Date,
-        calendar: Calendar,
-        dayFormatter: DateFormatter
-    ) -> [CompletedSeasonItem] {
-        var items: [CompletedSeasonItem] = []
-
-        // 시작 주의 월요일
-        let startWeekMonday = calendar.dateInterval(of: .weekOfYear, for: signupDate)!.start
-
-        // 종료 주의 일요일(포함)
-        let endWeekSunday = calendar.dateInterval(of: .weekOfYear, for: endDate)!.start
-        // 주 단위로 순회
-        var curMonday = startWeekMonday
-        while curMonday <= endWeekSunday {
-            let curSunday = calendar.date(byAdding: .day, value: 6, to: curMonday)!
-            // '이번 주'는 제외 (완료 주만)
-            if curSunday < calendar.dateInterval(of: .weekOfYear, for: Date())!.start {
-                let weekOfMonth = calendar.component(.weekOfMonth, from: curMonday)
-                let period = ConquestPeriod(startDate: curMonday, durationInDays: 6, weekIndex: weekOfMonth)
-                let label = weekOfMonthLabel(for: curMonday, calendar: calendar)
-                let range = "\(dayFormatter.string(from: curMonday)) ~ \(dayFormatter.string(from: curSunday))"
-
-                // TODO: 실제 통계 가져오기
-                let stats = SeasonStats(
-                    flags: Int.random(in: 0...5),
-                    distanceKm: Double.random(in: 3...15),
-                    score: Int.random(in: 200...2500),
-                    teamRank: Int.random(in: 1...15)
-                )
-
-                items.append(CompletedSeasonItem(
-                    week: WeekDisplay(label: label, range: range),
-                    period: period,
-                    stats: stats
-                ))
-            }
-            // 다음 주
-            guard let next = calendar.date(byAdding: .weekOfYear, value: 1, to: curMonday) else { break }
-            curMonday = next
-        }
+    /// 이번 주 시작 이전의 RankRecord 스냅샷을 가져옵니다.
+    private static func fetchCompletedRankRecords(before thisMonday: Date, calendar: Calendar) -> [RankRecord] {
+        let all = UserManager.shared.userInfo.rankHistory
+        let filtered = all.filter { $0.endDate < thisMonday }
         // 최신 주가 위로 오도록 내림차순 정렬
-        return items.sorted { $0.period.startDate > $1.period.startDate }
+        return filtered.sorted { $0.startDate > $1.startDate }
+    }
+
+    // MARK: - Completed Accessors
+    var completedCount: Int { completed.count }
+    func completedId(at index: Int) -> UUID { completed[index].id }
+    func completedWeekLabel(at index: Int) -> String {
+        let rr = completed[index]
+        let y = calendar.component(.year, from: rr.startDate)
+        let m = calendar.component(.month, from: rr.startDate)
+        let w = calendar.component(.weekOfMonth, from: rr.startDate)
+        return "\(y)년 \(m)월 \(w)주차"
+    }
+    func completedWeekRange(at index: Int) -> String {
+        let rr = completed[index]
+        let monday = calendar.dateInterval(of: .weekOfYear, for: rr.startDate)!.start
+        let sunday = calendar.date(byAdding: .day, value: 6, to: monday)!
+        return "\(dayFormatter.string(from: monday)) ~ \(dayFormatter.string(from: sunday))"
+    }
+    func completedDistanceKm(at index: Int) -> Double { completed[index].distanceKm ?? 0 }
+    func completedScore(at index: Int) -> Int { completed[index].weekScore }
+    func completedTeamRank(at index: Int) -> Int { completed[index].rank }
+
+    // Record 기반 접근자 (카드에 레코드와 함께 문자열 내려주기용)
+    func completedWeekLabel(for record: RankRecord) -> String {
+        let y = calendar.component(.year, from: record.startDate)
+        let m = calendar.component(.month, from: record.startDate)
+        let w = calendar.component(.weekOfMonth, from: record.startDate)
+        return "\(y)년 \(m)월 \(w)주차"
+    }
+    func completedWeekRange(for record: RankRecord) -> String {
+        let monday = calendar.dateInterval(of: .weekOfYear, for: record.startDate)!.start
+        let sunday = calendar.date(byAdding: .day, value: 6, to: monday)!
+        return "\(dayFormatter.string(from: monday)) ~ \(dayFormatter.string(from: sunday))"
     }
 
     // MARK: - Helpers
@@ -216,11 +187,14 @@ final class SeasonHistoryViewModel: ObservableObject {
 
     private static func remainingText(now: Date, to end: Date, calendar: Calendar) -> String {
         if now >= end { return "종료" }
-        let comps = calendar.dateComponents([.day, .hour], from: now, to: end)
+        let comps = calendar.dateComponents([.day, .hour, .minute], from: now, to: end)
         let d = comps.day ?? 0
         let h = comps.hour ?? 0
+        let m = comps.minute ?? 0
         if d > 0 { return "\(d)일 \(h)시간 남음" }
-        return "\(max(0, h))시간 남음"
+        if h > 0 { return "\(h)시간 남음" }
+        if m > 0 { return "\(m)분 남음" }
+        return "종료"
     }
 }
 
