@@ -13,4 +13,6 @@ struct RankRecord: Identifiable, Codable {
     var startDate: Date
     var endDate: Date
     var rank: Int
+    var weekScore: Int
+    var distanceKm: Double?
 }
