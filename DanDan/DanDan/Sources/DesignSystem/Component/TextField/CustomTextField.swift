@@ -26,13 +26,14 @@ struct CustomTextField: View {
             prompt: Text(prompt)
                 .foregroundStyle(.gray4)
         )
-        .font(.PR.body2)
+        .font(.PR.body3)
         .padding(.vertical, 15)
         .padding(.horizontal, 20)
         .tint(.steelBlack)
         .foregroundColor(.steelBlack)
         .background(.lightGreen)
         .cornerRadius(12)
+        .padding(.horizontal, 20)
     }
 }
 
