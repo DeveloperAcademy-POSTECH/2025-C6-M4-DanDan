@@ -92,6 +92,7 @@ extension RankingViewModel {
             }
 
             return RankingItemData(
+                id: info.id,
                 ranking: status.rank,
                 userName: info.userName,
                 userImage: image,
