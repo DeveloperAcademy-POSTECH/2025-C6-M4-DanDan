@@ -18,10 +18,10 @@ struct RankingItemView: View {
                 .font(.PR.title2)
                 .padding(.horizontal, 24)
 
-            ProfileImageView(image: rank.userImage)
+            ProfileImageView(image: rank.userImage, isMyRank: isMyRank)
 
             Text(rank.userName)
-                .font(.PR.body3)
+                .font(isMyRank ? .PR.title2 : .PR.body3)
                 .lineLimit(1)
                 .padding(.leading, 12)
 
@@ -32,6 +32,7 @@ struct RankingItemView: View {
                 .font(.PR.caption1)
                 .foregroundStyle(.gray2)
         }
+        .padding(.vertical, isMyRank ? 20 : 16)
         .background(isMyRank ? Color.lightGreen : rank.backgroundColor)
         .cornerRadius(12)
         .overlay(
@@ -48,7 +49,7 @@ struct RankingItemView: View {
             rank: .init(
                 ranking: 1,
                 userName: "소연수",
-                userImage: nil,
+                userImage: UIImage(named: "testImage"),
                 userWeekScore: 12,
                 userTeam: "blue",
                 backgroundColor: .blue.opacity(0.1)
@@ -59,7 +60,7 @@ struct RankingItemView: View {
             rank: .init(
                 ranking: 2,
                 userName: "김소원",
-                userImage: nil,
+                userImage: UIImage(named: "testImage"),
                 userWeekScore: 9,
                 userTeam: "blue",
                 backgroundColor: .blue.opacity(0.1)
