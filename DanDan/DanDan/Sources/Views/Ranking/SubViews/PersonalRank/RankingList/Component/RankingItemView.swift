@@ -8,26 +8,20 @@
 import SwiftUI
 
 struct RankingItemView: View {
-    var rank: RankingViewModel.RankingItemData
-    var isMyRank: Bool
-
-    init(rank: RankingViewModel.RankingItemData, isMyRank: Bool = false) {
-        self.rank = rank
-        self.isMyRank = isMyRank
-    }
+    let rank: RankingViewModel.RankingItemData
+    let isMyRank: Bool
 
     // TODO: 폰트셋 추가 후 수정
     var body: some View {
         HStack {
             Text("\(rank.ranking)")
-                .font(.system(size: 18, weight: .bold))
-                .frame(width: 36)
-                .padding(.horizontal, 12)
+                .font(.PR.title2)
+                .padding(.horizontal, 24)
 
             ProfileImageView(image: rank.userImage)
 
             Text(rank.userName)
-                .font(.system(size: 16))
+                .font(.PR.body3)
                 .lineLimit(1)
                 .padding(.leading, 12)
 
@@ -35,16 +29,14 @@ struct RankingItemView: View {
 
             Text("\(rank.userWeekScore)")
                 .padding(.trailing, 24)
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.gray)
+                .font(.PR.caption1)
+                .foregroundStyle(.gray2)
         }
-        .padding(.vertical, 16)
-        .background(rank.backgroundColor)
         .cornerRadius(12)
-        .background(
+        .overlay(
             RoundedRectangle(cornerRadius: 12)
             // TODO: 컬러 변경
-                .strokeBorder(Color("PointGreen01"), lineWidth: isMyRank ? 3 : 0)
+                .strokeBorder(Color.primaryGreen, lineWidth: isMyRank ? 3 : 0)
         )
     }
 }
@@ -60,6 +52,7 @@ struct RankingItemView: View {
                 userTeam: "blue",
                 backgroundColor: .blue.opacity(0.1)
             )
+            , isMyRank: false
         )
         RankingItemView(
             rank: .init(
@@ -70,6 +63,7 @@ struct RankingItemView: View {
                 userTeam: "blue",
                 backgroundColor: .blue.opacity(0.1)
             )
+            , isMyRank: true
         )
         RankingItemView(
             rank: .init(
@@ -80,6 +74,7 @@ struct RankingItemView: View {
                 userTeam: "yellow",
                 backgroundColor: .yellow.opacity(0.1)
             )
+            , isMyRank: false
         )
     }
     .padding()
