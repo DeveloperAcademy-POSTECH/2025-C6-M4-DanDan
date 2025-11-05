@@ -16,9 +16,9 @@ final class SettingViewModel: ObservableObject {
         navigationManager.navigate(to: destination)
     }
 
-    func goToTermsService() { navigate(to: .termsService) }
-    func goToTermsPrivacy() { navigate(to: .termsPrivacy) }
-    func goToTermsLocation() { navigate(to: .termsLocation) }
+    func goToTermsService() { navigationManager.navigate(to: .termsService) }
+    func goToTermsPrivacy() { navigationManager.navigate(to: .termsPrivacy) }
+    func goToTermsLocation() { navigationManager.navigate(to: .termsLocation) }
 
     func openSystemNotificationSettings() {
         guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
