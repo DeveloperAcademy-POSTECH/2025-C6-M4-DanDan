@@ -24,7 +24,7 @@ struct PrimaryButton: View {
         isEnabled: Bool = true,
         textPadding: CGFloat = 20,
         horizontalPadding: CGFloat = 20,
-        verticalPadding: CGFloat = 20,
+        verticalPadding: CGFloat = 16,
         background: Color = .primaryGreen,
         foreground: Color = .white,
     ) {
