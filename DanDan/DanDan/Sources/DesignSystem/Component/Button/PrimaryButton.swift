@@ -35,6 +35,7 @@ struct PrimaryButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
+                .font(.PR.body2)
                 .padding(.top, textPadding)
                 .padding(.bottom, textPadding)
                 .foregroundColor(.white)
