@@ -9,13 +9,13 @@ import SwiftUI
 import PhotosUI
 
 struct ProfileSetupView: View {
-    @EnvironmentObject private var nav: NavigationManager
+    private let navigationManager = NavigationManager.shared
     
     @State private var nickname: String = "" // 서버에 전송할 닉네임
     @State private var selectedItem: PhotosPickerItem?
-    @State private var profileImage: UIImage? // 서버에 전송할 이미지
+    @State private var profileImage: UIImage? = UIImage(named: "default_avatar") // 서버에 전송할 이미지
     @State private var showPicker: Bool = false
-    
+        
     // MARK: - 서버 콜백 엔트리 포인트
     /// "저장하기" 버튼 탭 시 서버 연동할 부분
     /// nickname과 profileImage를 onSave로 전달
@@ -52,14 +52,16 @@ struct ProfileSetupView: View {
                 "저장하기",
                 action: {
                     onSave?(nickname, profileImage)
-                    nav.navigate(to: .schoolSelection)
+                    navigationManager.navigate(to: .schoolSelection)
                 }, // 여기서 서버 API 호출
+                isEnabled: !nickname.trimmingCharacters(in: .whitespaces).isEmpty,
                 horizontalPadding: 20,
                 verticalPadding: 8,
             )
             .padding(.bottom, 24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        
         .onChange(of: selectedItem) { _, newValue in
             guard let item = newValue else { return }
             Task {
