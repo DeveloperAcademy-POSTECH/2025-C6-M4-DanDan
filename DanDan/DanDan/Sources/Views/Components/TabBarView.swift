@@ -25,8 +25,7 @@ struct TabBarView: View {
                 .ignoresSafeArea()
             }
             Tab("마이페이지", systemImage: "person.fill", value: .my){
-                // TODO: 마이페이지 뷰 구현 후 주석 풀기
-                // MyPageView()
+                 MyPageView()
             }
         }
         .tint(.primaryGreen)

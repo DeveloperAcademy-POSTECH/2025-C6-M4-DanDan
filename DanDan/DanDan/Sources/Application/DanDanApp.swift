@@ -12,7 +12,7 @@ struct DanDanApp: App {
     
     var body: some Scene {
         WindowGroup {
-            TabBarView()
+            ContentView()
         }
     }
 }

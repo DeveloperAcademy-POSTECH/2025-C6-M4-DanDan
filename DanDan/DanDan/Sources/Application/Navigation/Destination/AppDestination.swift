@@ -14,6 +14,10 @@ enum AppDestination: Hashable {
     case myPage
     case seasonHistory
     case profileEdit
+    case settings
+    case termsService
+    case termsPrivacy
+    case termsLocation
 }
 
 extension AppDestination {
@@ -25,7 +29,7 @@ extension AppDestination {
         case .onboarding:
             OnboardingView()
         case .main:
-            MainView()
+            TabBarView()
         case .ranking:
             // TODO: 더미데이터 수정
             RankingView(viewModel: .dummy)
@@ -35,6 +39,14 @@ extension AppDestination {
             SeasonHistoryView()
         case .profileEdit:
             ProfileEditView()
+        case .settings:
+            SettingView()
+        case .termsService:
+            ServiceTermsView()
+        case .termsPrivacy:
+            PrivacyPolicyView()
+        case .termsLocation:
+            LocationBasedServiceTermsView()
         }
     }
 }
