@@ -36,7 +36,7 @@ struct SchoolSelectView: View {
                 }
             }
             
-            TitleSectionView(title: "학교 선택하기", description: "다니고 있는 학교를 선택해주세요.")
+            TitleSectionView(title: "학교 선택하기", description: "내가 다니고 있는 학교를 선택해주세요.")
             
             SchoolListSection(selected: $selected)
             
