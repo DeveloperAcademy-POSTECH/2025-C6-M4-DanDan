@@ -25,7 +25,7 @@ struct LoginView: View {
                         .font(.PR.title1)
                         .foregroundStyle(.steelBlack)
                     
-                    Text("철길숲을 걸어 구역을 차지하고,\n우리 팀을 우승으로 이끌어보세요!")
+                    Text("철길숲을 걸어 구역을 차지하고,\n우리 팀을 우승으로 이끌어보세요.")
                         .font(.PR.caption3)
                         .foregroundStyle(.gray2)
                         .lineSpacing(4)
