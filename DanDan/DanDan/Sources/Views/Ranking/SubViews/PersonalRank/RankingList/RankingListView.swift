@@ -22,7 +22,6 @@ struct RankingListView: View {
                     )
                 }
             }
-            .padding(.top, 16)
         }
     }
 }
