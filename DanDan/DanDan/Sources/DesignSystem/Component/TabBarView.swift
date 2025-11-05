@@ -25,9 +25,10 @@ struct TabBarView: View {
                 .ignoresSafeArea()
             }
             Tab("마이페이지", systemImage: "person.fill", value: .my){
-                 MyPageView()
+                MyPageView()
             }
         }
         .tint(.primaryGreen)
+        .environmentObject(viewModel)
     }
 }
