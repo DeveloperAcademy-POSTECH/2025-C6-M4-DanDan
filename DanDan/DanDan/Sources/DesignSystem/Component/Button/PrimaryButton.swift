@@ -15,6 +15,8 @@ struct PrimaryButton: View {
     private let textPadding: CGFloat
     private let horizontalPadding: CGFloat
     private let verticalPadding: CGFloat
+    private let background: Color
+    private let foreground: Color
 
     init(
         _ title: String,
@@ -22,7 +24,9 @@ struct PrimaryButton: View {
         isEnabled: Bool = true,
         textPadding: CGFloat = 20,
         horizontalPadding: CGFloat = 20,
-        verticalPadding: CGFloat = 20
+        verticalPadding: CGFloat = 20,
+        background: Color = .primaryGreen,
+        foreground: Color = .white,
     ) {
         self.title = title
         self.action = action
@@ -30,6 +34,8 @@ struct PrimaryButton: View {
         self.textPadding = textPadding
         self.horizontalPadding = horizontalPadding
         self.verticalPadding = verticalPadding
+        self.background = background
+        self.foreground = foreground
     }
 
     var body: some View {
@@ -38,12 +44,13 @@ struct PrimaryButton: View {
                 .font(.PR.body2)
                 .padding(.top, textPadding)
                 .padding(.bottom, textPadding)
-                .foregroundColor(.white)
+                .foregroundColor(foreground)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 30)
-                        .fill(.primaryGreen)
+                        .fill(background)
                 )
+                .opacity(isEnabled ? 1.0 : 0.5)
         }
         .padding(.horizontal)
         .padding(.vertical)
@@ -52,7 +59,12 @@ struct PrimaryButton: View {
 }
 
 #Preview {
-    PrimaryButton("PrimaryButton") {
-
-    }
+    PrimaryButton("PrimaryButton") { }
+    PrimaryButton(
+        "Disabled",
+        action: { },
+        isEnabled: false,
+        background: .gray.opacity(0.6),
+        foreground: .white
+    )
 }
