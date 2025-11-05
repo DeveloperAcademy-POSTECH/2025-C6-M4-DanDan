@@ -15,19 +15,19 @@ struct HistoryCardButton: View {
             HStack(spacing: 0) {
                 Text("시즌 히스토리")
                     .font(.PR.body2)
-                    .foregroundColor(.black)
+                    .foregroundColor(.steelBlack)
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.black)
+                    .foregroundColor(.gray3)
                     .font(.system(size: 16, weight: .medium))
             }
             .padding(.vertical, 24)
             .padding(.horizontal, 24)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(uiColor: .secondarySystemBackground))
+                    .fill(.lightGreen)
             )
         }
         .padding(.horizontal, 20)

@@ -18,8 +18,11 @@ struct TabBarView: View {
                 RankingView(viewModel: .dummy)
             }
             Tab("지도", systemImage: "map.fill", value: .main){
-                MapToggleView()
-                    .ignoresSafeArea()
+                MapToggleView(
+                    conquestStatuses: viewModel.conquestStatuses,
+                    teams: viewModel.teams
+                )
+                .ignoresSafeArea()
             }
             Tab("마이페이지", systemImage: "person.fill", value: .my){
                 // TODO: 마이페이지 뷰 구현 후 주석 풀기
