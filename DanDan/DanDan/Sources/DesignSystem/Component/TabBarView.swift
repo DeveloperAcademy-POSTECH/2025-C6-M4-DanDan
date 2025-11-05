@@ -10,7 +10,7 @@ import SwiftUI
 struct TabBarView: View {
     @State private var selection: AppTab = .main
     @StateObject private var viewModel = RankingViewModel()
-    
+
     var body: some View {
         TabView(selection: $selection){
             Tab("랭킹", systemImage: "trophy.fill", value: .ranking){
@@ -30,5 +30,6 @@ struct TabBarView: View {
             }
         }
         .tint(.primaryGreen)
+        .environmentObject(viewModel)
     }
 }
