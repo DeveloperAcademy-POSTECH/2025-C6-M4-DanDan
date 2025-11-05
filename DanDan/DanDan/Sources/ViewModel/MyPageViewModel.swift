@@ -19,26 +19,6 @@ class MyPageViewModel: ObservableObject {
     @Published var userStatus: UserStatus
     @Published var currentPeriod: ConquestPeriod? = nil
     
-    // MARK: - Init
-    /// 사용자 정보 및 상태 매니저를 초기화합니다.
-    /// - Parameters:
-    ///   - userInfo: 사용자 기본 정보(`UserInfo`)
-    ///   - userStatus: 사용자 활동 상태(`UserStatus`)
-    init(
-        userInfo: UserInfo = UserInfo(
-            id: UUID(),
-            userName: "김소원멍청이",
-            userVictoryCnt: 7,
-            userTotalScore: 105,
-            userImage: [],
-            rankHistory: []
-        ),
-        userStatus: UserStatus = UserStatus()
-    ) {
-        self.userInfo = userInfo
-        self.userStatus = userStatus
-    }
-    
     // MARK: - Derived Profile Values
     var profileImage: Image {
         if let data = userInfo.userImage.last, let ui = UIImage(data: data) {
@@ -103,6 +83,26 @@ class MyPageViewModel: ObservableObject {
     
     var weekScore: Int { userStatus.userWeekScore }
     var teamRank: Int { userStatus.rank }
+    
+    // MARK: - Init
+    /// 사용자 정보 및 상태 매니저를 초기화합니다.
+    /// - Parameters:
+    ///   - userInfo: 사용자 기본 정보(`UserInfo`)
+    ///   - userStatus: 사용자 활동 상태(`UserStatus`)
+    init(
+        userInfo: UserInfo = UserInfo(
+            id: UUID(),
+            userName: "김소원멍청이",
+            userVictoryCnt: 7,
+            userTotalScore: 105,
+            userImage: [],
+            rankHistory: []
+        ),
+        userStatus: UserStatus = UserStatus()
+    ) {
+        self.userInfo = userInfo
+        self.userStatus = userStatus
+    }
 
     func tapSeasonHistoryButton() {
         navigationManager.navigate(to: .seasonHistory)
