@@ -42,6 +42,27 @@ class RankingViewModel: ObservableObject {
     }
 }
 
+extension RankingViewModel {
+    /// 선택된 필터 값에 따라 랭킹 아이템 목록을 반환합니다.
+    /// - Parameters:
+    ///     - items: 전체 랭킹 아이템 배열
+    ///     - filter: "전체" 또는 "우리팀"
+    ///     - myUserId: 현재 사용자 ID
+    /// - Returns: 필터링된 랭킹 아이템 배열
+    func filteredRankingItems(
+    from items: [RankingItemData],
+    filter: String,
+    myUserId: UUID
+    ) -> [RankingItemData] {
+        guard filter == "우리 팀",
+              let myTeam = items.first(where: { $0.id == myUserId })?.userTeam
+        else {
+            return items
+        }
+        return items.filter { $0.userTeam == myTeam }
+    }
+}
+
 // MARK: - View 전용 모델 및 데이터 변환
 
 extension RankingViewModel {

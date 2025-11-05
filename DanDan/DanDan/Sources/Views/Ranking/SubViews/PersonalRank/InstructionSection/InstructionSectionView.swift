@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InstructionSectionView: View {
-    @State private var selected = "전체"
+    @Binding var selectedFilter: String
     
     var body: some View {
         HStack {
@@ -18,13 +18,13 @@ struct InstructionSectionView: View {
             Spacer()
 
             PickerMenu(
-                selectedOption: $selected,
+                selectedOption: $selectedFilter,
                 options: ["전체", "우리 팀"]
             )
         }
     }
 }
 
-#Preview {
-    InstructionSectionView()
-}
+//#Preview {
+//    InstructionSectionView()
+//}

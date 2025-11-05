@@ -45,3 +45,18 @@ struct PickerMenu: View {
         }
     }
 }
+
+struct PickerMenuPreviewWrapper: View {
+    @State private var previewOption = "전체"
+
+    var body: some View {
+        PickerMenu(
+            selectedOption: $previewOption,
+            options: ["전체", "우리 팀"]
+        )
+    }
+}
+
+#Preview {
+    PickerMenuPreviewWrapper()
+}
