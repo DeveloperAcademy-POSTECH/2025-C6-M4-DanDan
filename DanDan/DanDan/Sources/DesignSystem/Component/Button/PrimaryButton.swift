@@ -52,8 +52,8 @@ struct PrimaryButton: View {
                 )
                 .opacity(isEnabled ? 1.0 : 0.5)
         }
-        .padding(.horizontal)
-        .padding(.vertical)
+        .padding(.horizontal, horizontalPadding)
+        .padding(.vertical, verticalPadding)
         .buttonStyle(PlainButtonStyle())
     }
 }
