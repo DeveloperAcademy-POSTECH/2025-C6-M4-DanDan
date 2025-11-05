@@ -17,7 +17,6 @@ struct AvatarEditButton: View {
     var body: some View {
         Button(action: onTap) {
             ZStack {
-                // 아바타 이미지 또는 플레이스홀더
                 Group {
                     if let img = image {
                         Image(uiImage: img)
@@ -35,7 +34,6 @@ struct AvatarEditButton: View {
                 .frame(width: diameter, height: diameter)
                 .clipShape(Circle())
 
-                // 아래쪽만 덮는 어두운 오버레이 (하단 strip)
                 Circle()
                     .fill(overlayColor)
                     .frame(width: diameter, height: diameter)
@@ -46,7 +44,6 @@ struct AvatarEditButton: View {
                         }
                     )
 
-                // 연필 아이콘: 오버레이 중앙에 배치
                 Image(systemName: "pencil")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(.white)
