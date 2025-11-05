@@ -12,11 +12,11 @@ struct MyPageView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ProfileHeader {
+            ProfileHeader(viewModel: viewModel) {
                 viewModel.tapProfileEditButton()
             }
             
-            WeeklyActivityCard()
+            WeeklyActivityCard(viewModel: viewModel)
 
             HistoryCardButton {
                 viewModel.tapSeasonHistoryButton()
