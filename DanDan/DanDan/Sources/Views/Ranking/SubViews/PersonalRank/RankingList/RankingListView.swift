@@ -15,6 +15,9 @@ struct RankingListView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
+                RankingCardSectionView()
+                    .padding(.vertical, 36)
+                
                 ForEach(rankingItems) { item in
                     RankingItemView(
                         rank: item,
@@ -22,7 +25,6 @@ struct RankingListView: View {
                     )
                 }
             }
-            .padding(.top, 16)
         }
     }
 }

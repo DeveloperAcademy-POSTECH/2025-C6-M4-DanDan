@@ -15,7 +15,6 @@ struct PersonalRankView: View {
         VStack(spacing: 0) {
             InstructionSectionView()
                 .padding(.top, 52)
-                .padding(.bottom, 36)
 
             RankingListView(
                 rankingItems: rankingItems,
