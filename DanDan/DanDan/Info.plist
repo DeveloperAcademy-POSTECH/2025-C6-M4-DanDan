@@ -4,6 +4,7 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Pretendard-ExtraBold.otf</string>
 		<string>Pretendard-Bold.otf</string>
 		<string>Pretendard-SemiBold.otf</string>
 		<string>Pretendard-Regular.otf</string>

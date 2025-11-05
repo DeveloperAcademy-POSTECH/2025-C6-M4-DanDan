@@ -46,4 +46,5 @@ enum PretendardWeight: String {
     case medium = "Pretendard-Medium"
     case semiBold = "Pretendard-SemiBold"
     case bold = "Pretendard-Bold"
+    case extraBold = "Pretendard-ExtraBold"
 }
