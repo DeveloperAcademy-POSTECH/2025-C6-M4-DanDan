@@ -18,26 +18,35 @@ struct RankingCardSectionView: View {
             )
 
             RankingCard(
+                userId: topThree[1].id,
+                myUserId: myUserId,
                 name: topThree[1].userName,
                 score: topThree[1].userWeekScore,
-                image: Image(uiImage: topThree[1].userImage ?? UIImage()),
-                color: topThree[1].backgroundColor
+                image: Image(uiImage: topThree[1].userImage ?? (UIImage(named: "testImage") ?? UIImage())),
+                color: topThree[1].backgroundColor,
+                rank: 2
             )
+            
 
             RankingCard(
+                userId: topThree[0].id,
+                myUserId: myUserId,
                 name: topThree[0].userName,
                 score: topThree[0].userWeekScore,
-                image: Image(uiImage: topThree[0].userImage ?? UIImage()),
-                color: topThree[0].backgroundColor
+                image: Image(uiImage: topThree[0].userImage ?? (UIImage(named: "testImage") ?? UIImage())),
+                color: topThree[0].backgroundColor,
+                rank: 1
             )
-
             .padding(.bottom, 20)
 
             RankingCard(
+                userId: topThree[2].id,
+                myUserId: myUserId,
                 name: topThree[2].userName,
                 score: topThree[2].userWeekScore,
-                image: Image(uiImage: topThree[2].userImage ?? UIImage()),
-                color: topThree[2].backgroundColor
+                image: Image(uiImage: topThree[2].userImage ?? (UIImage(named: "testImage") ?? UIImage())),
+                color: topThree[2].backgroundColor,
+                rank: 3
             )
         }
     }

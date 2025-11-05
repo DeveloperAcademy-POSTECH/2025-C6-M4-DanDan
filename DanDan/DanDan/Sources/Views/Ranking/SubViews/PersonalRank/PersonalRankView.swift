@@ -19,8 +19,8 @@ struct PersonalRankView: View {
     @State private var selectedFilter: String = "전체"
     
     private var filteredItems: [RankingViewModel.RankingItemData] {
-            rankingFilter(rankingItems, selectedFilter, myUserId)
-        }
+        rankingFilter(rankingItems, selectedFilter, myUserId)
+    }
     
     var body: some View {
         VStack(spacing: 0) {

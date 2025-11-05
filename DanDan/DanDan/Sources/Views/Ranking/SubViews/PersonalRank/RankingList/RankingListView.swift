@@ -11,13 +11,21 @@ struct RankingListView: View {
     let rankingItems: [RankingViewModel.RankingItemData]
     let myUserId: UUID
 
-    private var topThreeItems: [RankingViewModel.RankingItemData] {
-        Array(rankingItems.sorted { $0.ranking < $1.ranking }.prefix(3))
+    private var sortedItems: [RankingViewModel.RankingItemData] {
+        rankingItems.sorted { $0.ranking < $1.ranking }
     }
 
+    private var topThreeItems: [RankingViewModel.RankingItemData] {
+        Array(sortedItems.prefix(3))
+    }
+
+    private var remainingItems: [RankingViewModel.RankingItemData] {
+        Array(sortedItems.dropFirst(3))
+    }
+    
     var body: some View {
         ScrollView {
-            VStack(spacing: 8) {
+            VStack(spacing: 0) {
                 if !topThreeItems.isEmpty {
                     RankingCardSectionView(
                         rankingItems: topThreeItems,
@@ -26,7 +34,7 @@ struct RankingListView: View {
                     .padding(.vertical, 36)
                 }
 
-                ForEach(rankingItems) { item in
+                ForEach(remainingItems) { item in
                     RankingItemView(
                         rank: item,
                         isMyRank: item.id == myUserId

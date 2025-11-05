@@ -11,7 +11,6 @@ struct RankingItemView: View {
     let rank: RankingViewModel.RankingItemData
     let isMyRank: Bool
 
-    // TODO: 폰트셋 추가 후 수정
     var body: some View {
         HStack {
             Text("\(rank.ranking)")
@@ -44,14 +43,14 @@ struct RankingItemView: View {
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-            // TODO: 컬러 변경
                 .strokeBorder(Color.primaryGreen, lineWidth: isMyRank ? 3 : 0)
         )
+        .padding(.bottom, 8)
     }
 }
 
 #Preview {
-    VStack(spacing: 8) {
+    VStack(spacing: 0) {
         RankingItemView(
             rank: .init(
                 ranking: 1,

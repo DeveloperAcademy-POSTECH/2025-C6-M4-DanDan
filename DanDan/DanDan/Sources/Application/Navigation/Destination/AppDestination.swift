@@ -17,8 +17,7 @@ enum AppDestination: Hashable {
 }
 
 extension AppDestination {
-    // TODO: 더미데이터 수정 - @MainActor 삭제
-    @MainActor
+
     @ViewBuilder
     func view() -> some View {
         switch self {
@@ -27,8 +26,7 @@ extension AppDestination {
         case .main:
             MainView()
         case .ranking:
-            // TODO: 더미데이터 수정
-            RankingView(viewModel: .dummy)
+            RankingView()
         case .myPage:
             MyPageView()
         case .seasonHistory:
