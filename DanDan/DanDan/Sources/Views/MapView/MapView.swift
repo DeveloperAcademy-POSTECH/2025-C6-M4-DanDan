@@ -8,48 +8,6 @@
 import SwiftUI
 import MapKit
 
-// 정류소 버튼을 얹기 위한 MKAnnotation
-final class StationAnnotation: NSObject, MKAnnotation {
-    let coordinate: CLLocationCoordinate2D
-    let zone: Zone
-    let statusesForZone: [ZoneConquestStatus]
-    
-    init(coordinate: CLLocationCoordinate2D, zone: Zone, statusesForZone: [ZoneConquestStatus]) {
-        self.coordinate = coordinate
-        self.zone = zone
-        self.statusesForZone = statusesForZone
-    }
-}
-
-final class HostingAnnotationView: MKAnnotationView {
-    private var host: UIHostingController<AnyView>?
-    
-    var contentSize: CGSize = CGSize(width: 160, height: 190) {
-        didSet {
-            self.frame = CGRect(origin: .zero, size: contentSize)
-            self.setNeedsLayout()
-        }
-    }
-    
-    func setSwiftUIView<Content: View>(_ view: Content) {
-        if host == nil {
-            let controller = UIHostingController(rootView: AnyView(view))
-            controller.view.backgroundColor = .clear
-            host = controller
-            addSubview(controller.view)
-            controller.view.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                controller.view.topAnchor.constraint(equalTo: topAnchor),
-                controller.view.bottomAnchor.constraint(equalTo: bottomAnchor),
-                controller.view.leadingAnchor.constraint(equalTo: leadingAnchor),
-                controller.view.trailingAnchor.constraint(equalTo: trailingAnchor)
-            ])
-        } else {
-            host?.rootView = AnyView(view)
-        }
-    }
-}
-
 // 부분 3D 지도(메인)
 struct MapView: UIViewRepresentable {
     var conquestStatuses: [ZoneConquestStatus]
