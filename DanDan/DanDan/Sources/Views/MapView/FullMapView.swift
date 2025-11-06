@@ -127,14 +127,17 @@ struct FullMapScreen: View {
     @State private var isRightSelected = false
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
+    let userStatus: UserStatus
     
     var body: some View {
         FullMapView(conquestStatuses: conquestStatuses, teams: teams)
             .ignoresSafeArea()
             .overlay(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: 6) {
-                    ScoreBoardView(statuses: conquestStatuses, teams: teams)
-                        .padding(.leading, 20)
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 8) {
+                        ScoreBoardView(statuses: conquestStatuses, teams: teams) // 점수판
+                        TodayMyScore(status: userStatus) // 오늘 내 점수
+                    }
                     
                     SegmentedControl(
                         leftTitle: "전체",
@@ -142,8 +145,10 @@ struct FullMapScreen: View {
                         frameMaxWidth: 172,
                         isRightSelected: $isRightSelected
                     )
+                    .padding(.leading, -20)
                 }
                 .padding(.top, 60)
+                .padding(.leading, 14)
             }
     }
 }
