@@ -14,6 +14,18 @@ struct MapToggleView: View {
     @StateObject private var locationService = LocationService()
     @State private var tracker: ZoneTrackerManager?
     @State private var lastChecked: [Int: Bool] = [:]
+    @State private var renderToken = UUID()
+    @State private var debugMessage: String? = nil
+    @ObservedObject private var zoneState = ZoneCheckedStateManager.shared
+    
+    private func showDebug(_ message: String) {
+        debugMessage = message
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeOut(duration: 0.2)) {
+                debugMessage = nil
+            }
+        }
+    }
     
     
     var conquestStatuses: [ZoneConquestStatus]
@@ -23,14 +35,16 @@ struct MapToggleView: View {
         ZStack {
             Group {
                 if isFullMap {
-                    FullMapView(
+                    FullMapScreen(
                         conquestStatuses: conquestStatuses,
-                        teams: teams
+                        teams: teams,
+                        refreshToken: zoneState.version
                     ) // 2D 전체 지도뷰
                 } else {
                     MapView(
                         conquestStatuses: conquestStatuses,
-                        teams: teams
+                        teams: teams,
+                        refreshToken: zoneState.version
                     ) // 3D 부분 지도뷰
                 }
             }
@@ -42,10 +56,13 @@ struct MapToggleView: View {
                     let t = ZoneTrackerManager(zones: zones, userStatus: status)
                     self.tracker = t
                     self.lastChecked = status.zoneCheckedStatus
+                    zoneState.syncFromServer { count in
+                        self.showDebug("동기화 완료: 오늘 체크 \(count)개")
+                    }
                 }
             }
-            .onReceive(locationService.$currentLocation.compactMap { $0 }) { loc in
-                guard let tracker = tracker else { return }
+            .onReceive(locationService.$currentLocation) { loc in
+                guard let tracker = tracker, let loc = loc else { return }
                 // 위치 업데이트 처리
                 tracker.process(location: loc)
 
@@ -53,7 +70,10 @@ struct MapToggleView: View {
                 let current = tracker.userStatus.zoneCheckedStatus
                 for (zoneId, isChecked) in current where isChecked == true {
                     if lastChecked[zoneId] != true {
-                        StatusManager.shared.setZoneChecked(zoneId: zoneId, checked: true)
+                        zoneState.onComplete(zoneId: zoneId) { ok in
+                            if ok { self.showDebug("전송 성공: zoneId=\(zoneId)") }
+                            else { self.showDebug("전송 실패: zoneId=\(zoneId)") }
+                        }
                     }
                 }
                 lastChecked = current
@@ -62,6 +82,7 @@ struct MapToggleView: View {
             VStack {
                 HStack {
                     Spacer()
+                    // FullMap 화면의 개인/전체 토글은 FullMapScreen 내부 SegmentedControl에서 처리
                     Button {
                         withAnimation(.snappy(duration: 0.25)) {
                             isFullMap.toggle()
@@ -84,6 +105,24 @@ struct MapToggleView: View {
                 }
                 .padding(.top, 100)
                 
+                Spacer()
+            }
+
+            // Debug banner (top)
+            VStack(spacing: 0) {
+                if let msg = debugMessage {
+                    Text(msg)
+                        .font(.PR.caption2)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule()
+                                .fill(Color.black.opacity(0.75))
+                        )
+                        .padding(.top, 60)
+                        .transition(.opacity)
+                }
                 Spacer()
             }
         }
