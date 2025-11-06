@@ -46,4 +46,15 @@ extension Color {
 
         self.init(.sRGB, red: r, green: g, blue: b, opacity: a)
     }
+    
+    static func setBackgroundColor(for teamName: String) -> Color {
+        switch teamName.lowercased() {
+        case "blue":
+            return .subA20
+        case "yellow":
+            return .subB20
+        default:
+            return .gray5
+        }
+    }
 }
