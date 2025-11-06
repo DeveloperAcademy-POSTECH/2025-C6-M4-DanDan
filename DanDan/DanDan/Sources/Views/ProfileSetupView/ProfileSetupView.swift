@@ -49,7 +49,7 @@ struct ProfileSetupView: View {
             Spacer()
             
             PrimaryButton(
-                "저장하기",
+                "다음",
                 action: {
                     onSave?(nickname, profileImage)
                     navigationManager.navigate(to: .schoolSelection)
