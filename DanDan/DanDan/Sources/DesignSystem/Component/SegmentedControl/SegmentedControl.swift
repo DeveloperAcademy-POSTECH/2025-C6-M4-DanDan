@@ -8,15 +8,15 @@
 /*
  사용 방법:
  
- @State private var isRightSelected = false
- 
- var body: some View {
- SegmentedControl(
- leftTitle: "팀",
- rightTitle: "개인",
- isRightSelected: $isRightSelected
- )
- }
+     @State private var isRightSelected = false
+     
+     var body: some View {
+        SegmentedControl(
+            leftTitle: "팀",
+            rightTitle: "개인",
+            isRightSelected: $isRightSelected
+        )
+     }
  
  - leftTitle / rightTitle : 각 세그먼트의 텍스트
  - isRightSelected : 현재 선택 상태를 바인딩
