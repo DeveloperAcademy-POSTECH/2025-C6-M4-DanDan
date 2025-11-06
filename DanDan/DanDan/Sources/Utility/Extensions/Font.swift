@@ -35,6 +35,8 @@ extension Font {
         static let caption3 = Font.custom("Pretendard-Regular", size: 15, relativeTo: .caption)
         static let caption4 = Font.custom("Pretendard-Medium", size: 14, relativeTo: .caption)
         static let caption5 = Font.custom("Pretendard-SemiBold", size: 12, relativeTo: .caption)
+        static let caption6 = Font.custom("Pretendard-ExtraBold", size: 10, relativeTo: .caption)
+
     }
 
 }

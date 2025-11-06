@@ -15,6 +15,13 @@ class RankingViewModel: ObservableObject {
     @Published var conquestStatuses: [ZoneConquestStatus] = []
     @Published var userInfo: [UserInfo] = []
     @Published var rankedUsers: [UserStatus] = []
+    
+    // TODO: 팀명 확정 후 수정
+    @Published var teams: [Team] = [
+        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
+        Team(id: UUID(), teamName: "Yellow", teamColor: "B")
+    ]
+    
     @Published var rankingItems: [RankingItemData] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?

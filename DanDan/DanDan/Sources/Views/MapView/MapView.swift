@@ -11,6 +11,9 @@ import MapKit
 // 부분 3D 지도(메인)
 struct MapView: UIViewRepresentable {
     
+    var conquestStatuses: [ZoneConquestStatus]
+    var teams: [Team]
+    
     // MARK: - Bounds
     /// 철길숲의 남서쪽과 북동쪽 좌표를 기준으로 지도 표시 범위를 계산하는 내부 구조체
     private struct Bounds {
@@ -47,12 +50,17 @@ struct MapView: UIViewRepresentable {
     // MARK: - Overlays
     final class ColoredPolyline: MKPolyline {
         var color: UIColor = .white
+        var isOutline: Bool = false
+        var zoneId: Int = 0
     }
     
     // MARK: - Coordinator
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
+        
+        var conquestStatuses: [ZoneConquestStatus] = []
+        var teams: [Team] = []
         
         override init() {
             super.init()
@@ -95,15 +103,21 @@ struct MapView: UIViewRepresentable {
         
         // Polyline renderer
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            if let line = overlay as? ColoredPolyline {
-                let renderer = MKPolylineRenderer(overlay: line)
-                renderer.strokeColor = line.color
-                renderer.lineWidth = 20
-                renderer.lineCap = .butt
-                renderer.lineJoin = .round
-                return renderer
-            }
-            return MKOverlayRenderer()
+            guard let line = overlay as? ColoredPolyline else { return MKOverlayRenderer() }
+            
+            // 실제 색상 적용
+            let renderer = MKPolylineRenderer(overlay: line)
+            let color = ZoneColorResolver.leadingColorOrDefault(
+                for: line.zoneId,
+                in: conquestStatuses,
+                teams: teams,
+                defaultColor: .primaryGreen // line.color - ui 보여주기 용
+            )
+            renderer.strokeColor = color
+            renderer.lineWidth = 24
+            renderer.lineCap = .round
+            renderer.lineJoin = .round
+            return renderer
         }
     }
     
@@ -125,10 +139,13 @@ struct MapView: UIViewRepresentable {
         
         map.delegate = context.coordinator
         context.coordinator.mapView = map
+        context.coordinator.conquestStatuses = conquestStatuses
+        context.coordinator.teams = teams
         
         for zone in zones {
-            let coords = [zone.zoneStartPoint, zone.zoneEndPoint]
-            let polyline = ColoredPolyline(coordinates: coords, count: 2)
+            let coords = zone.coordinates
+            let polyline = ColoredPolyline(coordinates: coords, count: coords.count)
+            polyline.zoneId = zone.zoneId
             polyline.color = zone.zoneColor
             map.addOverlay(polyline, level: .aboveRoads)
         }
