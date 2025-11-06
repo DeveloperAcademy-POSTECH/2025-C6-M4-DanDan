@@ -14,8 +14,7 @@ struct TabBarView: View {
     var body: some View {
         TabView(selection: $selection){
             Tab("랭킹", systemImage: "trophy.fill", value: .ranking){
-                // TODO: 더미데이터 수정
-                RankingView(viewModel: .dummy)
+                RankingView()
             }
             Tab("지도", systemImage: "map.fill", value: .main){
                 MapToggleView(

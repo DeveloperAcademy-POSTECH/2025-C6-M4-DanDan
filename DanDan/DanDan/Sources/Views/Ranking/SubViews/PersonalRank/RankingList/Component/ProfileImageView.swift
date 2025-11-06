@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileImageView: View {
     let image: UIImage?
+    let isMyRank: Bool
 
     var body: some View {
         Group {
@@ -23,8 +24,18 @@ struct ProfileImageView: View {
                     .foregroundColor(.gray)
             }
         }
-        .frame(width: 46, height: 46)
+        .frame(width: isMyRank ? 56 : 48, height: isMyRank ? 56 : 48)
         .clipShape(Circle())
+        .overlay(alignment: .topTrailing) {
+            if isMyRank {
+                    MyRankBadgeView()
+                    .offset(x: 3, y: -4)
+                }
+        }
         .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
     }
+}
+
+#Preview {
+    ProfileImageView(image: UIImage(named: "testImage"), isMyRank: true)
 }

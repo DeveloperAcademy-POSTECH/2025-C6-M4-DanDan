@@ -62,8 +62,7 @@ struct SegmentedControl: View {
 extension SegmentedControl {
     private static func configureAppearance() {
         let appearance = UISegmentedControl.appearance()
-        appearance.selectedSegmentTintColor = UIColor.systemGreen  // 선택된 배경
-        appearance.backgroundColor = UIColor.systemGray5           // 전체 배경
+        appearance.selectedSegmentTintColor = UIColor.primaryGreen  // 선택된 배경
         appearance.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)   // 선택 텍스트
         appearance.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)     // 비선택 텍스트
     }

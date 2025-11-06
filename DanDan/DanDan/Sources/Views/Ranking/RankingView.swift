@@ -11,11 +11,6 @@ struct RankingView: View {
     @StateObject private var viewModel = RankingViewModel()
 
     @State private var isRightSelected: Bool = false
-    
-    // TODO: 더미데이터 수정
-    init(viewModel: RankingViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,12 +22,17 @@ struct RankingView: View {
 
             if isRightSelected {
                 PersonalRankView(
-                    rankingItems: viewModel.getRankingItemDataList(),
-                    myUserId: viewModel.currentUserId
+                    rankingItems: viewModel.rankingItems,
+                    myUserId: viewModel.currentUserId,
+                    rankingFilter: viewModel.filteredRankingItems
                 )
             } else {
                 TeamRankView()
             }
+        }
+        .onAppear() {
+            viewModel.fetchRanking()
+            print("\(viewModel.rankingItems)")
         }
         .padding(.top, 45)
 
@@ -41,5 +41,5 @@ struct RankingView: View {
 }
 
 #Preview {
-    RankingView(viewModel: .dummy)
+    RankingView()
 }

@@ -11,14 +11,14 @@ struct RankingChangeIndicatorView: View {
     let rankDiff: Int
     
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
+        HStack(alignment: .firstTextBaseline, spacing: 2) {
             Image(rankDiff > 0 ? "rank_up" : "rank_down")
                 .resizable()
-                .frame(width: 8, height: 8)
-                .offset(y: rankDiff > 0 ? -4 : 0)
+                .frame(width: 6, height: 6)
+                .offset(y: rankDiff > 0 ? -2 : 0)
             
             Text("\(abs(rankDiff))")
-                .font(.PR.body1)
+                .font(.pretendard(.bold, size: 12))
                 .foregroundStyle(.gray1)
         }
     }

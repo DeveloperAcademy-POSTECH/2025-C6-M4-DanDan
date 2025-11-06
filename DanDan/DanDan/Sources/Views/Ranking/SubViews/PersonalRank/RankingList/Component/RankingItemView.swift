@@ -8,26 +8,26 @@
 import SwiftUI
 
 struct RankingItemView: View {
-    var rank: RankingViewModel.RankingItemData
-    var isMyRank: Bool
+    let rank: RankingViewModel.RankingItemData
+    let isMyRank: Bool
 
-    init(rank: RankingViewModel.RankingItemData, isMyRank: Bool = false) {
-        self.rank = rank
-        self.isMyRank = isMyRank
-    }
-
-    // TODO: 폰트셋 추가 후 수정
     var body: some View {
         HStack {
             Text("\(rank.ranking)")
-                .font(.system(size: 18, weight: .bold))
-                .frame(width: 36)
-                .padding(.horizontal, 12)
+                .font(.PR.title2)
+                .padding(.horizontal, 24)
+                .overlay() {
+                    if isMyRank {
+                        // TODO: 변동 순위 rankDiff에 연동
+                        RankingChangeIndicatorView(rankDiff: 4)
+                            .offset(y: 21)
+                    }
+                }
 
-            ProfileImageView(image: rank.userImage)
+            ProfileImageView(image: rank.userImage, isMyRank: isMyRank)
 
             Text(rank.userName)
-                .font(.system(size: 16))
+                .font(isMyRank ? .PR.title2 : .PR.body3)
                 .lineLimit(1)
                 .padding(.leading, 12)
 
@@ -35,41 +35,43 @@ struct RankingItemView: View {
 
             Text("\(rank.userWeekScore)")
                 .padding(.trailing, 24)
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.gray)
+                .font(.PR.caption1)
+                .foregroundStyle(.gray2)
         }
-        .padding(.vertical, 16)
-        .background(rank.backgroundColor)
+        .padding(.vertical, isMyRank ? 20 : 16)
+        .background(isMyRank ? Color.lightGreen : rank.backgroundColor)
         .cornerRadius(12)
-        .background(
+        .overlay(
             RoundedRectangle(cornerRadius: 12)
-            // TODO: 컬러 변경
-                .strokeBorder(Color("PointGreen01"), lineWidth: isMyRank ? 3 : 0)
+                .strokeBorder(Color.primaryGreen, lineWidth: isMyRank ? 3 : 0)
         )
+        .padding(.bottom, 8)
     }
 }
 
 #Preview {
-    VStack(spacing: 8) {
+    VStack(spacing: 0) {
         RankingItemView(
             rank: .init(
                 ranking: 1,
                 userName: "소연수",
-                userImage: nil,
+                userImage: UIImage(named: "testImage"),
                 userWeekScore: 12,
                 userTeam: "blue",
                 backgroundColor: .blue.opacity(0.1)
             )
+            , isMyRank: false
         )
         RankingItemView(
             rank: .init(
                 ranking: 2,
                 userName: "김소원",
-                userImage: nil,
+                userImage: UIImage(named: "testImage"),
                 userWeekScore: 9,
                 userTeam: "blue",
                 backgroundColor: .blue.opacity(0.1)
             )
+            , isMyRank: true
         )
         RankingItemView(
             rank: .init(
@@ -80,6 +82,7 @@ struct RankingItemView: View {
                 userTeam: "yellow",
                 backgroundColor: .yellow.opacity(0.1)
             )
+            , isMyRank: false
         )
     }
     .padding()
