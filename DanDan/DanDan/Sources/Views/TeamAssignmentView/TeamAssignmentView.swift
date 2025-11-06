@@ -52,11 +52,11 @@ struct TeamAssignmentView: View {
     }
 }
 
-#Preview("Team Assignment") {
-    TeamAssignmentView(userStatus: {
-        var status = UserStatus()
-        status.userTeam = "yellow"
-        return status
-    }())
-    .frame(height: 350)
-}
+//#Preview("Team Assignment") {
+//    TeamAssignmentView(userStatus: {
+//        var status = UserStatus()
+//        status.userTeam = "yellow"
+//        return status
+//    }())
+//    .frame(height: 350)
+//}

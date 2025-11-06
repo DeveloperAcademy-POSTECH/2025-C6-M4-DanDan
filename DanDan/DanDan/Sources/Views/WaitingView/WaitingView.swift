@@ -24,6 +24,6 @@ struct WaitingView: View {
     }
 }
 
-#Preview {
-    WaitingView()
-}
+//#Preview {
+//    WaitingView()
+//}
