@@ -20,11 +20,9 @@ enum AppDestination: Hashable {
     case settings
     case termsService
     case termsPrivacy
-    case termsLocation
 }
 
 extension AppDestination {
-
     @ViewBuilder
     func view() -> some View {
         switch self {
@@ -52,8 +50,6 @@ extension AppDestination {
             ServiceTermsView()
         case .termsPrivacy:
             PrivacyPolicyView()
-        case .termsLocation:
-            LocationBasedServiceTermsView()
         }
     }
 }
