@@ -9,6 +9,9 @@ import SwiftUI
 
 enum AppDestination: Hashable {
     case onboarding
+    case login
+    case profileSetup
+    case schoolSelection
     case main
     case ranking
     case myPage
@@ -23,6 +26,12 @@ extension AppDestination {
         switch self {
         case .onboarding:
             OnboardingView()
+        case .login:
+            LoginView()
+        case .profileSetup:
+            ProfileSetupView()
+        case .schoolSelection:
+            SchoolSelectView()
         case .main:
             MainView()
         case .ranking:
