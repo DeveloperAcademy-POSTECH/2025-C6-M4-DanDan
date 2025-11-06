@@ -5,6 +5,7 @@
 //  Created by Jay on 10/26/25.
 //
 
+import Combine
 import Foundation
 import SwiftUI
 import UIKit
@@ -22,13 +23,17 @@ class RankingViewModel: ObservableObject {
     ]
     
     @Published var rankingItems: [RankingItemData] = []
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
 
-    private let navigationManager = NavigationManager.shared
+    private var cancellables = Set<AnyCancellable>()
+    private let rankingService = RankingService.shared
     private let rankingManager = RankingManager.shared
+    private let navigationManager = NavigationManager.shared
 
     // TODO: 더미 데이터 - 현재 유저
     var currentUserId: UUID = UUID(
-        uuidString: "22222222-2222-2222-2222-222222222222"
+        uuidString: "6699BDBD-46AA-49B7-AB77-4B2BB985E8CC"
     )!
 
     /// 주어진 점수 배열을 기반으로 각 구역의 점령 상태를 계산하여 업데이트합니다.
@@ -46,6 +51,28 @@ class RankingViewModel: ObservableObject {
     /// 메인 화면으로 이동합니다.
     func tapMainButton() {
         navigationManager.popToRoot()
+    }
+}
+
+extension RankingViewModel {
+    
+    /// 선택된 필터 값에 따라 랭킹 아이템 목록을 반환합니다.
+    /// - Parameters:
+    ///     - items: 전체 랭킹 아이템 배열
+    ///     - filter: "전체" 또는 "우리팀"
+    ///     - myUserId: 현재 사용자 ID
+    /// - Returns: 필터링된 랭킹 아이템 배열
+    func filteredRankingItems(
+        from items: [RankingItemData],
+        filter: String,
+        myUserId: UUID
+    ) -> [RankingItemData] {
+        guard filter == "우리 팀",
+            let myTeam = items.first(where: { $0.id == myUserId })?.userTeam
+        else {
+            return items
+        }
+        return items.filter { $0.userTeam == myTeam }
     }
 }
 
@@ -81,47 +108,63 @@ extension RankingViewModel {
             self.backgroundColor = backgroundColor
         }
     }
-
-    /// 사용자 상태 배열(rankedUsers)을 바탕으로 뷰에 필요한 사용자 정보와 스타일 데이터를 구성하여 반환합니다.
-    /// - Returns: [RankingItemData] 형식의 배열 (UserStatus, UserInfo, 스타일 포함)
-    func getRankingItemDataList() -> [RankingItemData] {
-        rankedUsers.compactMap { status in
-            guard let info = userInfo.first(where: { $0.id == status.id })
-            else { return nil }
-
-            let image: UIImage? = info.userImage.first.flatMap {
-                UIImage(data: $0)
-            }
-
-            let color: Color
-            
-            switch status.userTeam.lowercased() {
-            case "blue": color = .subA20
-            case "yellow": color = .subB20
-            default: color = .gray5
-            }
-
-            return RankingItemData(
-                id: info.id,
-                ranking: status.rank,
-                userName: info.userName,
-                userImage: image,
-                userWeekScore: status.userWeekScore,
-                userTeam: status.userTeam,
-                backgroundColor: color
-            )
-        }
-    }
 }
-// TODO: 더미데이터 수정
+
+// MARK: 백엔드 연동
+
 extension RankingViewModel {
-    static var dummy: RankingViewModel {
-        let vm = RankingViewModel()
 
-        vm.rankedUsers = UserStatus.dummyStatuses
-        vm.userInfo = UserInfo.dummyUsers
-        vm.rankingItems = vm.getRankingItemDataList()  // 내부 상태 기반 자동 생성
+    /// 서버에서 완성된 랭킹 데이터를 그대로 받아 ViewModel 상태를 업데이트합니다.
+    func fetchRanking() {
+        isLoading = true
 
-        return vm
+        rankingService.fetchOverallRanking()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                guard let self else { return }
+                self.isLoading = false
+
+                switch completion {
+                case .finished:
+                    print("성공")
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] dtoList in
+                guard let self else { return }
+
+                // ✅ 성공 시 데이터 확인 로그
+                print("✅ [Ranking Fetch Success] DTO Count:", dtoList.count)
+                dtoList.forEach { dto in
+                    print(
+                        " - \(dto.ranking)위 \(dto.userName) (\(dto.userTeam)) / 점수: \(dto.userWeekScore)"
+                    )
+                }
+
+                /// DTO → 내부 UI 모델 변환 + 팀 색상 지정
+                self.rankingItems = dtoList.map { dto in
+                    // 팀 색상 설정
+                    let color: Color
+                    switch dto.userTeam.lowercased() {
+                    case "blue":
+                        color = .subA20
+                    case "yellow":
+                        color = .subB20
+                    default:
+                        color = .gray5
+                    }
+                    
+                    return RankingItemData(
+                        id: dto.id,
+                        ranking: dto.ranking,
+                        userName: dto.userName,
+                        userImage: nil,  // 나중에 AsyncImage로 교체 가능
+                        userWeekScore: dto.userWeekScore,
+                        userTeam: dto.userTeam,
+                        backgroundColor: color
+                    )
+                }
+            }
+            .store(in: &cancellables)
     }
 }

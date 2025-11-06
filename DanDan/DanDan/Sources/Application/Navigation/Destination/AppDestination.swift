@@ -9,32 +9,51 @@ import SwiftUI
 
 enum AppDestination: Hashable {
     case onboarding
+    case login
+    case profileSetup
+    case schoolSelection
     case main
     case ranking
     case myPage
     case seasonHistory
     case profileEdit
+    case settings
+    case termsService
+    case termsPrivacy
+    case termsLocation
 }
 
 extension AppDestination {
-    // TODO: 더미데이터 수정 - @MainActor 삭제
-    @MainActor
+
     @ViewBuilder
     func view() -> some View {
         switch self {
         case .onboarding:
             OnboardingView()
+        case .login:
+            LoginView()
+        case .profileSetup:
+            ProfileSetupView()
+        case .schoolSelection:
+            SchoolSelectView()
         case .main:
-            MainView()
+            TabBarView()
         case .ranking:
-            // TODO: 더미데이터 수정
-            RankingView(viewModel: .dummy)
+            RankingView()
         case .myPage:
             MyPageView()
         case .seasonHistory:
             SeasonHistoryView()
         case .profileEdit:
             ProfileEditView()
+        case .settings:
+            SettingView()
+        case .termsService:
+            ServiceTermsView()
+        case .termsPrivacy:
+            PrivacyPolicyView()
+        case .termsLocation:
+            LocationBasedServiceTermsView()
         }
     }
 }

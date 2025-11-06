@@ -35,13 +35,28 @@ struct PickerMenu: View {
                 HStack(spacing: 4) {
                     Text(selectedOption)
                         .font(.PR.caption4)
-                        .foregroundColor(Color("PointGreen01"))
+                        .foregroundColor(.primaryGreen)
                     Image(systemName: "chevron.down")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color("PointGreen01"))
+                        .foregroundColor(.primaryGreen)
                 }
             }
             .contentShape(Rectangle())
         }
     }
+}
+
+struct PickerMenuPreviewWrapper: View {
+    @State private var previewOption = "전체"
+
+    var body: some View {
+        PickerMenu(
+            selectedOption: $previewOption,
+            options: ["전체", "우리 팀"]
+        )
+    }
+}
+
+#Preview {
+    PickerMenuPreviewWrapper()
 }
