@@ -22,6 +22,7 @@ struct RankingView: View {
             SegmentedControl(
                 leftTitle: "팀",
                 rightTitle: "개인",
+                frameMaxWidth: .infinity,
                 isRightSelected: $isRightSelected
             )
 
