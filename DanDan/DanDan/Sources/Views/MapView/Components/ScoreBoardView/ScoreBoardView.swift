@@ -110,7 +110,7 @@ struct ScoreBoardView: View {
             }
             .padding(4)
         }
-        .frame(width: 340, height: 44)
+        .frame(width: 230, height: 44)
     }
 }
 

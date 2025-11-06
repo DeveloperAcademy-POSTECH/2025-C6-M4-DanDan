@@ -23,7 +23,7 @@ struct MapToggleView: View {
         ZStack {
             Group {
                 if isFullMap {
-                    FullMapView(
+                    FullMapScreen(
                         conquestStatuses: conquestStatuses,
                         teams: teams
                     ) // 2D 전체 지도뷰
