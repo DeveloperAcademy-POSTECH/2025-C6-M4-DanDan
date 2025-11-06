@@ -9,11 +9,11 @@ import SwiftUI
 import PhotosUI
 
 struct ProfileSetupView: View {
-    @EnvironmentObject private var nav: NavigationManager
+    private let navigationManager = NavigationManager.shared
     
     @State private var nickname: String = "" // 서버에 전송할 닉네임
     @State private var selectedItem: PhotosPickerItem?
-    @State private var profileImage: UIImage? // 서버에 전송할 이미지
+    @State private var profileImage: UIImage? = UIImage(named: "default_avatar") // 서버에 전송할 이미지
     @State private var showPicker: Bool = false
     
     // 서버 콜백 제거: 온보딩 세션에 직접 저장
@@ -52,6 +52,7 @@ struct ProfileSetupView: View {
                     RegistrationManager.shared.profileImage = profileImage
                     nav.navigate(to: .schoolSelection)
                 }, // 여기서 서버 API 호출
+                isEnabled: !nickname.trimmingCharacters(in: .whitespaces).isEmpty,
                 horizontalPadding: 20,
                 verticalPadding: 8,
             )

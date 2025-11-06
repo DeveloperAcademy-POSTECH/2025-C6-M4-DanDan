@@ -30,22 +30,18 @@ extension School {
 }
 
 struct SchoolSelectView: View {
-    @EnvironmentObject private var nav: NavigationManager
     @Environment(\.dismiss) private var dismiss
     
     @State private var selected: School? = nil
+    @State private var showConfirm = false
     
     // 서버 콜백 제거: 뷰 내부에서 직접 호출
+    private var needsCustomBackButton : Bool {
+        if #available(iOS 26.0, *) { return false } else { return true }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
-            TopBarView {
-                if !nav.path.isEmpty {
-                    nav.pop()
-                } else {
-                    nav.navigate(to: .profileSetup)
-                }
-            }
             
             TitleSectionView(title: "학교 선택하기", description: "내가 다니고 있는 학교를 선택해주세요.")
             
@@ -55,7 +51,7 @@ struct SchoolSelectView: View {
             
             // MARK: - 가입하기 버튼
             PrimaryButton(
-                "가입하기",
+                "시작하기",
                 action: {
                     guard let s = selected else { return }
                     let name = RegistrationManager.shared.nickname
@@ -83,26 +79,30 @@ struct SchoolSelectView: View {
             .padding(.bottom, 24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    }
-}
-
-// MARK: - 뒤로가기 버튼
-private struct TopBarView: View {
-    let onBack: () -> Void
-    
-    var body: some View {
-        HStack {
-            Button(action: onBack) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.steelBlack)
-                    .padding(8)
-                    .contentShape(Rectangle())
+        
+        .navigationBarBackButtonHidden(needsCustomBackButton)
+        
+        // MARK: - Back Button
+        .toolbar {
+            if needsCustomBackButton
+            {
+                ToolbarItem(placement: .topBarLeading) {
+                    BackButton { dismiss() }
+                }
             }
-            Spacer()
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 12)
+        
+        .alert("정확한 정보를 입력하셨나요?", isPresented: $showConfirm) {
+            Button("수정하기", role: .cancel) { }
+            Button("가입하기") {
+                if let s = selected {
+                    onComplete?(s) // 서버 연동/다음 화면 이동
+                }
+            }
+            
+        } message: {
+            Text("가입 이후에는 닉네임과 프로필, 학교를 \n바꿀 수 없어요!")
+        }
     }
 }
 

@@ -89,7 +89,7 @@ struct LoginView: View {
                 //                    }
                 //                    .buttonStyle(FilledCapsuleButtonStyle(fill: .kakaoYellow, foreground: .black))
                 
-                // MARK: - Guest
+                // MARK: - Guest Login
                 PrimaryButton(
                     "게스트로 로그인",
                     action: { nav.navigate(to: .profileSetup) },

@@ -22,6 +22,7 @@ struct TitleSectionView: View {
                 .foregroundStyle(.gray2)
                 .lineSpacing(3)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
     }
 }
