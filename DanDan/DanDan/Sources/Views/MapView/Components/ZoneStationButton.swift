@@ -26,7 +26,7 @@ struct ZoneStationButton: View {
                     .scaledToFit()
                     .frame(width: 68, height: 74)
                     .accessibilityLabel("정류소")
-                    .shadow(color: .white.opacity(0.7), radius: 8)
+                    .shadow(color: .black.opacity(0.4), radius: 8, x: 6, y: 4)
             }
             .buttonStyle(.plain)
             
