@@ -32,4 +32,13 @@ struct ConquestPeriod: Identifiable, Codable {
 
         self.endDate = calculatedEndDate
     }
+
+    /// 백엔드가 제공한 시작/종료일을 그대로 사용하는 생성자
+    init(startDate: Date, endDate: Date, weekIndex: Int = 1, winningTeam: String = "") {
+        self.id = UUID()
+        self.startDate = startDate
+        self.endDate = endDate
+        self.weekIndex = weekIndex
+        self.winningTeam = winningTeam
+    }
 }

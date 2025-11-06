@@ -13,18 +13,6 @@ final class ZoneCheckedService {
     private init() {}
 
     // MARK: - Public
-    /// 공개 랭킹(API: GET /conquest/rankings/overall) 토큰 없이 호출 테스트
-    func probeOverallRankingPublic(completion: @escaping (Bool) -> Void) {
-        Task {
-            do {
-                let ok = try await fetchOverallRankingPublic()
-                DispatchQueue.main.async { completion(ok) }
-            } catch {
-                print("🚨 probeOverallRankingPublic error:", error)
-                DispatchQueue.main.async { completion(false) }
-            }
-        }
-    }
     /// 오늘의 산책 체크 상태 조회 (완주한 zoneId 리스트)
     func fetchTodayCheckedZoneIds(completion: @escaping ([Int]) -> Void) {
         Task {
@@ -70,9 +58,8 @@ final class ZoneCheckedService {
 
     // MARK: - Private async methods
     private func fetchToday() async throws -> [Int] {
-        // 토큰이 없으면 공개 랭킹으로 가볍게 호출해 네트워크 확인만 하고, 빈 리스트 반환
+        // 토큰이 없으면 바로 인증 필요 에러 반환
         guard (try? tokenManager.getAccessToken()) != nil else {
-            _ = try? await fetchOverallRankingPublic() // fire-and-forget health check
             throw URLError(.userAuthenticationRequired)
         }
 
@@ -84,8 +71,10 @@ final class ZoneCheckedService {
         logResponse(response, data: data)
         try ensure2xx(response, data: data)
 
-        // 서버 응답 본문 파싱 없이 네트워크 성공만 확인
-        return []
+        // 본문 파싱: DailyCheckResponse -> 완료된 구역의 zoneId 리스트만 반환
+        let decoded = try JSONDecoder().decode(DailyCheckResponse.self, from: data)
+        let completedZoneIds = decoded.data?.zones.filter { $0.isCompleted }.map { $0.zoneId } ?? []
+        return completedZoneIds
     }
 
     private func complete(zoneId: Int) async throws {
@@ -141,16 +130,5 @@ final class ZoneCheckedService {
         let body = data.flatMap { String(data: $0, encoding: .utf8) } ?? "<no body>"
         print("✅ Response: status=\(http.statusCode), url=\(http.url?.absoluteString ?? "-"), body=\(body)")
     }
-    /// 실제 공개 랭킹 호출 (Authorization 헤더 없이)
-    private func fetchOverallRankingPublic() async throws -> Bool {
-        var request = try makeRequest(path: "conquest/rankings/overall", addAuth: false)
-        print("🛰️ GET", request.url?.absoluteString ?? "-", "\nHeaders:", request.allHTTPHeaderFields ?? [:])
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-        logResponse(response, data: data)
-
-        // 공개 엔드포인트는 200만 확인해도 충분 (본문 파싱 생략)
-        try ensure2xx(response, data: data)
-        return true
-    }
+    
 }
