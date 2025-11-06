@@ -70,7 +70,7 @@ struct FullMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             guard let line = overlay as? ColoredPolyline else { return MKOverlayRenderer() }
             let renderer = MKPolylineRenderer(overlay: line)
-
+            
             let stroke = ZoneColorResolver.leadingColorOrDefault(
                 for: line.zoneId,
                 in: conquestStatuses,
@@ -119,7 +119,7 @@ struct FullMapView: UIViewRepresentable {
         
         return map
     }
-        
+    
     func updateUIView(_ uiView: MKMapView, context: Context) { }
 }
 
@@ -127,18 +127,23 @@ struct FullMapScreen: View {
     @State private var isRightSelected = false
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
-
+    
     var body: some View {
         FullMapView(conquestStatuses: conquestStatuses, teams: teams)
             .ignoresSafeArea()
             .overlay(alignment: .topLeading) {
-                SegmentedControl(
-                    leftTitle: "전체",
-                    rightTitle: "개인",
-                    frameMaxWidth: 172,
-                    isRightSelected: $isRightSelected
-                )
-                .padding(.top, 54)
+                VStack(alignment: .leading, spacing: 6) {
+                    ScoreBoardView(statuses: conquestStatuses, teams: teams)
+                        .padding(.leading, 20)
+                    
+                    SegmentedControl(
+                        leftTitle: "전체",
+                        rightTitle: "개인",
+                        frameMaxWidth: 172,
+                        isRightSelected: $isRightSelected
+                    )
+                }
+                .padding(.top, 60)
             }
     }
 }
