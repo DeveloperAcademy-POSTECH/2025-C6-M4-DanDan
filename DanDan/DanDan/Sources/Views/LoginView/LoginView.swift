@@ -11,7 +11,7 @@ import SwiftUI
 struct LoginView: View {
     @State private var showSocialAlert = false
     
-    // Callback for guest login (서버 여기로 연결)
+    // TODO: 여기는 그냥 네비게이션
     var onGuestLogin: (() -> Void)?
     
     var body: some View {
@@ -91,7 +91,7 @@ struct LoginView: View {
                 //                    }
                 //                    .buttonStyle(FilledCapsuleButtonStyle(fill: .kakaoYellow, foreground: .black))
                 
-                // MARK: - Guest
+                // MARK: - Guest Login
                 PrimaryButton(
                     "게스트로 로그인",
                     action: { onGuestLogin?() },
