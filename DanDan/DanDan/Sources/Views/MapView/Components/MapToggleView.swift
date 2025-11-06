@@ -22,12 +22,13 @@ struct MapToggleView: View {
         ZStack {
             Group {
                 if isFullMap {
-                    FullMapScreen(
+                    FullMapScreen( // 2D 전체 지도뷰
                         conquestStatuses: conquestStatuses,
-                        teams: teams
-                    ) // 2D 전체 지도뷰
+                        teams: teams,
+                        userStatus: StatusManager.shared.userStatus
+                    )
                 } else {
-                    MapScreen(
+                    MapScreen( // 3D 부분 지도뷰
                         conquestStatuses: conquestStatuses,
                         teams: teams,
                         userStatus: StatusManager.shared.userStatus,

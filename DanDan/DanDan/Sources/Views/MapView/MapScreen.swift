@@ -30,7 +30,7 @@ struct MapScreen: View {
                     .padding(.leading, 4)
             }
             .padding(.top, 60)
-            .padding(.leading, 12)
+            .padding(.leading, 14)
         }
     }
 }
