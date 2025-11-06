@@ -30,6 +30,7 @@ extension School {
 }
 
 struct SchoolSelectView: View {
+    @EnvironmentObject private var nav: NavigationManager
     @Environment(\.dismiss) private var dismiss
     
     @State private var selected: School? = nil
@@ -92,17 +93,7 @@ struct SchoolSelectView: View {
             }
         }
         
-        .alert("정확한 정보를 입력하셨나요?", isPresented: $showConfirm) {
-            Button("수정하기", role: .cancel) { }
-            Button("가입하기") {
-                if let s = selected {
-                    onComplete?(s) // 서버 연동/다음 화면 이동
-                }
-            }
-            
-        } message: {
-            Text("가입 이후에는 닉네임과 프로필, 학교를 \n바꿀 수 없어요!")
-        }
+        // 확인 알럿은 서버 스펙 확정 후 재도입 가능
     }
 }
 

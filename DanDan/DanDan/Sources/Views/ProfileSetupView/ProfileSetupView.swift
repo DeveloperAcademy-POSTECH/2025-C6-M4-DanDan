@@ -50,7 +50,7 @@ struct ProfileSetupView: View {
                 action: {
                     RegistrationManager.shared.nickname = nickname
                     RegistrationManager.shared.profileImage = profileImage
-                    nav.navigate(to: .schoolSelection)
+                    navigationManager.navigate(to: .schoolSelection)
                 }, // 여기서 서버 API 호출
                 isEnabled: !nickname.trimmingCharacters(in: .whitespaces).isEmpty,
                 horizontalPadding: 20,
