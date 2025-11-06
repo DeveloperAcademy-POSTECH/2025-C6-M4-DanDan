@@ -122,3 +122,23 @@ struct FullMapView: UIViewRepresentable {
         
     func updateUIView(_ uiView: MKMapView, context: Context) { }
 }
+
+struct FullMapScreen: View {
+    @State private var isRightSelected = false
+    let conquestStatuses: [ZoneConquestStatus]
+    let teams: [Team]
+
+    var body: some View {
+        FullMapView(conquestStatuses: conquestStatuses, teams: teams)
+            .ignoresSafeArea()
+            .overlay(alignment: .topLeading) {
+                SegmentedControl(
+                    leftTitle: "전체",
+                    rightTitle: "개인",
+                    frameMaxWidth: 172,
+                    isRightSelected: $isRightSelected
+                )
+                .padding(.top, 54)
+            }
+    }
+}
