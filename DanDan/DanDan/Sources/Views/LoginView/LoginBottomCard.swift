@@ -12,13 +12,13 @@ struct LoginBottomCard: View {
     let onGuestLogin: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("환영해요!")
                 .font(.PR.title1)
                 .foregroundStyle(.steelBlack)
                 .padding(.leading, 10)
             
-            Text("철길숲을 걸어 구역을 차지하고,\n우리 팀을 우승으로 이끌어보세요.")
+            Text("철길숲을 걸어 구역을 점령하고\n우리 팀을 우승으로 이끌어보세요.")
                 .font(.PR.caption3)
                 .foregroundStyle(.gray1)
                 .lineSpacing(4)
@@ -42,6 +42,8 @@ struct LoginBottomCard: View {
                 foreground: .white
             )
             
+//            // MARK: - Apple
+
 //            Button {
 //                showSocialAlert = true
 //            } label: {
@@ -57,6 +59,7 @@ struct LoginBottomCard: View {
 //            .buttonStyle(FilledCapsuleButtonStyle(fill: .black, foreground: .white))
 //            
 //            // MARK: - Naver
+            
 //            Button {
 //                showSocialAlert = true
 //            } label: {
@@ -75,6 +78,7 @@ struct LoginBottomCard: View {
 //            .buttonStyle(FilledCapsuleButtonStyle(fill: .naverGreen, foreground: .white))
 //            
 //            // MARK: - Kakao
+            
 //            Button {
 //                showSocialAlert = true
 //            } label: {
