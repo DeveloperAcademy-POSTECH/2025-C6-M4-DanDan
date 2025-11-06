@@ -186,6 +186,12 @@ class NetworkService: NetworkServiceProtocol {
         )
     }
 
+    // MARK: - Async API
+    /// ✅ 네트워크 요청을 async/await로 직접 호출할 수 있는 퍼블릭 메서드
+    func request<T: Decodable>(_ endpoint: any APIEndpoint) async throws -> T {
+        return try await performRequest(endpoint)
+    }
+
     /// ✅ 요청 실패 시 재시도 여부 판단
     private func shouldRetryRequest(
         _ request: URLRequest,

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 enum School: String, CaseIterable, Identifiable {
     case daedongMiddle = "대동중학교"
@@ -16,15 +17,25 @@ enum School: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+extension School {
+    /// 학교 → 팀명 매핑 (요구사항: Yellow/Blue)
+    var mappedTeamName: String {
+        switch self {
+        case .daedongMiddle: return "Yellow"
+        case .pohangSteelMiddle: return "Blue"
+        case .semyeongHigh: return "Yellow"
+        case .pohangIdongHigh: return "Blue"
+        }
+    }
+}
+
 struct SchoolSelectView: View {
     @EnvironmentObject private var nav: NavigationManager
     @Environment(\.dismiss) private var dismiss
     
     @State private var selected: School? = nil
     
-    // MARK: - 저장 이벤트 콜벡 (서버 연결)
-    // 가입하기 버튼 탭 -> 선택된 학교 데이터 전달
-    var onComplete: ((School) -> Void)?
+    // 서버 콜백 제거: 뷰 내부에서 직접 호출
     
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
@@ -43,12 +54,24 @@ struct SchoolSelectView: View {
             Spacer()
             
             // MARK: - 가입하기 버튼
-            // 여기서 서버 API 호출
             PrimaryButton(
                 "가입하기",
                 action: {
-                    if let s = selected {
-                        onComplete?(s)
+                    guard let s = selected else { return }
+                    let name = RegistrationManager.shared.nickname
+                    let imageData = RegistrationManager.shared.profileImage?.jpegData(compressionQuality: 0.85)
+                    let teamName = s.mappedTeamName
+                    Task { @MainActor in
+                        do {
+                            let service = GuestAuthService()
+                            _ = try await service.registerGuest(name: name, teamName: teamName, imageData: imageData)
+                            RegistrationManager.shared.nickname = ""
+                            RegistrationManager.shared.profileImage = nil
+                            nav.popToRoot()
+                            nav.navigate(to: .map)
+                        } catch {
+                            print("🚨 Guest register failed:", error)
+                        }
                     }
                 },
                 isEnabled: selected != nil,

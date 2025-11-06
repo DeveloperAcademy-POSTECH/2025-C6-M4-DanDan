@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+// UIKit 의존 제거 (이미지 데이터로만 처리)
 
 /// 게스트 인증 서비스 프로토콜
 protocol GuestAuthServiceProtocol {
@@ -55,6 +56,20 @@ class GuestAuthService: GuestAuthServiceProtocol {
                 return .unknown(error)
             }
             .eraseToAnyPublisher()
+    }
+
+    /// 게스트 회원가입 (팀명 포함, 이미지 포함 가능) - async/await 버전
+    func registerGuest(name: String, teamName: String, imageData: Data?) async throws -> GuestRegisterResponse {
+        let response = try await MultipartUploadHelper.uploadGuestRegisterByTeamName(
+            name: name,
+            teamName: teamName,
+            imageData: imageData
+        )
+        try tokenManager.saveTokens(
+            accessToken: response.data.accessToken,
+            refreshToken: response.data.refreshToken
+        )
+        return response
     }
 
     /// 리프레시 토큰으로 액세스/리프레시 토큰 재발급

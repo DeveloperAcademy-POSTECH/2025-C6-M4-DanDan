@@ -24,6 +24,9 @@ struct MyPageView: View {
 
             Spacer()
         }
+        .task {
+            await viewModel.load()
+        }
     }
 }
 

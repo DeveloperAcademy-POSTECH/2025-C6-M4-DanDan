@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 final class RegistrationManager {
-    static let shared = RegistrationDraft()
+    static let shared = RegistrationManager()
     private init() {}
 
     var nickname: String = ""

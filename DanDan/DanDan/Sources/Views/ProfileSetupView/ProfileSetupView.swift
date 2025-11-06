@@ -16,10 +16,7 @@ struct ProfileSetupView: View {
     @State private var profileImage: UIImage? // 서버에 전송할 이미지
     @State private var showPicker: Bool = false
     
-    // MARK: - 서버 콜백 엔트리 포인트
-    /// "저장하기" 버튼 탭 시 서버 연동할 부분
-    /// nickname과 profileImage를 onSave로 전달
-    var onSave: ((_ nickname: String, _ image: UIImage?) -> Void)?
+    // 서버 콜백 제거: 온보딩 세션에 직접 저장
     
     var body: some View {
         
@@ -49,9 +46,10 @@ struct ProfileSetupView: View {
             Spacer()
             
             PrimaryButton(
-                "저장하기",
+                "다음으로",
                 action: {
-                    onSave?(nickname, profileImage)
+                    RegistrationManager.shared.nickname = nickname
+                    RegistrationManager.shared.profileImage = profileImage
                     nav.navigate(to: .schoolSelection)
                 }, // 여기서 서버 API 호출
                 horizontalPadding: 20,
@@ -60,7 +58,7 @@ struct ProfileSetupView: View {
             .padding(.bottom, 24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .onChange(of: selectedItem) { _, newValue in
+        .onChange(of: selectedItem) { newValue in
             guard let item = newValue else { return }
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self),

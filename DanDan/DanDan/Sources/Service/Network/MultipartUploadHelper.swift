@@ -14,7 +14,7 @@ struct MultipartUploadHelper {
     // MARK: - Private Helpers
 
     /// 이미지 리사이징
-    /// - Parameters:
+    /// - Parameters: 
     ///   - image: 원본 이미지
     ///   - maxSize: 최대 가로/세로 크기
     /// - Returns: 리사이징된 이미지
@@ -55,7 +55,7 @@ struct MultipartUploadHelper {
         image: UIImage?
     ) async throws -> GuestRegisterResponse {
         // URL 생성
-        guard let url = URL(string: NetworkConfig.baseURL + "/auth/guest/register") else {
+        guard let url = URL(string: NetworkConfig.baseURL + "auth/guest/register") else {
             throw NetworkError.invalidRequest
         }
 
@@ -118,6 +118,7 @@ struct MultipartUploadHelper {
         request.httpBody = body
 
         // 요청 전송
+        print("🛰️ [uploadGuestRegister] URL=\(request.url?.absoluteString ?? "-") Headers=\(request.allHTTPHeaderFields ?? [:])")
         let (data, response) = try await URLSession.shared.data(for: request)
 
         // 응답 검증
@@ -143,5 +144,63 @@ struct MultipartUploadHelper {
             print("❌ 디코딩 실패: \(error)")
             throw NetworkError.decodingFailed(error as? DecodingError ?? DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Unknown decoding error")))
         }
+    }
+
+    /// 팀명을 포함한 게스트 회원가입 (multipart/form-data)
+    static func uploadGuestRegisterByTeamName(
+        name: String,
+        teamName: String,
+        imageData: Data?
+    ) async throws -> GuestRegisterResponse {
+        guard let url = URL(string: NetworkConfig.baseURL + "auth/guest/register/by-team-name") else {
+            throw NetworkError.invalidRequest
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 30
+
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue(
+            "multipart/form-data; boundary=\(boundary)",
+            forHTTPHeaderField: "Content-Type"
+        )
+
+        var body = Data()
+
+        // name (서버 스펙)
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"name\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(name)\r\n".data(using: .utf8)!)
+
+        // teamName
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"teamName\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(teamName)\r\n".data(using: .utf8)!)
+
+        // file
+        if let imageData = imageData {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"file\"; filename=\"profile.jpg\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(imageData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        print("🛰️ [uploadGuestRegisterByTeamName] URL=\(request.url?.absoluteString ?? "-") Headers=\(request.allHTTPHeaderFields ?? [:])")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else { throw NetworkError.invalidResponse }
+        guard (200...299).contains(http.statusCode) else {
+            if let raw = String(data: data, encoding: .utf8) {
+                print("❌ [uploadGuestRegisterByTeamName] HTTP=\(http.statusCode) body=\n\(raw)")
+            }
+            throw NetworkError.httpError(statusCode: http.statusCode, data: data)
+        }
+
+        let decoder = JSONDecoder()
+        return try decoder.decode(GuestRegisterResponse.self, from: data)
     }
 }

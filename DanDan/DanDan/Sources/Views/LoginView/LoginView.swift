@@ -9,10 +9,8 @@ import AuthenticationServices
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject private var nav: NavigationManager
     @State private var showSocialAlert = false
-    
-    // Callback for guest login (서버 여기로 연결)
-    var onGuestLogin: (() -> Void)?
     
     var body: some View {
         ZStack {
@@ -94,7 +92,7 @@ struct LoginView: View {
                 // MARK: - Guest
                 PrimaryButton(
                     "게스트로 로그인",
-                    action: { onGuestLogin?() },
+                    action: { nav.navigate(to: .profileSetup) },
                     horizontalPadding: 0,
                     verticalPadding: 10,
                     background: .primaryGreen,
@@ -169,12 +167,12 @@ struct AppleSignInButton: UIViewRepresentable {
 }
 
 // MARK: - Preview
-
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView {
-            // guest login tapped
-        }
-        .previewDisplayName("Login")
-    }
-}
+//
+//struct LoginView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        LoginView {
+//            // guest login tapped
+//        }
+//        .previewDisplayName("Login")
+//    }
+//}
