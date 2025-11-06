@@ -36,8 +36,8 @@ extension AppDestination {
         case .schoolSelection:
             SchoolSelectView()
         case .main:
-//            TabBarView()
-            LoginView()
+            TabBarView()
+//            LoginView()
         case .ranking:
             RankingView()
         case .myPage:
