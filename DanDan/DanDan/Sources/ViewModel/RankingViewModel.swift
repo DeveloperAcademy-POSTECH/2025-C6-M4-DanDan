@@ -15,13 +15,14 @@ class RankingViewModel: ObservableObject {
     @Published var conquestStatuses: [ZoneConquestStatus] = []
     @Published var userInfo: [UserInfo] = []
     @Published var rankedUsers: [UserStatus] = []
-    
+    @Published var teamRankings: [TeamRanking] = []
+
     // TODO: 팀명 확정 후 수정
     @Published var teams: [Team] = [
         Team(id: UUID(), teamName: "Blue", teamColor: "A"),
-        Team(id: UUID(), teamName: "Yellow", teamColor: "B")
+        Team(id: UUID(), teamName: "Yellow", teamColor: "B"),
     ]
-    
+
     @Published var rankingItems: [RankingItemData] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -55,7 +56,7 @@ class RankingViewModel: ObservableObject {
 }
 
 extension RankingViewModel {
-    
+
     /// 선택된 필터 값에 따라 랭킹 아이템 목록을 반환합니다.
     /// - Parameters:
     ///     - items: 전체 랭킹 아이템 배열
@@ -110,7 +111,7 @@ extension RankingViewModel {
     }
 }
 
-// MARK: 백엔드 연동
+// MARK: - 개인 랭킹 서버 연동
 
 extension RankingViewModel {
 
@@ -144,16 +145,8 @@ extension RankingViewModel {
                 /// DTO → 내부 UI 모델 변환 + 팀 색상 지정
                 self.rankingItems = dtoList.map { dto in
                     // 팀 색상 설정
-                    let color: Color
-                    switch dto.userTeam.lowercased() {
-                    case "blue":
-                        color = .subA20
-                    case "yellow":
-                        color = .subB20
-                    default:
-                        color = .gray5
-                    }
-                    
+                    let color = Color.setBackgroundColor(for: dto.userTeam)
+
                     return RankingItemData(
                         id: dto.id,
                         ranking: dto.ranking,
@@ -166,5 +159,24 @@ extension RankingViewModel {
                 }
             }
             .store(in: &cancellables)
+    }
+}
+
+// MARK: - 팀 랭킹 서버 연동
+
+extension RankingViewModel {
+    func fetchTeamRanking() {
+        Task {
+            do {
+                isLoading = true
+                let rankings = try await rankingService.fetchTeamRankings()
+                self.teamRankings = rankings
+                isLoading = false
+            } catch {
+                isLoading = false
+                errorMessage = "팀 랭킹을 불러오지 못했습니다: \(error.localizedDescription)"
+                print("❌ fetchTeamRanking 실패: \(error)")
+            }
+        }
     }
 }

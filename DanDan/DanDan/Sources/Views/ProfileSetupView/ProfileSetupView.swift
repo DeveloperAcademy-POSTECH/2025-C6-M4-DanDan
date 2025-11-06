@@ -15,6 +15,8 @@ struct ProfileSetupView: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var profileImage: UIImage? = UIImage(named: "default_avatar") // 서버에 전송할 이미지
     @State private var showPicker: Bool = false
+    @State private var isNicknameTooLong: Bool = false
+    
     
     // 서버 콜백 제거: 온보딩 세션에 직접 저장
     
@@ -23,7 +25,6 @@ struct ProfileSetupView: View {
         VStack(alignment: .leading, spacing: 24) {
             
             TitleSectionView(title: "회원가입하기", description: "나만의 닉네임과 프로필을 설정해주세요.")
-                .padding(.top, 58)
             
             VStack(spacing: 20) {
                 // 프로필 이미지 업로드 버튼
@@ -39,9 +40,24 @@ struct ProfileSetupView: View {
                 .padding(.vertical, 10)
                 
                 CustomTextField(text: $nickname, prompt: "닉네임 입력")
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(isNicknameTooLong ? Color.red : Color.clear, lineWidth: 1)
+                            .padding(.horizontal, 20)
+                    )
+                if isNicknameTooLong {
+                    Text("닉네임은 7자 이하로 설정해주세요")
+                        .font(.PR.body4)
+                        .foregroundColor(.red)
+                        .padding(.leading, 4)
+                        .padding(.top, -12)
+                }
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 8)
+            .onChange(of: nickname) { newValue in
+                isNicknameTooLong = newValue.count > 7
+            }
             
             Spacer()
             
@@ -52,7 +68,7 @@ struct ProfileSetupView: View {
                     RegistrationManager.shared.profileImage = profileImage
                     navigationManager.navigate(to: .schoolSelection)
                 }, // 여기서 서버 API 호출
-                isEnabled: !nickname.trimmingCharacters(in: .whitespaces).isEmpty,
+                isEnabled: !nickname.trimmingCharacters(in: .whitespaces).isEmpty && !isNicknameTooLong,
                 horizontalPadding: 20,
                 verticalPadding: 8,
             )

@@ -5,6 +5,25 @@
 //  Created by soyeonsoo on 11/6/25.
 //
 
+/*
+ 사용 방법
+ 
+ // 26.0 이전 버전인 경우 true인 변수
+ private var needsCustomBackButton : Bool {
+     if #available(iOS 26.0, *) { return false } else { return true }
+ }
+ 
+ .toolbar {
+     if needsCustomBackButton
+     {
+         ToolbarItem(placement: .topBarLeading) {
+             BackButton { dismiss() }
+         }
+     }
+ }
+ 
+ */
+
 import SwiftUI
 
 struct BackButton: View {
