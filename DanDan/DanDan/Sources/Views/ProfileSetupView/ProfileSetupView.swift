@@ -26,7 +26,6 @@ struct ProfileSetupView: View {
         VStack(alignment: .leading, spacing: 24) {
             
             TitleSectionView(title: "회원가입하기", description: "나만의 닉네임과 프로필을 설정해주세요.")
-                .padding(.top, 58)
             
             VStack(spacing: 20) {
                 // 프로필 이미지 업로드 버튼
