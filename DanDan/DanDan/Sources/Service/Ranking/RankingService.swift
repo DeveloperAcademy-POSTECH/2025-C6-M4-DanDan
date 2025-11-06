@@ -15,13 +15,35 @@ class RankingService {
     private init(networkService: NetworkServiceProtocol = NetworkService()) {
         self.networkService = networkService
     }
+    
+    // MARK: - 개인 랭킹
 
-    /// 전체 랭킹 리스트 요청
-    func fetchOverallRanking() -> AnyPublisher<[RankingResponseDTO], NetworkError> {
-            networkService.request(RankingEndPoint.rankingList)
-                .map { (response: RankingAPIResponse) in
-                    response.data.rankings // 🔥 DTO 배열만 꺼내기
-                }
-                .eraseToAnyPublisher()
+    /// 전체 유저 랭킹 리스트 요청
+    func fetchOverallRanking() -> AnyPublisher<
+        [RankingResponseDTO], NetworkError
+    > {
+        networkService.request(RankingEndPoint.rankingList)
+            .map { (response: RankingAPIResponse) in
+                response.data.rankings  
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - 팀 랭킹
+    
+    func fetchTeamRankings() async throws -> [TeamRanking] {
+            guard let url = URL(string: "https://www.singyupark.cloud:8443/api/v1/conquest/rankings/teams") else {
+                throw URLError(.badURL)
+            }
+
+            let (data, response) = try await URLSession.shared.data(from: url)
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  200..<300 ~= httpResponse.statusCode else {
+                throw URLError(.badServerResponse)
+            }
+
+            let decodedResponse = try JSONDecoder().decode(TeamRankingResponseDTO.self, from: data)
+            return decodedResponse.data.rankings
         }
 }

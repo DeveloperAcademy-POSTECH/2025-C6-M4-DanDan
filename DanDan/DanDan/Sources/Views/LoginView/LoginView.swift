@@ -9,104 +9,23 @@ import AuthenticationServices
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject private var nav: NavigationManager
+    private let navigationManager = NavigationManager.shared
+    
     @State private var showSocialAlert = false
     
     var body: some View {
         ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
+            Image("bg_login")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea(edges: .all)
             
-            VStack(alignment: .leading, spacing: 12) {
-                Text("환영해요!")
-                    .font(.PR.title1)
-                    .foregroundStyle(.steelBlack)
-                    .padding(.leading, 10)
-                
-                Text("철길숲을 걸어 구역을 차지하고,\n우리 팀을 우승으로 이끌어보세요.")
-                    .font(.PR.caption3)
-                    .foregroundStyle(.gray2)
-                    .lineSpacing(4)
-                    .padding(.bottom, 18)
-                    .padding(.leading, 10)
-                
-                // Buttons
-                
-                // MARK: - Apple
-                AppleSignInButton()
-                    .frame(minWidth: 140, idealWidth: .infinity, maxWidth: .infinity, minHeight: 56, maxHeight: 56)
-                    .cornerRadius(30)
-                    .onTapGesture { showSocialAlert = true }
-                    .padding(.bottom, -10)
-                
-                //                    Button {
-                //                        showSocialAlert = true
-                //                    } label: {
-                //                        HStack(spacing: 10) {
-                //                            Image(systemName: "apple.logo")
-                //                                .renderingMode(.template)
-                //                                .font(.system(size: 20))
-                //                            Text("Sign in with Apple")
-                //                                .font(.system(size: 19, weight: .bold))
-                //                        }
-                //                        .frame(maxWidth: .infinity, minHeight: 58)
-                //                    }
-                //                    .buttonStyle(FilledCapsuleButtonStyle(fill: .black, foreground: .white))
-                
-                //                    // MARK: - Naver
-                //                    Button {
-                //                        showSocialAlert = true
-                //                    } label: {
-                //                        HStack(spacing: 10) {
-                //                            Image("naver_logo")
-                //                                .resizable()
-                //                                .scaledToFit()
-                //                                .frame(width: 20, height: 20)
-                //
-                //                            Text("네이버 아이디로 로그인")
-                //                                .font(.PR.body2)
-                //                                .foregroundColor(.white)
-                //                        }
-                //                        .frame(maxWidth: .infinity, minHeight: 58)
-                //                    }
-                //                    .buttonStyle(FilledCapsuleButtonStyle(fill: .naverGreen, foreground: .white))
-                //
-                //                    // MARK: - Kakao
-                //                    Button {
-                //                        showSocialAlert = true
-                //                    } label: {
-                //                        HStack(spacing: 10) {
-                //                            Image("kakao_logo")
-                //                                .resizable()
-                //                                .scaledToFit()
-                //                                .frame(width: 20, height: 20)
-                //
-                //                            Text("카카오 아이디로 로그인")
-                //                                .font(.PR.body2)
-                //                                .foregroundColor(.black)
-                //                        }
-                //                        .frame(maxWidth: .infinity, minHeight: 58)
-                //                    }
-                //                    .buttonStyle(FilledCapsuleButtonStyle(fill: .kakaoYellow, foreground: .black))
-                
-                // MARK: - Guest Login
-                PrimaryButton(
-                    "게스트로 로그인",
-                    action: { nav.navigate(to: .profileSetup) },
-                    horizontalPadding: 0,
-                    verticalPadding: 10,
-                    background: .primaryGreen,
-                    foreground: .white,
-                )
-            }
-            .padding(.horizontal, 20)
+            
+            LoginBottomCard(
+                onAppleSignInTapped: { showSocialAlert = true }, onGuestLogin: { navigationManager.navigate(to: .profileSetup) }
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             .padding(.bottom, 30)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-        }
-        .alert("소셜 로그인 준비중", isPresented: $showSocialAlert) {
-            Button("확인", role: .cancel) { }
-        } message: {
-            Text("테스트 버전이라 게스트로 로그인만 가능해요")
         }
     }
 }
@@ -176,3 +95,10 @@ struct AppleSignInButton: UIViewRepresentable {
 //        .previewDisplayName("Login")
 //    }
 //}
+
+struct LoginView_Previews: PreviewProvider {
+    static var previews: some View {
+        LoginView()
+            .previewDisplayName("Login")
+    }
+}

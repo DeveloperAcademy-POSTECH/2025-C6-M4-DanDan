@@ -12,7 +12,7 @@ struct InstructionSectionView: View {
     
     var body: some View {
         HStack {
-            Text("개인랭킹")
+            Text("개인 랭킹")
                 .font(.PR.title1)
 
             Spacer()

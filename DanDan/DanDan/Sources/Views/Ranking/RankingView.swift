@@ -25,15 +25,16 @@ struct RankingView: View {
                 PersonalRankView(
                     rankingItems: viewModel.rankingItems,
                     myUserId: viewModel.currentUserId,
-                    rankingFilter: viewModel.filteredRankingItems
+                    rankingFilter: viewModel.filteredRankingItems,
+                    fetchRanking: viewModel.fetchRanking
                 )
             } else {
-                TeamRankView()
+                TeamRankView(
+                    fetchTeamRanking: viewModel.fetchTeamRanking,
+                    myUserId: viewModel.currentUserId,
+                    teamRankings: viewModel.teamRankings
+                )
             }
-        }
-        .onAppear() {
-            viewModel.fetchRanking()
-            print("\(viewModel.rankingItems)")
         }
         .padding(.top, 45)
 
