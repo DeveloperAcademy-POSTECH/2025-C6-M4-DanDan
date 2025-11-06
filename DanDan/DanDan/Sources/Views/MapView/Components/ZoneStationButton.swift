@@ -11,6 +11,9 @@ struct ZoneStationButton: View {
     let zone: Zone
     let statusesForZone: [ZoneConquestStatus]
     
+    var iconSize: CGSize = CGSize(width: 68, height: 74)
+    var popoverOffsetY: CGFloat = -100
+    
     @State private var showPopover = false
     
     var body: some View {
@@ -24,7 +27,7 @@ struct ZoneStationButton: View {
                 Image("zone_station")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 68, height: 74)
+                    .frame(width: iconSize.width, height: iconSize.height)
                     .accessibilityLabel("정류소")
                     .shadow(color: .black.opacity(0.4), radius: 8, x: 6, y: 4)
             }
@@ -34,7 +37,7 @@ struct ZoneStationButton: View {
             if showPopover {
                 ZoneStationSignView(zone: zone, statusesForZone: statusesForZone)
                     .fixedSize()
-                    .offset(y: -100)
+                    .offset(y: popoverOffsetY)
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .zIndex(2)
                     .onTapGesture {
