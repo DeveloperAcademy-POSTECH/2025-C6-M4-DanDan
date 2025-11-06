@@ -69,7 +69,7 @@ extension SegmentedControl {
     private static func configureAppearance() {
         let appearance = UISegmentedControl.appearance()
         appearance.selectedSegmentTintColor = UIColor.primaryGreen // 선택된 배경
-        appearance.backgroundColor = .gray5           // 전체 배경
+        appearance.backgroundColor = .lightGreen          // 전체 배경
         appearance.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)   // 선택 텍스트
         appearance.setTitleTextAttributes([.foregroundColor: UIColor.gray3], for: .normal)     // 비선택 텍스트
     }
@@ -78,5 +78,5 @@ extension SegmentedControl {
 #Preview {
     @State var isRightSelected: Bool = false
     
-    SegmentedControl(leftTitle: "afs", rightTitle: "sfd", frameMaxWidth: 172, isRightSelected: $isRightSelected)
+    SegmentedControl(leftTitle: "전체", rightTitle: "개인", frameMaxWidth: 172, isRightSelected: $isRightSelected)
 }
