@@ -13,6 +13,7 @@ import CoreLocation
 @MainActor
 class MyPageViewModel: ObservableObject {
     private let navigationManager = NavigationManager.shared
+    private let userService: UserServiceProtocol = UserService()
     
     // MARK: - User State
     @Published var userInfo: UserInfo
@@ -28,7 +29,14 @@ class MyPageViewModel: ObservableObject {
     }
     
     var displayName: String { userInfo.userName }
-    var winCount: Int { userInfo.userVictoryCnt }
+    var winCount: Int {
+        let now = Date()
+        // 완료된 주차 중, 스냅샷 시점의 내 팀이 그 주의 우승 팀이었던 횟수
+        return userInfo.rankHistory.filter { record in
+            guard let myTeam = record.teamAtPeriod, let winning = record.winningTeam else { return false }
+            return record.endDate < now && myTeam == winning
+        }.count
+    }
     var totalScore: Int { userInfo.userTotalScore }
     
     // FIXME: - 임시 계산 로직 (추후 폴리라인 세분화 및 거리 계산 방식 개선 예정)
@@ -110,5 +118,35 @@ class MyPageViewModel: ObservableObject {
 
     func tapProfileEditButton() {
         navigationManager.navigate(to: .profileEdit)
+    }
+
+    // MARK: - Networking
+    func load() async {
+        do {
+            let resp = try await userService.fetchMyPage()
+            // Map to local models used by the view
+            userInfo.userName = resp.data.user.userName
+            userInfo.userVictoryCnt = resp.data.user.userVictoryCnt
+            userInfo.userTotalScore = resp.data.user.userTotalScore
+            userStatus.userWeekScore = resp.data.currentWeekActivity.userWeekScore
+            userStatus.rank = resp.data.currentWeekActivity.ranking
+            // 프로필 이미지 URL이 있으면 다운로드해 로컬 캐시에 반영
+            if let urlString = resp.data.user.profileUrl, let url = URL(string: urlString) {
+                do {
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    if !data.isEmpty {
+                        userInfo.userImage = [data]
+                    }
+                } catch {
+                    print("⚠️ Failed to load profile image:", error)
+                }
+            }
+            // currentPeriod start date
+            if let start = ISO8601DateFormatter().date(from: resp.data.currentWeekActivity.startDate) {
+                self.currentPeriod = ConquestPeriod(startDate: start)
+            }
+        } catch {
+            print("🚨 MyPage load failed:", error)
+        }
     }
 }

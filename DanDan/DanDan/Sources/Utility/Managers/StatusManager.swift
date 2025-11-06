@@ -98,13 +98,21 @@ class StatusManager: ObservableObject {
     ///
     /// - Parameter distanceKm: 해당 주차 동안 이동한 거리(km)
     private func finalizeCurrentWeekSnapshot(distanceKm: Double? = nil) {
+        // 우승 팀 계산 (무승부 시 nil)
+        let winnerId = ConquestResultManager.shared.determineWinningTeam(from: zoneStatuese)
+        let winnerName = winnerId.flatMap { id in
+            zoneStatuese.first(where: { $0.teamId == id })?.teamName
+        }
+
         let snapshot = RankRecord(
             periodID: currentPeriod.id,
             startDate: currentPeriod.startDate,
             endDate: currentPeriod.endDate,
             rank: userStatus.rank,
             weekScore: userStatus.userWeekScore,
-            distanceKm: distanceKm
+            distanceKm: distanceKm,
+            teamAtPeriod: userStatus.userTeam,
+            winningTeam: winnerName
         )
         UserManager.shared.appendRankRecord(snapshot)
     }
