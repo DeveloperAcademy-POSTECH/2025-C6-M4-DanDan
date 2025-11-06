@@ -26,7 +26,7 @@ struct TodayMyScore: View {
                 .font(.PR.title2)
                 .foregroundStyle(.steelBlack)
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, 10)
         .padding(.horizontal, 22)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -37,6 +37,6 @@ struct TodayMyScore: View {
                 )
                 .shadow(color: .black.opacity(0.1), radius: 14, x: 0, y: 8)
         )
-        .fixedSize()
+        .frame(height: 44)
     }
 }
