@@ -8,11 +8,13 @@
 import Foundation
 
 struct RankRecord: Identifiable, Codable {
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var periodID: UUID
     var startDate: Date
     var endDate: Date
     var rank: Int
     var weekScore: Int
     var distanceKm: Double?
+    var teamAtPeriod: String? = nil
+    var winningTeam: String? = nil
 }
