@@ -22,15 +22,16 @@ struct SchoolSelectView: View {
     @State private var selected: School? = nil
     @State private var showConfirm = false
     
+    private var needsCustomBackButton : Bool {
+        if #available(iOS 26.0, *) { return false } else { return true }
+    }
+    
     // MARK: - 저장 이벤트 콜벡 (서버 연결)
     // 가입하기 버튼 탭 -> 선택된 학교 데이터 전달
     var onComplete: ((School) -> Void)?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
-            TopBarView {
-                dismiss()
-            }
             
             TitleSectionView(title: "학교 선택하기", description: "내가 다니고 있는 학교를 선택해주세요.")
             
@@ -55,6 +56,18 @@ struct SchoolSelectView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         
+        .navigationBarBackButtonHidden(needsCustomBackButton)
+        
+        // MARK: - Back Button
+        .toolbar {
+            if needsCustomBackButton
+            {
+                ToolbarItem(placement: .topBarLeading) {
+                    BackButton { dismiss() }
+                }
+            }
+        }
+        
         .alert("정확한 정보를 입력하셨나요?", isPresented: $showConfirm) {
             Button("수정하기", role: .cancel) { }
             Button("가입하기") {
@@ -66,20 +79,6 @@ struct SchoolSelectView: View {
         } message: {
             Text("가입 이후에는 닉네임과 프로필, 학교를 \n바꿀 수 없어요!")
         }
-    }
-}
-
-// MARK: - 뒤로가기 버튼
-private struct TopBarView: View {
-    let onBack: () -> Void
-    
-    var body: some View {
-        HStack {
-            BackButton(action: onBack)
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 12)
     }
 }
 
