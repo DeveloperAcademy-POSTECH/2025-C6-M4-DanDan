@@ -39,6 +39,19 @@ final class ZoneCheckedService {
         }
     }
 
+    /// 점수 획득 (zoneId 전달)
+    func acquireScore(zoneId: Int, completion: @escaping (Bool) -> Void) {
+        Task {
+            do {
+                try await acquire(zoneId: zoneId)
+                DispatchQueue.main.async { completion(true) }
+            } catch {
+                print("🚨 acquireScore error:", error)
+                DispatchQueue.main.async { completion(false) }
+            }
+        }
+    }
+
     // MARK: - Internal request builder
     private func makeRequest(path: String, method: String = "GET", addAuth: Bool, body: Data? = nil) throws -> URLRequest {
         let base = NetworkConfig.baseURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
@@ -94,6 +107,28 @@ final class ZoneCheckedService {
         if let http = response as? HTTPURLResponse, http.statusCode == 409 {
             // 이미 오늘 완료된 구역인 경우: 멱등 처리로 성공 간주
             print("ℹ️ Already completed today (zoneId=\(zoneId)) — treating as success")
+            return
+        }
+        try ensure2xx(response, data: data)
+    }
+
+    private func acquire(zoneId: Int) async throws {
+        // ✅ Endpoint: POST walks/score/acquire (per backend spec)
+        var request = try makeRequest(path: "walks/score/acquire", method: "POST", addAuth: true)
+
+        let body = ["zoneId": zoneId]
+        request.httpBody = try JSONEncoder().encode(body)
+        if let bodyStr = String(data: request.httpBody ?? Data(), encoding: .utf8) {
+            print("🛰️ POST", request.url?.absoluteString ?? "-", "\nHeaders:", request.allHTTPHeaderFields ?? [:], "\nBody:", bodyStr)
+        } else {
+            print("🛰️ POST", request.url?.absoluteString ?? "-", "\nHeaders:", request.allHTTPHeaderFields ?? [:], "\nBody: <binary>")
+        }
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        logResponse(response, data: data)
+        if let http = response as? HTTPURLResponse, http.statusCode == 409 {
+            // 이미 점수 획득 완료된 경우 멱등 처리로 성공 간주
+            print("ℹ️ Score already acquired today (zoneId=\(zoneId)) — treating as success")
             return
         }
         try ensure2xx(response, data: data)
