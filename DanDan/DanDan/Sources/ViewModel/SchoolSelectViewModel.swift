@@ -26,8 +26,10 @@ class SchoolSelectViewModel: ObservableObject {
             )
 
             if let data = response.data {
-                message = "✅ \(data.userName)이(가) \(data.teamName) 팀으로 등록되었습니다!"
+                message = "✅ \(userName)이(가) \(teamName) 팀으로 등록되었습니다!"
                 print("Access Token:", data.accessToken)
+                // 새 로그인(등록) 성공 시, 로컬 사용자 점령 상태 초기화
+                StatusManager.shared.resetUserStatus()
             } else {
                 message = "⚠️ \(response.message)"
             }

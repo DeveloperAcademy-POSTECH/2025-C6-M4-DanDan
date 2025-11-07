@@ -17,11 +17,16 @@ struct GuestAuthResponseDTO: Codable {
 }
 
 struct GuestAuthData: Codable {
-    let userId: UUID
-    let userName: String
-    let teamName: String
     let accessToken: String
     let refreshToken: String
+    let user: GuestAuthUser
+}
+
+struct GuestAuthUser: Codable {
+    let id: UUID
+    let name: String
+    let profileUrl: String
+    let profileImageKey: String
 }
 
 struct GuestAuthError: Codable {

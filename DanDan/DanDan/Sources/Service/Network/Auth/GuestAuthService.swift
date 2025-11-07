@@ -162,7 +162,12 @@ class GuestAuthService: GuestAuthServiceProtocol {
         }
 
         do {
-            return try decoder.decode(GuestAuthResponseDTO.self, from: data)
+            let dto = try decoder.decode(GuestAuthResponseDTO.self, from: data)
+            // 토큰 저장 (성공 시)
+            if let d = dto.data {
+                try? tokenManager.saveTokens(accessToken: d.accessToken, refreshToken: d.refreshToken)
+            }
+            return dto
         } catch {
             print("❌ 디코딩 실패:", error)
             throw error
@@ -197,6 +202,8 @@ class GuestAuthService: GuestAuthServiceProtocol {
             .tryMap { [weak self] (_: EmptyResponse) -> Void in
                 // 로컬 토큰 삭제
                 try self?.tokenManager.clearTokens()
+                // 로컬 사용자 상태 초기화
+                StatusManager.shared.resetUserStatus()
                 return ()
             }
             .mapError { error in

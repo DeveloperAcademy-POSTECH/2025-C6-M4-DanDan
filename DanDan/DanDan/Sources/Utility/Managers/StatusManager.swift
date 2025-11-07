@@ -9,6 +9,7 @@ import Foundation
 
 class StatusManager: ObservableObject {
     static let shared = StatusManager()
+    static let didResetNotification = Notification.Name("UserStatusDidReset")
 
     @Published var userStatus: UserStatus
     @Published var zoneStatuese: [ZoneConquestStatus] = []
@@ -70,6 +71,7 @@ class StatusManager: ObservableObject {
     func resetUserStatus() {
         userStatus = UserStatus(from: userStatus)
         save()
+        NotificationCenter.default.post(name: Self.didResetNotification, object: nil)
     }
 
     /// 모든 구간의 점령 상태를 초기화합니다.
