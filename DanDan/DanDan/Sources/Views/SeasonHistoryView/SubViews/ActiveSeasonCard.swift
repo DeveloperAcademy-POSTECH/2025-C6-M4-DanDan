@@ -38,7 +38,7 @@ struct ActiveSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("거리")
                             .font(.PR.body4)
-                        Text("\(String(format: "%.1f", viewModel.currentDistanceKm))km")
+                        Text("\(Int(viewModel.currentDistanceKm))km")
                             .font(.PR.title2)
                     }
                     VStack(spacing: 8) {

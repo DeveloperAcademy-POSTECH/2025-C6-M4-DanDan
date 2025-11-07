@@ -40,7 +40,7 @@ struct CompletedSeasonCard: View {
                         Text("거리")
                             .font(.PR.body4)
                             .foregroundStyle(.secondary)
-                        Text("\(String(format: "%.1f", record.distanceKm ?? 0))km")
+                        Text("\(Int(record.distanceKm ?? 0))km")
                             .font(.PR.title2)
                     }
                     VStack(spacing: 8) {
