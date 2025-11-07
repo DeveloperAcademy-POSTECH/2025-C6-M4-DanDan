@@ -37,14 +37,14 @@ struct ProfileHeader: View {
                         .offset(x: 8, y: -2)
                 }
             }
-
-            VStack(alignment: .leading, spacing: 16) {
+            
+            VStack(alignment: .leading, spacing: 24) {
                 Text(viewModel.displayName)
                     .font(.pretendard(.semiBold, size: 22))
                     .foregroundColor(.steelBlack)
-
+                
                 HStack(spacing: 24) {
-                    VStack(alignment: .center, spacing: 8) {
+                    HStack(spacing: 8) {
                         Text("우승")
                             .font(.PR.caption4)
                             .foregroundColor(.gray3)
@@ -52,15 +52,15 @@ struct ProfileHeader: View {
                             .font(.PR.title2)
                             .foregroundColor(.steelBlack)
                     }
-                    VStack(alignment: .center, spacing: 8) {
-                        Text("총 거리")
-                            .font(.PR.caption4)
-                            .foregroundColor(.gray3)
-                        Text(viewModel.totalDistanceKmText)
-                            .font(.PR.title2)
-                            .foregroundColor(.steelBlack)
-                    }
-                    VStack(alignment: .center, spacing: 8) {
+//                    VStack(alignment: .center, spacing: 8) {
+//                        Text("총 거리")
+//                            .font(.PR.caption4)
+//                            .foregroundColor(.gray3)
+//                        Text(viewModel.totalDistanceKmText)
+//                            .font(.PR.title2)
+//                            .foregroundColor(.steelBlack)
+//                    }
+                    HStack(alignment: .center, spacing: 8) {
                         Text("총 점수")
                             .font(.PR.caption4)
                             .foregroundColor(.gray3)
@@ -69,7 +69,6 @@ struct ProfileHeader: View {
                             .foregroundColor(.steelBlack)
                     }
                 }
-                .padding(.leading, 8)
             }
             Spacer()
         }
