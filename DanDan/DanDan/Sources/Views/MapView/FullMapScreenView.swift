@@ -166,7 +166,7 @@ struct FullMapView: UIViewRepresentable {
     func updateUIView(_ uiView: MKMapView, context: Context) { }
 }
 
-struct FullMapScreen: View {
+struct FullMapScreenView: View {
     @State private var isRightSelected = false
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]

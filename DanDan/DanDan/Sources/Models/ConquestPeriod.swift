@@ -33,3 +33,14 @@ struct ConquestPeriod: Identifiable, Codable {
         self.endDate = calculatedEndDate
     }
 }
+
+// MARK: - 서버 응답용 초기화자
+extension ConquestPeriod {
+    init(startDate: Date, endDate: Date, weekIndex: Int = 1, winningTeam: String = "") {
+        self.id = UUID()
+        self.startDate = startDate
+        self.endDate = endDate
+        self.weekIndex = weekIndex
+        self.winningTeam = winningTeam
+    }
+}
