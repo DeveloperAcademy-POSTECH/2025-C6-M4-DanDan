@@ -167,9 +167,10 @@ class MyPageViewModel: ObservableObject {
             let e = resp.data.currentWeekActivity.endDate
             if let start = parseServerDate(s),
                let end = parseServerDate(e) {
+                let durationDays = Calendar.current.dateComponents([.day], from: start, to: end).day ?? 7
                 currentPeriod = ConquestPeriod(
                     startDate: start,
-                    endDate: end,
+                    durationInDays: durationDays,
                     weekIndex: resp.data.currentWeekActivity.weekIndex
                 )
             }
