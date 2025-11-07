@@ -2,7 +2,7 @@
 //  SeasonHistoryDTO.swift
 //  DanDan
 //
-//  Created by Assistant on 11/7/25.
+//  Created by Hwnag Seyeon on 11/8/25.
 //
 
 import Foundation

@@ -2,7 +2,7 @@
 //  SeasonHistoryService.swift
 //  DanDan
 //
-//  Created by Assistant on 11/7/25.
+//  Created by Hwnag Seyeon on 11/8/25.
 //
 
 import Combine
@@ -18,7 +18,7 @@ final class SeasonHistoryService {
     }
 
     /// 유저 시즌 히스토리 조회 (최신순, 페이지네이션)
-    func fetchUserHistory(page: Int = 0, size: Int = 10) -> AnyPublisher<SeasonHistoryDataDTO, NetworkError> {
+    func fetchUserHistory(page: Int = 0, size: Int = 5) -> AnyPublisher<SeasonHistoryDataDTO, NetworkError> {
         let endpoint = SeasonHistoryEndpoint.userHistory(page: page, size: size)
         return network
             .request(endpoint)

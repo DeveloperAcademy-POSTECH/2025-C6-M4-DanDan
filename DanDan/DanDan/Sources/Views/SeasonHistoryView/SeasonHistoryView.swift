@@ -21,7 +21,7 @@ struct SeasonHistoryView: View {
             SeasonHistoryList(viewModel: viewModel)
         }
         .onAppear {
-            viewModel.fetchHistory(page: 0, size: 10)
+            viewModel.fetchHistory(page: 0, size: 5)
         }
         .navigationBarBackButtonHidden(needsCustomBackButton)
         .toolbar {

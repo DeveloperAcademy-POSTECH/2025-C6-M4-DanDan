@@ -2,7 +2,7 @@
 //  SeasonHistoryEndpoint.swift
 //  DanDan
 //
-//  Created by Assistant on 11/7/25.
+//  Created by Hwnag Seyeon on 11/8/25.
 //
 
 import Foundation
@@ -21,10 +21,7 @@ enum SeasonHistoryEndpoint: APIEndpoint {
         .get
     }
 
-    var requiresAuthentication: Bool {
-        // 사용자 기반 API이므로 인증 필요
-        true
-    }
+    var requiresAuthentication: Bool {true}
 }
 
 
