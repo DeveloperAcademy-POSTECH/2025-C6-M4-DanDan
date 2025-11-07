@@ -59,31 +59,3 @@ struct MapScreen: View {
         }
     }
 }
-
-//#Preview {
-//    // 더미 데이터
-//    let teams = [
-//        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
-//        Team(id: UUID(), teamName: "Yellow", teamColor: "B"),
-//    ]
-//
-//    let statuses: [ZoneConquestStatus] = [
-//        .init(zoneId: 1, teamId: 1, teamName: "Blue", teamScore: 7),
-//        .init(zoneId: 1, teamId: 2, teamName: "Yellow", teamScore: 3),
-//        .init(zoneId: 2, teamId: 1, teamName: "Blue", teamScore: 2),
-//        .init(zoneId: 3, teamId: 2, teamName: "Yellow", teamScore: 9),
-//    ]
-//
-//    var dummyStatus = UserStatus()
-//    dummyStatus.userDailyScore = 5
-//
-//    let start = Calendar.current.date(byAdding: .day, value: -4, to: Date())!
-//    let period = ConquestPeriod(startDate: start, durationInDays: 7)
-//
-//    return MapScreen(
-//        conquestStatuses: statuses,
-//        teams: teams,
-//        userStatus: dummyStatus,
-//        period: period
-//    )
-//}

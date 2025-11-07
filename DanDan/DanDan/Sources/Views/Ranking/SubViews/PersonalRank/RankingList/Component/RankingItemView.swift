@@ -49,4 +49,3 @@ struct RankingItemView: View {
         .padding(.bottom, 8)
     }
 }
-
