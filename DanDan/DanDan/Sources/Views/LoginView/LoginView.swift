@@ -20,7 +20,6 @@ struct LoginView: View {
                 .scaledToFill()
                 .ignoresSafeArea(edges: .all)
             
-            
             LoginBottomCard(
                 onAppleSignInTapped: { showSocialAlert = true }, onGuestLogin: { navigationManager.navigate(to: .profileSetup) }
             )
