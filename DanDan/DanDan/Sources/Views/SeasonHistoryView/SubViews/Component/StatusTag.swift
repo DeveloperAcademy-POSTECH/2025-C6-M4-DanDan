@@ -16,7 +16,7 @@ struct StatusTag: View {
             .foregroundColor(.white)
             .padding(.horizontal, 16)
             .padding(.vertical, 2)
-            .background(Color.red) // 추후 색상 변경
+            .background(.primaryGreen)
             .clipShape(Capsule())
     }
 }

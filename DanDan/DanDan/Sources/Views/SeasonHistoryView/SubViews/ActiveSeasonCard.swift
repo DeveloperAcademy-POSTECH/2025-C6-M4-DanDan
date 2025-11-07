@@ -16,8 +16,10 @@ struct ActiveSeasonCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(viewModel.weekLabel)
                         .font(.PR.body2)
+                        .foregroundStyle(.steelBlack)
                     Text(viewModel.weekRange)
                         .font(.PR.caption4)
+                        .foregroundStyle(.gray3)
                 }
                 Spacer()
                 StatusTag(text: viewModel.statusText)
@@ -38,36 +40,44 @@ struct ActiveSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("거리")
                             .font(.PR.body4)
-                        Text("\(String(format: "%.1f", viewModel.currentDistanceKm))km")
+                            .foregroundStyle(.gray3)
+                        Text("\(Int(viewModel.currentDistanceKm))km")
                             .font(.PR.title2)
+                            .foregroundStyle(.steelBlack)
                     }
                     VStack(spacing: 8) {
                         Text("점수")
                             .font(.PR.body4)
-                        Text("\(viewModel.currentWeekScore)")
+                            .foregroundStyle(.gray3)
+                        Text("\(viewModel.currentWeekScore)점")
                             .font(.PR.title2)
+                            .foregroundStyle(.steelBlack)
                     }
                     VStack(spacing: 8) {
                         Text("팀 내 순위")
                             .font(.PR.body4)
+                            .foregroundStyle(.gray3)
                         Text("\(viewModel.currentTeamRank)위")
                             .font(.PR.title2)
+                            .foregroundStyle(.steelBlack)
                     }
                 }
             }
             .padding(.bottom, 28)
             
             Text("내가 얻은 구역")
+                .font(.pretendard(.semiBold, size: 14))
+                .foregroundStyle(.gray3)
                 .padding(.bottom, 8)
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.yellow)
+                .fill(Color.gray)
                 .frame(height: 157)
             
         }
         .padding()
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.green, lineWidth: 2)
+                .stroke(Color.primaryGreen, lineWidth: 2)
         )
         .padding(.horizontal, 20)
         .padding(.top, 40)
