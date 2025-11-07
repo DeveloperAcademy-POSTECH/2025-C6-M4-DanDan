@@ -13,7 +13,7 @@ struct AccountSettingSection: View {
     var body: some View {
         VStack(spacing: 0) {
             SectionHeader(title: "계정")
-            NavRow(title: "로그아웃") { () }
+            NavRow(title: "로그아웃") { viewModel.logout() }
         }
     }
 }
