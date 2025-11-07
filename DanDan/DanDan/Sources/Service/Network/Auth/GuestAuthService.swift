@@ -162,12 +162,16 @@ class GuestAuthService: GuestAuthServiceProtocol {
         }
 
         do {
-            let dto = try decoder.decode(GuestAuthResponseDTO.self, from: data)
-            // 토큰 저장 (성공 시)
-            if let d = dto.data {
-                try? tokenManager.saveTokens(accessToken: d.accessToken, refreshToken: d.refreshToken)
-            }
-            return dto
+            let response = try decoder.decode(GuestAuthResponseDTO.self, from: data)
+
+if let data = response.data {
+    try tokenManager.saveTokens(
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken
+    )
+}
+
+return response
         } catch {
             print("❌ 디코딩 실패:", error)
             throw error

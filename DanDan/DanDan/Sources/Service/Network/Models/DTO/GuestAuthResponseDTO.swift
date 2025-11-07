@@ -11,7 +11,7 @@ struct GuestAuthResponseDTO: Codable {
     let success: Bool
     let code: String
     let message: String
-    let data: GuestAuthData?
+    let data: GuestAuthData
     let errors: [GuestAuthError]?
     let meta: GuestAuthMeta?
 }
@@ -25,8 +25,8 @@ struct GuestAuthData: Codable {
 struct GuestAuthUser: Codable {
     let id: UUID
     let name: String
-    let profileUrl: String
-    let profileImageKey: String
+    let profileUrl: String?
+    let profileImageKey: String?
 }
 
 struct GuestAuthError: Codable {
