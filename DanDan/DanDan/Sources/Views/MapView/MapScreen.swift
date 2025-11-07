@@ -18,16 +18,22 @@ struct MapScreen: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
-                    ScoreBoardView(  // 점수판
-                        statuses: [],
-                        teams: viewModel.teams.map {
-                            Team(
-                                id: UUID(),
-                                teamName: $0.teamName,
-                                teamColor: $0.teamName
+                    if viewModel.teams.count >= 2 {
+                            ScoreBoardView(
+                                leftTeamName: viewModel.teams[0].teamName,
+                                rightTeamName: viewModel.teams[1].teamName,
+                                leftTeamScore: viewModel.teams[0].conqueredZones,
+                                rightTeamScore: viewModel.teams[1].conqueredZones
+                            )
+                        } else {
+                            // 로딩 중일 때는 기본값 표시
+                            ScoreBoardView(
+                                leftTeamName: "—",
+                                rightTeamName: "—",
+                                leftTeamScore: 0,
+                                rightTeamScore: 0
                             )
                         }
-                    )
 
                     TodayMyScore(
                         status: UserStatus(

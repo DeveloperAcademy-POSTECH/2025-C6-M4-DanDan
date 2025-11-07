@@ -8,17 +8,7 @@
 import SwiftUI
 
 struct DDayView: View {
-//    let period: ConquestPeriod
-//    var now: () -> Date = { Date() }   // 테스트/프리뷰 주입 용
     let dday: Int
-    
-//    // 게임 종료까지 남은 일수 계산
-//    private var daysRemaining: Int {
-//        let cal = Calendar.current
-//        let todayStartOfDay = cal.startOfDay(for: now())
-//        let endOfWeek = cal.startOfDay(for: period.endDate)
-//        return max(0, cal.dateComponents([.day], from: todayStartOfDay, to: endOfWeek).day ?? 0)
-//    }
     
     private var ddayText: String {
         dday == 0 ? "D-Day" : "D-\(dday)"
@@ -49,6 +39,7 @@ struct DDayView: View {
     }
 }
 
+//
 //#Preview {
 //    let start = Calendar.current.date(byAdding: .day, value: -4, to: Date())!
 //    let period = ConquestPeriod(startDate: start, durationInDays: 7)

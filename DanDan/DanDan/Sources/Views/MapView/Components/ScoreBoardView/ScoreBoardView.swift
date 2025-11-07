@@ -8,20 +8,10 @@
 import SwiftUI
 
 struct ScoreBoardView: View {
-    var leftTeamName: String = "A팀"
-    var rightTeamName: String = "B팀"
-    var leftTeamScore: Int = 1
-    var rightTeamScore: Int = 14
-    
-    init(statuses: [ZoneConquestStatus], teams: [Team]) {
-        let pair = statuses.scorePair(for: teams)
-        
-        self.leftTeamName   = pair.leftTeamName ?? "—"
-        self.rightTeamName  = pair.rightTeamName ?? "—"
-        self.leftTeamScore  = pair.leftScore ?? 0
-        self.rightTeamScore = pair.rightScore ?? 0
-    }
-    
+    let leftTeamName: String
+    let rightTeamName: String
+    let leftTeamScore: Int
+    let rightTeamScore: Int
     
     private var total: CGFloat {
         max(1, CGFloat(leftTeamScore + rightTeamScore))
@@ -114,27 +104,27 @@ struct ScoreBoardView: View {
     }
 }
 
-#Preview {
-    // 더미 팀 데이터
-    let teams = [
-        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
-        Team(id: UUID(), teamName: "Yellow", teamColor: "B")
-    ]
-
-    // 더미 점령 상태 데이터
-    let dummyStatuses = [
-        ZoneConquestStatus(zoneId: 1, teamId: 1, teamName: "Blue", teamScore: 12),
-        ZoneConquestStatus(zoneId: 1, teamId: 2, teamName: "Yellow", teamScore: 19),
-        ZoneConquestStatus(zoneId: 2, teamId: 1, teamName: "Blue", teamScore: 34),
-        ZoneConquestStatus(zoneId: 2, teamId: 2, teamName: "Yellow", teamScore: 32)
-    ]
-
-    VStack(spacing: 20) {
-        ScoreBoardView(statuses: dummyStatuses, teams: teams)
-    }
-    .padding()
-    .background(
-        LinearGradient(colors: [.subA50, .subB20], startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
-    )
-}
+//#Preview {
+//    // 더미 팀 데이터
+//    let teams = [
+//        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
+//        Team(id: UUID(), teamName: "Yellow", teamColor: "B")
+//    ]
+//
+//    // 더미 점령 상태 데이터
+//    let dummyStatuses = [
+//        ZoneConquestStatus(zoneId: 1, teamId: 1, teamName: "Blue", teamScore: 12),
+//        ZoneConquestStatus(zoneId: 1, teamId: 2, teamName: "Yellow", teamScore: 19),
+//        ZoneConquestStatus(zoneId: 2, teamId: 1, teamName: "Blue", teamScore: 34),
+//        ZoneConquestStatus(zoneId: 2, teamId: 2, teamName: "Yellow", teamScore: 32)
+//    ]
+//
+//    VStack(spacing: 20) {
+//        ScoreBoardView(statuses: dummyStatuses, teams: teams)
+//    }
+//    .padding()
+//    .background(
+//        LinearGradient(colors: [.subA50, .subB20], startPoint: .top, endPoint: .bottom)
+//            .ignoresSafeArea()
+//    )
+//}
