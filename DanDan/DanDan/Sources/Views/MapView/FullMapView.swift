@@ -199,6 +199,8 @@ struct FullMapScreen: View {
     let teams: [Team]
     let refreshToken: UUID
 
+    let userStatus: UserStatus
+    
     var body: some View {
         FullMapView(
             conquestStatuses: conquestStatuses,
@@ -208,18 +210,22 @@ struct FullMapScreen: View {
         )
             .ignoresSafeArea()
             .overlay(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: 6) {
-                    ScoreBoardView(statuses: conquestStatuses, teams: teams)
-                        .padding(.leading, 20)
-
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 8) {
+                        ScoreBoardView(statuses: conquestStatuses, teams: teams) // 점수판
+                        TodayMyScore(status: userStatus) // 오늘 내 점수
+                    }
+                    
                     SegmentedControl(
                         leftTitle: "전체",
                         rightTitle: "개인",
                         frameMaxWidth: 172,
                         isRightSelected: $isRightSelected
                     )
+                    .padding(.leading, -20)
                 }
                 .padding(.top, 60)
+                .padding(.leading, 14)
             }
 //            .overlay(alignment: .bottomLeading) {
 //                #if DEBUG

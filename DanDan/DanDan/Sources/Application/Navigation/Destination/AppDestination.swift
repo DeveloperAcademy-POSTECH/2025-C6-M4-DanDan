@@ -12,6 +12,7 @@ enum AppDestination: Hashable {
     case login
     case profileSetup
     case schoolSelection
+    case teamAssignment
     case main
     case ranking
     case myPage
@@ -35,6 +36,8 @@ extension AppDestination {
             ProfileSetupView()
         case .schoolSelection:
             SchoolSelectView()
+        case .teamAssignment:
+            TeamAssignmentView()
         case .main:
 //            TabBarView()
             LoginView()

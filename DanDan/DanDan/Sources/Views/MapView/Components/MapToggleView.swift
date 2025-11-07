@@ -27,7 +27,6 @@ struct MapToggleView: View {
         }
     }
     
-    
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
     
@@ -35,20 +34,24 @@ struct MapToggleView: View {
         ZStack {
             Group {
                 if isFullMap {
-                    FullMapScreen(
+                    FullMapScreen( // 2D 전체 지도뷰
                         conquestStatuses: conquestStatuses,
                         teams: teams,
-                        refreshToken: zoneState.version
+                        refreshToken: zoneState.version,
+                      userStatus: StatusManager.shared.userStatus
                     ) // 2D 전체 지도뷰
+
+
                 } else {
-                    MapView(
+                    MapScreen( // 3D 부분 지도뷰
                         conquestStatuses: conquestStatuses,
                         teams: teams,
-                        refreshToken: zoneState.version
-                    ) // 3D 부분 지도뷰
+                        refreshToken: zoneState.version,
+                        userStatus: StatusManager.shared.userStatus,
+                        period: StatusManager.shared.currentPeriod
+                    )
                 }
             }
-            .ignoresSafeArea()
             .onAppear {
                 if tracker == nil {
                     // 현재 저장된 사용자 상태로 트래커 초기화
@@ -62,7 +65,7 @@ struct MapToggleView: View {
                 guard let tracker = tracker, let loc = loc else { return }
                 // 위치 업데이트 처리
                 tracker.process(location: loc)
-
+                
                 // 변경된 체크 상태를 StatusManager에 반영
                 let current = tracker.userStatus.zoneCheckedStatus
                 for (zoneId, isChecked) in current where isChecked == true {
@@ -100,10 +103,22 @@ struct MapToggleView: View {
                     .padding(.trailing, 20)
 
                 }
-                .padding(.top, 100)
-                
-                Spacer()
+            } label: {
+                Image(systemName: "globe.central.south.asia.fill")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(isFullMap ? .primaryGreen : .steelBlack)
+                    .frame(width: 56, height: 56)
             }
+          .buttonStyle(.plain)
+            .background(.ultraThinMaterial, in: Circle())
+            .overlay(
+                Circle()
+                    .strokeBorder(.white.opacity(0.4), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
+            .padding(.trailing, 20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .padding(.top, 114)
 
             // Debug banner (top)
             VStack(spacing: 0) {
@@ -125,3 +140,4 @@ struct MapToggleView: View {
         }
     }
 }
+
