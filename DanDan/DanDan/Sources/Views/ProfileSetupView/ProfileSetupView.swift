@@ -57,8 +57,8 @@ struct ProfileSetupView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 8)
-            .onChange(of: nickname) { newValue in
-                isNicknameTooLong = newValue.count > 7
+            .onChange(of: nickname) {
+                isNicknameTooLong = nickname.count > 7
             }
             
             Spacer()

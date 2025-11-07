@@ -79,6 +79,8 @@ struct MapView: UIViewRepresentable {
             manager.startUpdatingHeading() // 나침반(방향) 업데이트 시작
         }
         
+        // MARK: - 테스트용(자유롭게 움직이기) 주석 처리 부분
+        
         // 사용자의 위치에 따라 카메라 중심 이동
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             guard let mapView = mapView,
@@ -92,6 +94,9 @@ struct MapView: UIViewRepresentable {
             )
             mapView.setCamera(camera, animated: true)
         }
+        // 테스트용 주석 처리 여기까지
+        
+        // MARK: - 테스트용(자유롭게 움직이기) 주석 처리 부분
         
         // 유저의 방향(heading) 변경에 따라 지도 회전
         func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
@@ -106,6 +111,7 @@ struct MapView: UIViewRepresentable {
             )
             mapView.setCamera(camera, animated: true)
         }
+        // 테스트용 주석 처리 여기까지
         
         // Polyline renderer
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -159,11 +165,14 @@ struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
         
+        // MARK: - 테스트용(자유롭게 움직이기) 주석 처리 부분
+
         map.isScrollEnabled = false
         map.isZoomEnabled = false
         map.isRotateEnabled = false
         map.isPitchEnabled = false
         map.showsCompass = false
+        // 테스트용 주석 처리 여기까지
         
         let config = MKStandardMapConfiguration(elevationStyle: .realistic)
         config.pointOfInterestFilter = .excludingAll

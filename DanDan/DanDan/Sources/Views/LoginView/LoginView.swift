@@ -20,7 +20,6 @@ struct LoginView: View {
                 .scaledToFill()
                 .ignoresSafeArea(edges: .all)
             
-            
             LoginBottomCard(
                 onAppleSignInTapped: { showSocialAlert = true }, onGuestLogin: { navigationManager.navigate(to: .profileSetup) }
             )
@@ -77,6 +76,7 @@ extension Color {
 }
 
 // MARK: - Native Apple Sign in Button
+
 struct AppleSignInButton: UIViewRepresentable {
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
         let v = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
