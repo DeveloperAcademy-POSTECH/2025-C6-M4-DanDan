@@ -10,7 +10,6 @@ import MapKit
 
 // 부분 3D 지도(메인)
 struct MapView: UIViewRepresentable {
-    
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
     // 외부 상태 변경에 따른 갱신 트리거용 토큰 (뷰 재생성 없이 update만 유도)
@@ -40,6 +39,13 @@ struct MapView: UIViewRepresentable {
         }
         
         var span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+    }
+    
+    private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
+        guard !coords.isEmpty else { return bounds.center }
+        let lat = coords.map { $0.latitude }.reduce(0, +) / Double(coords.count)
+        let lon = coords.map { $0.longitude }.reduce(0, +) / Double(coords.count)
+        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
     }
     
     // MARK: - Constants
@@ -134,6 +140,33 @@ struct MapView: UIViewRepresentable {
                 return renderer
             }
         }
+        
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard let ann = annotation as? StationAnnotation else { return nil }
+            
+            let id = "station-hosting"
+            let view: HostingAnnotationView
+            if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id) as? HostingAnnotationView {
+                view = reused
+                view.annotation = ann
+            } else {
+                view = HostingAnnotationView(annotation: ann, reuseIdentifier: id)
+            }
+            
+            // SwiftUI 버튼 주입
+            let swiftUIView = ZoneStationButton(
+                zone: ann.zone,
+                statusesForZone: ann.statusesForZone
+            )
+            view.setSwiftUIView(swiftUIView)
+            
+            view.contentSize = CGSize(width: 160, height: 190)
+            
+            view.centerOffset = CGPoint(x: 10, y: -36)
+            view.canShowCallout = false
+            
+            return view
+        }
     }
     
     func makeCoordinator() -> Coordinator { Coordinator() }
@@ -170,6 +203,12 @@ struct MapView: UIViewRepresentable {
         
         for zone in zones {
             let coords = zone.coordinates
+          
+          let c = centroid(of: coords)
+            let statuses = conquestStatuses.filter { $0.zoneId == zone.zoneId }
+            let ann = StationAnnotation(coordinate: c, zone: zone, statusesForZone: statuses)
+            map.addAnnotation(ann)
+          
             let base = ColoredPolyline(coordinates: coords, count: coords.count)
             base.zoneId = zone.zoneId
             base.color = zone.zoneColor

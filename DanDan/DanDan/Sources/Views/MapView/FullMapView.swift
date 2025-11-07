@@ -44,6 +44,14 @@ struct FullMapView: UIViewRepresentable {
         var span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     }
     
+    /// 구역 중심 좌표 계산
+    private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
+        guard !coords.isEmpty else { return bounds.center }
+        let lat = coords.map { $0.latitude }.reduce(0, +) / Double(coords.count)
+        let lon = coords.map { $0.longitude }.reduce(0, +) / Double(coords.count)
+        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+    }
+    
     // MARK: - Constants
 
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표
@@ -106,6 +114,35 @@ struct FullMapView: UIViewRepresentable {
             renderer.lineJoin = .round
             return renderer
         }
+        
+        // 정류소 버튼 주입(작은 크기)
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard let ann = annotation as? StationAnnotation else { return nil }
+            
+            let id = "station-hosting-full"
+            let view: HostingAnnotationView
+            if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id) as? HostingAnnotationView {
+                view = reused
+                view.annotation = ann
+            } else {
+                view = HostingAnnotationView(annotation: ann, reuseIdentifier: id)
+            }
+            
+            let swiftUIView = ZoneStationButton(
+                zone: ann.zone,
+                statusesForZone: ann.statusesForZone,
+                iconSize: CGSize(width: 28, height: 32), 
+                popoverOffsetY: -84
+            )
+            view.setSwiftUIView(swiftUIView)
+            
+            view.contentSize = CGSize(width: 120, height: 140)
+            view.centerOffset = CGPoint(x: 0, y: -40)
+            view.canShowCallout = false
+            view.isUserInteractionEnabled = true
+            
+            return view
+        }
     }
     
     func makeCoordinator() -> Coordinator { Coordinator() }
@@ -146,6 +183,12 @@ struct FullMapView: UIViewRepresentable {
         
         for zone in zones {
             let coords = zone.coordinates
+            
+            let c = centroid(of: coords)
+            let statuses = conquestStatuses.filter { $0.zoneId == zone.zoneId }
+            let ann = StationAnnotation(coordinate: c, zone: zone, statusesForZone: statuses)
+            map.addAnnotation(ann)
+            
             let polyline = ColoredPolyline(coordinates: coords, count: coords.count)
             polyline.zoneId = zone.zoneId
             polyline.color = zone.zoneColor
