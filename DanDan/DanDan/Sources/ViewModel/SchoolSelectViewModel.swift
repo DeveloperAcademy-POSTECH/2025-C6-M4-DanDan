@@ -26,8 +26,11 @@ class SchoolSelectViewModel: ObservableObject {
             )
 
             let data = response.data
-            message = "✅ \(data.user.name)이(가) \(teamName) 팀으로 등록되었습니다!"
+            let displayName = data.user.name
+            message = "✅ \(displayName)이(가) \(teamName) 팀으로 등록되었습니다!"
             print("Access Token:", data.accessToken)
+            // 새 로그인(등록) 성공 시, 로컬 사용자 점령 상태 초기화
+            StatusManager.shared.resetUserStatus()
         } catch {
             message = "❌ 게스트 등록 실패: \(error.localizedDescription)"
         }

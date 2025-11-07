@@ -13,6 +13,9 @@ struct UserStatus: Identifiable, Codable {
     var userWeekScore: Int
     var userDailyScore: Int
     var zoneCheckedStatus: [Int: Bool]
+    /// 오늘 구역 보상(점수)을 이미 수령했는지 여부
+    /// - Optional로 두어 구버전 저장 데이터와의 디코딩 호환 유지
+    var rewardClaimedStatus: [Int: Bool]?
     var rank: Int
 
     init() {
@@ -21,6 +24,7 @@ struct UserStatus: Identifiable, Codable {
         self.userWeekScore = 0
         self.userDailyScore = 0
         self.zoneCheckedStatus = [:]
+        self.rewardClaimedStatus = [:]
         self.rank = 0
     }
     
@@ -32,6 +36,7 @@ struct UserStatus: Identifiable, Codable {
         self.userWeekScore = 0
         self.userDailyScore = 0
         self.zoneCheckedStatus = [:]
+        self.rewardClaimedStatus = [:]
         self.rank = 0
     }
 }

@@ -5,8 +5,8 @@
 //  Created on 11/2/25.
 //
 
-import Foundation
 import Combine
+import Foundation
 import UIKit
 
 /// 게스트 인증 서비스 프로토콜
@@ -19,13 +19,14 @@ protocol GuestAuthServiceProtocol {
 
 /// 게스트 익명 로그인 인증 서비스
 class GuestAuthService: GuestAuthServiceProtocol {
-
     // MARK: - Properties
+
     private let networkService: NetworkServiceProtocol
     private let tokenManager: TokenManagerProtocol
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initializer
+
     init(
         networkService: NetworkServiceProtocol = NetworkService(),
         tokenManager: TokenManagerProtocol = TokenManager()
@@ -57,7 +58,7 @@ class GuestAuthService: GuestAuthServiceProtocol {
             }
             .eraseToAnyPublisher()
     }
-    
+
     private static func resizeImage(image: UIImage, maxSize: CGFloat) -> UIImage {
         let size = image.size
 
@@ -82,7 +83,7 @@ class GuestAuthService: GuestAuthServiceProtocol {
 
         return resizedImage ?? image
     }
-    
+
     /// 게스트 회원가입 (팀 이름 + 유저 이름 + 이미지 포함)
     func registerGuest(
         teamName: String,
@@ -149,7 +150,7 @@ class GuestAuthService: GuestAuthServiceProtocol {
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode)
+              (200 ... 299).contains(httpResponse.statusCode)
         else {
             throw URLError(.badServerResponse)
         }
@@ -163,11 +164,13 @@ class GuestAuthService: GuestAuthServiceProtocol {
 
         do {
             let response = try decoder.decode(GuestAuthResponseDTO.self, from: data)
-            // 토큰 저장
+
+            let responseData = response.data
             try tokenManager.saveTokens(
-                accessToken: response.data.accessToken,
-                refreshToken: response.data.refreshToken
+                accessToken: responseData.accessToken,
+                refreshToken: responseData.refreshToken
             )
+
             return response
         } catch {
             print("❌ 디코딩 실패:", error)
@@ -200,9 +203,11 @@ class GuestAuthService: GuestAuthServiceProtocol {
     /// 로그아웃 (토큰 삭제)
     func logout() -> AnyPublisher<Void, NetworkError> {
         return networkService.request(AuthEndpoint.logout)
-            .tryMap { [weak self] (_: EmptyResponse) -> Void in
+            .tryMap { [weak self] (_: EmptyResponse) in
                 // 로컬 토큰 삭제
                 try self?.tokenManager.clearTokens()
+                // 로컬 사용자 상태 초기화
+                StatusManager.shared.resetUserStatus()
                 return ()
             }
             .mapError { error in
@@ -221,6 +226,7 @@ class GuestAuthService: GuestAuthServiceProtocol {
 }
 
 // MARK: - Stub for Testing
+
 class StubGuestAuthService: GuestAuthServiceProtocol {
     func registerGuest(name: String) -> AnyPublisher<GuestRegisterResponse, NetworkError> {
         let data = GuestRegisterData(

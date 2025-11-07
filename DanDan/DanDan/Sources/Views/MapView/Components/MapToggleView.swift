@@ -14,6 +14,7 @@ struct MapToggleView: View {
     @StateObject private var locationService = LocationService()
     @State private var tracker: ZoneTrackerManager?
     @State private var lastChecked: [Int: Bool] = [:]
+    @State private var refreshToken: UUID = .init()
     
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
@@ -25,6 +26,7 @@ struct MapToggleView: View {
                     FullMapScreen( // 2D 전체 지도뷰
                         conquestStatuses: conquestStatuses,
                         teams: teams,
+                        refreshToken: refreshToken,
                         userStatus: StatusManager.shared.userStatus
                     )
                 } else {
@@ -32,7 +34,8 @@ struct MapToggleView: View {
                         conquestStatuses: conquestStatuses,
                         teams: teams,
                         userStatus: StatusManager.shared.userStatus,
-                        period: StatusManager.shared.currentPeriod
+                        period: StatusManager.shared.currentPeriod,
+                        refreshToken: refreshToken
                     )
                 }
             }
@@ -52,12 +55,24 @@ struct MapToggleView: View {
                 
                 // 변경된 체크 상태를 StatusManager에 반영
                 let current = tracker.userStatus.zoneCheckedStatus
+                var didChange = false
                 for (zoneId, isChecked) in current where isChecked == true {
                     if lastChecked[zoneId] != true {
                         StatusManager.shared.setZoneChecked(zoneId: zoneId, checked: true)
+                        didChange = true
                     }
                 }
                 lastChecked = current
+                if didChange {
+                    refreshToken = UUID()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: StatusManager.didResetNotification)) { _ in
+                // 로그인/로그아웃 등으로 로컬 상태가 리셋되면, 트래커/캐시/토큰도 동기화
+                let status = StatusManager.shared.userStatus
+                self.tracker = ZoneTrackerManager(zones: zones, userStatus: status)
+                self.lastChecked = [:]
+                self.refreshToken = UUID()
             }
             
             Button {
