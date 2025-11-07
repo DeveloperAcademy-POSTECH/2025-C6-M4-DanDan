@@ -11,7 +11,7 @@ enum AppDestination: Hashable {
     case onboarding
     case login
     case profileSetup
-    case schoolSelection(nickname: String, image: UIImage?)
+    case schoolSelection
     case teamAssignment
     case main
     case ranking
@@ -35,13 +35,12 @@ extension AppDestination {
             LoginView()
         case .profileSetup:
             ProfileSetupView()
-        case .schoolSelection(let nickname, let image):
-            SchoolSelectView(nickname: nickname, profileImage: image)
+        case .schoolSelection:
+            SchoolSelectView()
         case .teamAssignment:
             TeamAssignmentView()
         case .main:
             TabBarView()
-        //            LoginView()
         case .ranking:
             RankingView()
         case .myPage:
