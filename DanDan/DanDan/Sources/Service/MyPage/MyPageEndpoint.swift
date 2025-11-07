@@ -24,14 +24,6 @@ enum MyPageEndpoint: APIEndpoint {
         }
     }
 
-    var headers: [String : String]? {
-        return nil
-    }
-
-    var body: [String : Any]? {
-        return nil
-    }
-
     var requiresAuthentication: Bool {
         switch self {
         case .mypage:
