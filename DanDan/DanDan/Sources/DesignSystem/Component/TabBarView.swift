@@ -10,6 +10,7 @@ import SwiftUI
 struct TabBarView: View {
     @State private var selection: AppTab = .main
     @StateObject private var viewModel = RankingViewModel()
+    private let navigationManager = NavigationManager.shared
     
     var body: some View {
         TabView(selection: $selection){
@@ -29,5 +30,15 @@ struct TabBarView: View {
         }
         .tint(.primaryGreen)
         .environmentObject(viewModel)
+        .toolbar {
+            if selection == .my {
+                TitleIconToolBar(
+                    title: "마이페이지",
+                    trailingSystemImage: "gearshape.fill"
+                ) {
+                    navigationManager.navigate(to: .settings)
+                }
+            }
+        }
     }
 }
