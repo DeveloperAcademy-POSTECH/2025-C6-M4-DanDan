@@ -60,7 +60,7 @@ struct ProfileHeader: View {
 //                            .font(.PR.title2)
 //                            .foregroundColor(.steelBlack)
 //                    }
-                    HStack(alignment: .center, spacing: 8) {
+                    HStack(spacing: 8) {
                         Text("총 점수")
                             .font(.PR.caption4)
                             .foregroundColor(.gray3)
