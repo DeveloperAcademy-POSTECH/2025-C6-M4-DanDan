@@ -200,8 +200,7 @@ struct FullMapScreenView: View {
     @State private var isRightSelected = false
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
-    let userStatus: UserStatus
-
+    
     var body: some View {
         FullMapView(conquestStatuses: conquestStatuses, teams: teams)
             .ignoresSafeArea()
@@ -226,7 +225,7 @@ struct FullMapScreenView: View {
                                 rightTeamScore: 0
                             )
                         }
-                        TodayMyScore(status: userStatus)  // 오늘 내 점수
+                        TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
                     }
 
                     SegmentedControl(

@@ -24,8 +24,7 @@ struct MapToggleView: View {
                 if isFullMap {
                     FullMapScreenView( // 2D 전체 지도뷰
                         conquestStatuses: conquestStatuses,
-                        teams: teams,
-                        userStatus: StatusManager.shared.userStatus
+                        teams: teams
                     )
                 } else {
                     MapScreen() // 3D 부분 지도뷰

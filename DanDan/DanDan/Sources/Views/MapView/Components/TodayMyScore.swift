@@ -8,12 +8,7 @@
 import SwiftUI
 
 struct TodayMyScore: View {
-    var score: Int = 0
-    
-    /// UserStatus -> score 매핑
-    init(status: UserStatus) {
-        self.score = status.userDailyScore
-    }
+    var score: Int
     
     var body: some View {
         HStack(spacing: 8) {

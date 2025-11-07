@@ -19,27 +19,23 @@ struct MapScreen: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
                     if viewModel.teams.count >= 2 {
-                            ScoreBoardView(
-                                leftTeamName: viewModel.teams[0].teamName,
-                                rightTeamName: viewModel.teams[1].teamName,
-                                leftTeamScore: viewModel.teams[0].conqueredZones,
-                                rightTeamScore: viewModel.teams[1].conqueredZones
-                            )
-                        } else {
-                            // 로딩 중일 때는 기본값 표시
-                            ScoreBoardView(
-                                leftTeamName: "—",
-                                rightTeamName: "—",
-                                leftTeamScore: 0,
-                                rightTeamScore: 0
-                            )
-                        }
-
-                    TodayMyScore(
-                        status: UserStatus(
-                            userDailyScore: viewModel.userDailyScore
+                        ScoreBoardView(
+                            leftTeamName: viewModel.teams[0].teamName,
+                            rightTeamName: viewModel.teams[1].teamName,
+                            leftTeamScore: viewModel.teams[0].conqueredZones,
+                            rightTeamScore: viewModel.teams[1].conqueredZones
                         )
-                    )  // 오늘 내 점수
+                    } else {
+                        // 로딩 중일 때는 기본값 표시
+                        ScoreBoardView(
+                            leftTeamName: "—",
+                            rightTeamName: "—",
+                            leftTeamScore: 0,
+                            rightTeamScore: 0
+                        )
+                    }
+
+                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
                 }
 
                 if !viewModel.startDate.isEmpty {
