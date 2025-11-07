@@ -25,12 +25,9 @@ class SchoolSelectViewModel: ObservableObject {
                 profileImage: profileImage
             )
 
-            if let data = response.data {
-                message = "✅ \(data.userName)이(가) \(data.teamName) 팀으로 등록되었습니다!"
-                print("Access Token:", data.accessToken)
-            } else {
-                message = "⚠️ \(response.message)"
-            }
+            let data = response.data
+            message = "✅ \(data.user.name)이(가) \(teamName) 팀으로 등록되었습니다!"
+            print("Access Token:", data.accessToken)
         } catch {
             message = "❌ 게스트 등록 실패: \(error.localizedDescription)"
         }
