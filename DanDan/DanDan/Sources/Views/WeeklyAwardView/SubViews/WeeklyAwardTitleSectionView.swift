@@ -21,6 +21,7 @@ struct WeeklyAwardTitleSectionView: View {
                 .font(.PR.caption3)
                 .foregroundStyle(.gray2)
                 .lineSpacing(3)
+                .multilineTextAlignment(.center)
         }
         .padding(.top, 68)
     }

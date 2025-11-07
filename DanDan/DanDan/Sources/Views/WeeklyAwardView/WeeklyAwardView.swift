@@ -16,13 +16,14 @@ struct MVP: Identifiable, Hashable {
 struct WeeklyAwardView: View {
     private let navigationManager = NavigationManager.shared
     
-    // TODO: 외부에서 주입 필요 - 이것만!!
-    let winnerTeamName: String?
+    // TODO: 외부에서 주입 필요
+    var winnerTeamName: String?
     
-    // 데모용 더미 데이터
-    // TODO: VM에서 주입 필요
+    var conqueredZones: Int?
+    
+    // TODO: rank, imageName 주입 필요
     private let demoMVPs: [MVP] = (1...15).map {
-        MVP(rank: $0, imageName: "default_avatar")
+        MVP(rank: $0, imageName: "default_avatar") // 더미 데이터
     }
     
     private var winnerTitle: String {
@@ -37,7 +38,7 @@ struct WeeklyAwardView: View {
         VStack {
             WeeklyAwardTitleSectionView(
                 title: winnerTitle,
-                description: "테스트 참여 감사해요 더 좋은 앱으로 돌아올게요"
+                description: "총 \(conqueredZones!)구역을 점령했어요\n테스트 참여 감사해요 더 좋은 앱으로 돌아올게요"
             )
             .padding(.vertical, 20)
             .frame(maxWidth: .infinity, alignment: .top)
@@ -63,5 +64,5 @@ struct WeeklyAwardView: View {
 }
 
 #Preview("Yellow") {
-    WeeklyAwardView(winnerTeamName: "yellow")
+    WeeklyAwardView(winnerTeamName: "yellow", conqueredZones: 9)
 }
