@@ -30,6 +30,10 @@ struct MapToggleView: View {
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
     
+    let userStatus = StatusManager.shared
+    
+    
+    
     var body: some View {
         ZStack {
             Group {
@@ -38,7 +42,7 @@ struct MapToggleView: View {
                         conquestStatuses: conquestStatuses,
                         teams: teams,
                         refreshToken: zoneState.version,
-                      userStatus: StatusManager.shared.userStatus
+                        userStatus: StatusManager.shared.userStatus
                     ) // 2D 전체 지도뷰
 
 
@@ -46,7 +50,6 @@ struct MapToggleView: View {
                     MapScreen( // 3D 부분 지도뷰
                         conquestStatuses: conquestStatuses,
                         teams: teams,
-                        refreshToken: zoneState.version,
                         userStatus: StatusManager.shared.userStatus,
                         period: StatusManager.shared.currentPeriod
                     )
@@ -103,20 +106,7 @@ struct MapToggleView: View {
                     .padding(.trailing, 20)
 
                 }
-            } label: {
-                Image(systemName: "globe.central.south.asia.fill")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(isFullMap ? .primaryGreen : .steelBlack)
-                    .frame(width: 56, height: 56)
             }
-          .buttonStyle(.plain)
-            .background(.ultraThinMaterial, in: Circle())
-            .overlay(
-                Circle()
-                    .strokeBorder(.white.opacity(0.4), lineWidth: 1)
-            )
-            .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
-            .padding(.trailing, 20)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(.top, 114)
 

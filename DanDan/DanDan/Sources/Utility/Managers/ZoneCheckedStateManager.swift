@@ -48,6 +48,21 @@ final class ZoneCheckedStateManager: ObservableObject {
         }
     }
 
+    /// 새 로그인/계정 전환 시, 로컬에 캐시된 완료 구역 상태를 전부 초기화합니다.
+    func resetAll() {
+        onMainSync {
+            // 내부 상태 초기화
+            self.state = ZoneCheckedState()
+            self.previousEffective = []
+            // 저장소 초기화
+            UserDefaults.standard.removeObject(forKey: self.pendingKey)
+            // 사용자 상태의 완료 구역도 초기화
+            StatusManager.shared.resetDailyStatus()
+            // 강제 리렌더 트리거
+            self.version = UUID()
+        }
+    }
+
     /// 서버에서 오늘 확정 리스트 동기화(GET)
     func syncFromServer(completion: ((Int) -> Void)? = nil) {
         ZoneCheckedService.shared.fetchTodayCheckedZoneIds { [weak self] ids in

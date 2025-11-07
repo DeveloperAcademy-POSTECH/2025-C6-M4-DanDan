@@ -57,16 +57,27 @@ struct SchoolSelectView: View {
                 action: {
                     guard let s = selected else { return }
                     let name = RegistrationManager.shared.nickname
-                    let imageData = RegistrationManager.shared.profileImage?.jpegData(compressionQuality: 0.85)
                     let teamName = s.mappedTeamName
-                    Task { @MainActor in
+                    Task {
+                        // 무거운 JPEG 인코딩은 백그라운드에서 수행
+                        let imageData: Data? = await withCheckedContinuation { cont in
+                            DispatchQueue.global(qos: .userInitiated).async {
+                                let data = RegistrationManager.shared.profileImage?.jpegData(compressionQuality: 0.85)
+                                cont.resume(returning: data)
+                            }
+                        }
                         do {
                             let service = GuestAuthService()
                             _ = try await service.registerGuest(name: name, teamName: teamName, imageData: imageData)
-                            RegistrationManager.shared.nickname = ""
-                            RegistrationManager.shared.profileImage = nil
-                            navigationManager.popToRoot()
-                            navigationManager.navigate(to: .map)
+                            // UI 업데이트는 메인에서
+                            await MainActor.run {
+                                // 새 로그인 세션 시작: 개인 완료 구역 및 관련 캐시 초기화
+                                ZoneCheckedStateManager.shared.resetAll()
+                                RegistrationManager.shared.nickname = ""
+                                RegistrationManager.shared.profileImage = nil
+                                navigationManager.popToRoot()
+                                navigationManager.navigate(to: .map)
+                            }
                         } catch {
                             print("🚨 Guest register failed:", error)
                         }
