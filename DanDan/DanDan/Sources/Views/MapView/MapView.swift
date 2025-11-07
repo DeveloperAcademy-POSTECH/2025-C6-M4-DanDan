@@ -10,7 +10,6 @@ import MapKit
 
 // 부분 3D 지도(메인)
 struct MapView: UIViewRepresentable {
-    
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
     
@@ -38,6 +37,13 @@ struct MapView: UIViewRepresentable {
         }
         
         var span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+    }
+    
+    private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
+        guard !coords.isEmpty else { return bounds.center }
+        let lat = coords.map { $0.latitude }.reduce(0, +) / Double(coords.count)
+        let lon = coords.map { $0.longitude }.reduce(0, +) / Double(coords.count)
+        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
     }
     
     // MARK: - Constants
@@ -80,7 +86,7 @@ struct MapView: UIViewRepresentable {
             
             let camera = MKMapCamera(
                 lookingAtCenter: location.coordinate,
-                fromDistance: 800,
+                fromDistance: 500,
                 pitch: 80,
                 heading: mapView.camera.heading
             )
@@ -94,7 +100,7 @@ struct MapView: UIViewRepresentable {
             let currentCenter = mapView.camera.centerCoordinate
             let camera = MKMapCamera(
                 lookingAtCenter: currentCenter,
-                fromDistance: 800,
+                fromDistance: 500,
                 pitch: 80,
                 heading: newHeading.trueHeading
             )
@@ -111,13 +117,40 @@ struct MapView: UIViewRepresentable {
                 for: line.zoneId,
                 in: conquestStatuses,
                 teams: teams,
-                defaultColor: .primaryGreen // line.color - ui 보여주기 용
+                defaultColor: .primaryGreen // line.color - ui 보여주기용
             )
             renderer.strokeColor = color
             renderer.lineWidth = 24
             renderer.lineCap = .round
             renderer.lineJoin = .round
             return renderer
+        }
+        
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard let ann = annotation as? StationAnnotation else { return nil }
+            
+            let id = "station-hosting"
+            let view: HostingAnnotationView
+            if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id) as? HostingAnnotationView {
+                view = reused
+                view.annotation = ann
+            } else {
+                view = HostingAnnotationView(annotation: ann, reuseIdentifier: id)
+            }
+            
+            // SwiftUI 버튼 주입
+            let swiftUIView = ZoneStationButton(
+                zone: ann.zone,
+                statusesForZone: ann.statusesForZone
+            )
+            view.setSwiftUIView(swiftUIView)
+            
+            view.contentSize = CGSize(width: 160, height: 190)
+            
+            view.centerOffset = CGPoint(x: 10, y: -36)
+            view.canShowCallout = false
+            
+            return view
         }
     }
     
@@ -144,6 +177,11 @@ struct MapView: UIViewRepresentable {
         
         for zone in zones {
             let coords = zone.coordinates
+            let c = centroid(of: coords)
+            let statuses = conquestStatuses.filter { $0.zoneId == zone.zoneId }
+            let ann = StationAnnotation(coordinate: c, zone: zone, statusesForZone: statuses)
+            map.addAnnotation(ann)
+            
             let polyline = ColoredPolyline(coordinates: coords, count: coords.count)
             polyline.zoneId = zone.zoneId
             polyline.color = zone.zoneColor
