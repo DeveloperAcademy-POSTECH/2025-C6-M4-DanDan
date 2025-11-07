@@ -202,21 +202,18 @@ class GuestAuthService: GuestAuthServiceProtocol {
 
     /// 로그아웃 (토큰 삭제)
     func logout() -> AnyPublisher<Void, NetworkError> {
-        return networkService.request(AuthEndpoint.logout)
-            .tryMap { [weak self] (_: EmptyResponse) in
+        return Future<Void, NetworkError> { [weak self] promise in
+            do {
                 // 로컬 토큰 삭제
                 try self?.tokenManager.clearTokens()
-                // 로컬 사용자 상태 초기화
+                // 로컬 사용자 상태 초기화(최소 범위)
                 StatusManager.shared.resetUserStatus()
-                return ()
+                promise(.success(()))
+            } catch {
+                promise(.failure(.unknown(error)))
             }
-            .mapError { error in
-                if let networkError = error as? NetworkError {
-                    return networkError
-                }
-                return .unknown(error)
-            }
-            .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
 
     /// 인증 여부 확인
