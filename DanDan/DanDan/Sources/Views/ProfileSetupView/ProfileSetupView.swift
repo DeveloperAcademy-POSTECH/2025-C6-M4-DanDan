@@ -66,8 +66,8 @@ struct ProfileSetupView: View {
             PrimaryButton(
                 "다음",
                 action: {
-                    navigationManager.navigate(to: .schoolSelection(nickname: nickname, image: profileImage))
                     onSave?(nickname, profileImage)
+                    navigationManager.navigate(to: .schoolSelection)
                 }, // 여기서 서버 API 호출
                 isEnabled: !nickname.trimmingCharacters(in: .whitespaces).isEmpty && !isNicknameTooLong,
                 horizontalPadding: 20,

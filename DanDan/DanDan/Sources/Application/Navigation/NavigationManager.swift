@@ -11,20 +11,11 @@ import SwiftUI
 class NavigationManager: ObservableObject {
     @Published var path = NavigationPath()
     @Published var root: AppDestination = .main
-    @Published var hasCompletedOnboarding: Bool = false
+    @Published var hasCompletedOnboarding: Bool = true
 
     static let shared = NavigationManager()
-
+    
     private init() {
-        
-        // TODO: 배포시 제거 - 테스트를 위한 키체인 제거
-        do {
-            try TokenManager().clearTokens()
-            print("🧹 DEBUG: Keychain cleared for clean testing")
-        } catch {
-            print("⚠️ Failed to clear Keychain: \(error)")
-        }
-
         setRootView()
     }
 
@@ -45,15 +36,12 @@ class NavigationManager: ObservableObject {
     func popToRoot() {
         path = NavigationPath()
     }
-
+    
     func setRootView() {
-        let tokenManager = TokenManager()
-        let isAuthenticated = tokenManager.isAuthenticated()
-
-        if isAuthenticated {
+        if hasCompletedOnboarding {
             self.root = .main
         } else {
-            self.root = .login
+            self.root = .onboarding
         }
     }
 
