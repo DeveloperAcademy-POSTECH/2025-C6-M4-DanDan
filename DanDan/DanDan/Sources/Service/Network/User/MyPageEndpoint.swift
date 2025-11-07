@@ -1,5 +1,5 @@
 //
-//  UserEndpoint.swift
+//  MyPageEndpoint.swift
 //  DanDan
 //
 //  Created by Assistant on 11/6/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum UserEndpoint: APIEndpoint {
+enum MyPageEndpoint: APIEndpoint {
     case mypage
 
     var path: String {
@@ -39,5 +39,6 @@ enum UserEndpoint: APIEndpoint {
         }
     }
 }
+
 
 

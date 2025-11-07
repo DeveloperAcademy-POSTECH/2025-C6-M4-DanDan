@@ -17,7 +17,6 @@ struct ContentView: View {
                     destination.view()
             }
         }
-        .environmentObject(navigationManager)
     }
 }
 

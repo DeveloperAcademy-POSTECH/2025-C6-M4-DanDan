@@ -56,9 +56,6 @@ struct MapToggleView: View {
                     let t = ZoneTrackerManager(zones: zones, userStatus: status)
                     self.tracker = t
                     self.lastChecked = status.zoneCheckedStatus
-                    zoneState.syncFromServer { count in
-                        self.showDebug("동기화 완료: 오늘 체크 \(count)개")
-                    }
                 }
             }
             .onReceive(locationService.$currentLocation) { loc in

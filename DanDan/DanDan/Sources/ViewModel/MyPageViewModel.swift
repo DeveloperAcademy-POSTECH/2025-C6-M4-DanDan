@@ -12,7 +12,7 @@ import UIKit
 @MainActor
 class MyPageViewModel: ObservableObject {
     private let navigationManager = NavigationManager.shared
-    private let userService: UserServiceProtocol = UserService()
+    private let myPageService: MyPageServiceProtocol = MyPageService()
 
     // MARK: - User State
 
@@ -34,13 +34,13 @@ class MyPageViewModel: ObservableObject {
     var teamRank: Int { userStatus.rank }
 
     var currentWeekText: String {
-        guard let period = currentPeriod else { return "현재: -" }
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy.MM.dd"
-        let start = formatter.string(from: period.startDate)
-        let end = formatter.string(from: period.endDate)
-        return "현재: \(start) ~ \(end)"
+        guard let period = currentPeriod else { return "-" }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ko_KR")
+        let comps = calendar.dateComponents([.year, .month], from: period.startDate)
+        let year = comps.year ?? 0
+        let month = comps.month ?? 0
+        return "\(year)년 \(month)월 \(period.weekIndex)주차"
     }
 
     // FIXME: - 임시 계산 로직 (추후 폴리라인 세분화 및 거리 계산 방식 개선 예정)
@@ -112,10 +112,38 @@ class MyPageViewModel: ObservableObject {
     }
 
     // MARK: - Networking
+    
+    // 서버에서 내려오는 날짜 문자열을 다양한 포맷으로 안전하게 파싱
+    private func parseServerDate(_ s: String) -> Date? {
+        // ISO8601 + fractional seconds
+        let iso1 = ISO8601DateFormatter()
+        iso1.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let d = iso1.date(from: s) { return d }
+        
+        // 일반 ISO8601
+        let iso2 = ISO8601DateFormatter()
+        iso2.formatOptions = [.withInternetDateTime]
+        if let d = iso2.date(from: s) { return d }
+        
+        // 자주 쓰는 포맷들 (RFC3339/날짜 전용)
+        let patterns = [
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX",
+            "yyyy-MM-dd'T'HH:mm:ssXXXXX",
+            "yyyy-MM-dd"
+        ]
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.timeZone = TimeZone(secondsFromGMT: 0)
+        for p in patterns {
+            df.dateFormat = p
+            if let d = df.date(from: s) { return d }
+        }
+        return nil
+    }
 
     func load() async {
         do {
-            let resp = try await userService.fetchMyPage()
+            let resp = try await myPageService.fetchMyPage()
 
             userInfo.userName = resp.data.user.userName
             userInfo.userVictoryCnt = resp.data.user.userVictoryCnt
@@ -135,10 +163,10 @@ class MyPageViewModel: ObservableObject {
                 }
             }
 
-            let iso = ISO8601DateFormatter()
-            if let start = iso.date(from: resp.data.currentWeekActivity.startDate),
-               let end = iso.date(from: resp.data.currentWeekActivity.endDate)
-            {
+            let s = resp.data.currentWeekActivity.startDate
+            let e = resp.data.currentWeekActivity.endDate
+            if let start = parseServerDate(s),
+               let end = parseServerDate(e) {
                 currentPeriod = ConquestPeriod(
                     startDate: start,
                     endDate: end,

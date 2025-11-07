@@ -30,7 +30,8 @@ extension School {
 }
 
 struct SchoolSelectView: View {
-    @EnvironmentObject private var nav: NavigationManager
+//    @EnvironmentObject private var nav: NavigationManager
+    private let navigationManager = NavigationManager.shared
     @Environment(\.dismiss) private var dismiss
     
     @State private var selected: School? = nil
@@ -64,8 +65,8 @@ struct SchoolSelectView: View {
                             _ = try await service.registerGuest(name: name, teamName: teamName, imageData: imageData)
                             RegistrationManager.shared.nickname = ""
                             RegistrationManager.shared.profileImage = nil
-                            nav.popToRoot()
-                            nav.navigate(to: .map)
+                            navigationManager.popToRoot()
+                            navigationManager.navigate(to: .map)
                         } catch {
                             print("🚨 Guest register failed:", error)
                         }
