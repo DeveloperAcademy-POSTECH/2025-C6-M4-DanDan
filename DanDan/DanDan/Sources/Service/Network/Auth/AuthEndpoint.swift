@@ -11,7 +11,6 @@ import Foundation
 enum AuthEndpoint: APIEndpoint {
     case guestRegister(name: String)
     case refreshToken(refreshToken: String)
-    case logout
 
     var path: String {
         switch self {
@@ -19,14 +18,12 @@ enum AuthEndpoint: APIEndpoint {
             return "/auth/guest/register"
         case .refreshToken:
             return "/auth/guest/refresh"
-        case .logout:
-            return "/auth/logout"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .guestRegister, .refreshToken, .logout:
+        case .guestRegister, .refreshToken:
             return .post
         }
     }
@@ -45,8 +42,6 @@ enum AuthEndpoint: APIEndpoint {
         case .refreshToken(let refreshToken):
             // refreshToken을 body로 전송 (백엔드 API 사양)
             return ["refreshToken": refreshToken]
-        case .logout:
-            return nil
         }
     }
 
@@ -54,8 +49,6 @@ enum AuthEndpoint: APIEndpoint {
         switch self {
         case .guestRegister, .refreshToken:
             return false  // 인증 불필요 (회원가입, 토큰 갱신)
-        case .logout:
-            return true   // 로그아웃은 인증 필요
         }
     }
 }
