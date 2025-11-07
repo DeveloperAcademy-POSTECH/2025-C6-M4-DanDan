@@ -128,7 +128,8 @@ struct FullMapView: UIViewRepresentable {
                 view = HostingAnnotationView(annotation: ann, reuseIdentifier: id)
             }
             
-//            let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+            let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+            let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
             let swiftUIView = ZStack {
                 ZoneStationButton(
                     zone: ann.zone,
@@ -137,14 +138,25 @@ struct FullMapView: UIViewRepresentable {
                     popoverOffsetY: -84
                 )
 
-//                if isChecked {
-//                    ConqueredButton(zoneId: ann.zone.zoneId) { id in
-//                        ZoneCheckedService.shared.acquireScore(zoneId: id) { ok in
-//                            if !ok { print("🚨 acquireScore failed for zoneId=\(id)") }
-//                        }
-//                    }
-//                    .offset(y: -100)
-//                }
+                if isChecked && !isClaimed {
+                    ConqueredButton(zoneId: ann.zone.zoneId) { id in
+                        ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
+                            if !ok {
+                                print("🚨 postChecked failed for zoneId=\(id)")
+                                return
+                            }
+                            ZoneCheckedService.shared.acquireScore(zoneId: id) { ok2 in
+                                if ok2 {
+                                    StatusManager.shared.incrementDailyScore()
+                                    StatusManager.shared.setRewardClaimed(zoneId: id, claimed: true)
+                                } else {
+                                    print("🚨 acquireScore failed for zoneId=\(id)")
+                                }
+                            }
+                        }
+                    }
+                    .offset(y: -100)
+                }
             }
             view.setSwiftUIView(swiftUIView)
 
@@ -250,6 +262,7 @@ struct FullMapView: UIViewRepresentable {
                 guard let ann = annotation as? StationAnnotation,
                       let view = uiView.view(for: ann) as? HostingAnnotationView else { continue }
                 let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+                let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
                 let swiftUIView = ZStack {
                     ZoneStationButton(
                         zone: ann.zone,
@@ -257,14 +270,25 @@ struct FullMapView: UIViewRepresentable {
                         iconSize: CGSize(width: 28, height: 32),
                         popoverOffsetY: -84
                     )
-//                    if isChecked {
-//                        ConqueredButton(zoneId: ann.zone.zoneId) { id in
-//                            ZoneCheckedService.shared.acquireScore(zoneId: id) { ok in
-//                                if !ok { print("🚨 acquireScore failed for zoneId=\(id)") }
-//                            }
-//                        }
-//                        .offset(y: -100)
-//                    }
+                    if isChecked && !isClaimed {
+                        ConqueredButton(zoneId: ann.zone.zoneId) { id in
+                            ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
+                                if !ok {
+                                    print("🚨 postChecked failed for zoneId=\(id)")
+                                    return
+                                }
+                                ZoneCheckedService.shared.acquireScore(zoneId: id) { ok2 in
+                                    if ok2 {
+                                        StatusManager.shared.incrementDailyScore()
+                                        StatusManager.shared.setRewardClaimed(zoneId: id, claimed: true)
+                                    } else {
+                                        print("🚨 acquireScore failed for zoneId=\(id)")
+                                    }
+                                }
+                            }
+                        }
+                        .offset(y: -100)
+                    }
                 }
                 view.setSwiftUIView(swiftUIView)
             }
@@ -326,92 +350,92 @@ struct FullMapScreen: View {
             .padding(.top, 60)
             .padding(.leading, 14)
         }
-//        .overlay(alignment: .bottomLeading) {
-//            #if DEBUG
-//            ScrollView(.horizontal, showsIndicators: false) {
-//                HStack(spacing: 8) {
-//                    ForEach(1 ... 15, id: \.self) { id in
-//                        Button(action: {
-//                            // 로컬 먼저 반영 (개인 지도 즉시 표시)
-//                            StatusManager.shared.setZoneChecked(zoneId: id, checked: true)
-//                            effectiveToken = UUID()
-//                            // 서버 전송은 후행, 실패해도 로컬 상태 유지
-//                            ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
-//                                if !ok {
-//                                    print("[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지")
-//                                }
-//                            }
-//                        }) {
-//                            Text("#\(id)")
-//                                .font(.PR.caption2)
-//                                .foregroundColor(.white)
-//                                .padding(.vertical, 6)
-//                                .padding(.horizontal, 10)
-//                                .background(Color.black.opacity(0.6))
-//                                .clipShape(Capsule())
-//                        }
-//                    }
-//                }
-//                .padding(.horizontal, 12)
-//                .padding(.vertical, 10)
-//            }
-//            .background(
-//                Color.black.opacity(0.15)
-//                    .blur(radius: 2)
-//            )
-//            .clipShape(RoundedRectangle(cornerRadius: 12))
-//            .padding(.leading, 16)
-//            .padding(.bottom, 20)
-//            .onAppear {
-//                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
-//                effectiveToken = refreshToken
-//            }
-//            .onChange(of: refreshToken) { newValue in
-//                // 부모 갱신 토큰 변화도 반영
-//                effectiveToken = newValue
-//            }
-//            #endif
-//        }
+        .overlay(alignment: .bottomLeading) {
+            #if DEBUG
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(1 ... 15, id: \.self) { id in
+                        Button(action: {
+                            // 로컬 먼저 반영 (개인 지도 즉시 표시)
+                            StatusManager.shared.setZoneChecked(zoneId: id, checked: true)
+                            effectiveToken = UUID()
+                            // 서버 전송은 후행, 실패해도 로컬 상태 유지
+                            ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
+                                if !ok {
+                                    print("[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지")
+                                }
+                            }
+                        }) {
+                            Text("#\(id)")
+                                .font(.PR.caption2)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 10)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+            }
+            .background(
+                Color.black.opacity(0.15)
+                    .blur(radius: 2)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.leading, 16)
+            .padding(.bottom, 20)
+            .onAppear {
+                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
+                effectiveToken = refreshToken
+            }
+            .onChange(of: refreshToken) { newValue in
+                // 부모 갱신 토큰 변화도 반영
+                effectiveToken = newValue
+            }
+            #endif
+        }
     }
 }
 
-// #if DEBUG
-// #Preview("FullMap · Overall vs Personal") {
-//     let demoTeams: [Team] = [
-//         .init(id: UUID(), teamName: "white", teamColor: "SubA"),
-//         .init(id: UUID(), teamName: "blue", teamColor: "SubB")
-//     ]
-//     // zones 중 일부에 더미 승자 배정
-//     let demoStatuses: [ZoneConquestStatus] = zones.prefix(10).enumerated().map { idx, z in
-//         let winner = (idx % 2 == 0) ? "white" : "blue"
-//         return ZoneConquestStatus(zoneId: z.zoneId, teamId: idx % 2, teamName: winner, teamScore: 10 + idx)
-//     }
+ #if DEBUG
+ #Preview("FullMap · Overall vs Personal") {
+     let demoTeams: [Team] = [
+         .init(id: UUID(), teamName: "white", teamColor: "SubA"),
+         .init(id: UUID(), teamName: "blue", teamColor: "SubB")
+     ]
+     // zones 중 일부에 더미 승자 배정
+     let demoStatuses: [ZoneConquestStatus] = zones.prefix(10).enumerated().map { idx, z in
+         let winner = (idx % 2 == 0) ? "white" : "blue"
+         return ZoneConquestStatus(zoneId: z.zoneId, teamId: idx % 2, teamName: winner, teamScore: 10 + idx)
+     }
 
-//     VStack(spacing: 12) {
-//         Text("Overall")
-//             .font(.PR.caption2)
-//             .foregroundColor(.gray2)
-//         FullMapView(conquestStatuses: demoStatuses, teams: demoTeams, mode: .overall)
-//             .frame(height: 220)
-//             .clipShape(RoundedRectangle(cornerRadius: 12))
+     VStack(spacing: 12) {
+         Text("Overall")
+             .font(.PR.caption2)
+             .foregroundColor(.gray2)
+         FullMapView(conquestStatuses: demoStatuses, teams: demoTeams, mode: .overall)
+             .frame(height: 220)
+             .clipShape(RoundedRectangle(cornerRadius: 12))
 
-//         Text("Personal (임의로 짝수 구역만 완료로 가정)")
-//             .font(.PR.caption2)
-//             .foregroundColor(.gray2)
-//         FullMapView(conquestStatuses: demoStatuses, teams: demoTeams, mode: .personal)
-//             .frame(height: 220)
-//             .clipShape(RoundedRectangle(cornerRadius: 12))
-//     }
-//     .padding()
-//     .task {
-//         // 짝수 zoneId만 완료로 가정 (미리보기용 사이드 이펙트)
-//         for status in demoStatuses {
-//             if status.zoneId % 2 == 0 {
-//                 StatusManager.shared.setZoneChecked(zoneId: status.zoneId, checked: true)
-//             } else {
-//                 StatusManager.shared.setZoneChecked(zoneId: status.zoneId, checked: false)
-//             }
-//         }
-//     }
-// }
-// #endif
+         Text("Personal (임의로 짝수 구역만 완료로 가정)")
+             .font(.PR.caption2)
+             .foregroundColor(.gray2)
+         FullMapView(conquestStatuses: demoStatuses, teams: demoTeams, mode: .personal)
+             .frame(height: 220)
+             .clipShape(RoundedRectangle(cornerRadius: 12))
+     }
+     .padding()
+     .task {
+         // 짝수 zoneId만 완료로 가정 (미리보기용 사이드 이펙트)
+         for status in demoStatuses {
+             if status.zoneId % 2 == 0 {
+                 StatusManager.shared.setZoneChecked(zoneId: status.zoneId, checked: true)
+             } else {
+                 StatusManager.shared.setZoneChecked(zoneId: status.zoneId, checked: false)
+             }
+         }
+     }
+ }
+ #endif

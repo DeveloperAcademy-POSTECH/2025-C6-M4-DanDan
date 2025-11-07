@@ -154,21 +154,34 @@ struct MapView: UIViewRepresentable {
             }
             
             // SwiftUI 버튼 + 정복 버튼 주입
-//            let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+            let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+            let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
             let swiftUIView = ZStack {
                 ZoneStationButton(
                     zone: ann.zone,
                     statusesForZone: ann.statusesForZone
                 )
 
-//                if isChecked {
-//                    ConqueredButton(zoneId: ann.zone.zoneId) { id in
-//                        ZoneCheckedService.shared.acquireScore(zoneId: id) { ok in
-//                            if !ok { print("🚨 acquireScore failed for zoneId=\(id)") }
-//                        }
-//                    }
-//                    .offset(y: -120)
-//                }
+                if isChecked && !isClaimed {
+                    ConqueredButton(zoneId: ann.zone.zoneId) { id in
+                        // 순차 호출: complete -> score/acquire
+                        ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
+                            if !ok {
+                                print("🚨 postChecked failed for zoneId=\(id)")
+                                return
+                            }
+                            ZoneCheckedService.shared.acquireScore(zoneId: id) { ok2 in
+                                if ok2 {
+                                    StatusManager.shared.incrementDailyScore()
+                                    StatusManager.shared.setRewardClaimed(zoneId: id, claimed: true)
+                                } else {
+                                    print("🚨 acquireScore failed for zoneId=\(id)")
+                                }
+                            }
+                        }
+                    }
+                    .offset(y: -120)
+                }
             }
             view.setSwiftUIView(swiftUIView)
 
