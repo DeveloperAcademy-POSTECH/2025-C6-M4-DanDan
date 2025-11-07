@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct SettingView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    private var needsCustomBackButton: Bool {
+        if #available(iOS 26.0, *) { return false } else { return true }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
 
@@ -24,6 +30,10 @@ struct SettingView: View {
             Spacer()
         }
         .padding(.top, 45)
+        .navigationBarBackButtonHidden(needsCustomBackButton)
+        .toolbar {
+            BackTitleToolbar(title: "설정") {dismiss()}
+        }
         
     }
 }
