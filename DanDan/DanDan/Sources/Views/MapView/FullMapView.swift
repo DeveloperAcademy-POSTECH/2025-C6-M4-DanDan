@@ -10,6 +10,7 @@ import SwiftUI
 
 // 전체 2D 지도
 struct FullMapView: UIViewRepresentable {
+    let zoneStatuses: [ZoneStatus]
     enum Mode { case overall, personal }
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
@@ -78,6 +79,7 @@ struct FullMapView: UIViewRepresentable {
     {
         let manager = CLLocationManager()
 
+        var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
         var mode: Mode = .overall
@@ -104,8 +106,7 @@ struct FullMapView: UIViewRepresentable {
             case .overall:
                 stroke = ZoneColorResolver.leadingColorOrDefault(
                     for: line.zoneId,
-                    in: conquestStatuses,
-                    teams: teams,
+                    zoneStatuses: zoneStatuses,
                     defaultColor: .primaryGreen
                 )
             case .personal:
@@ -118,7 +119,7 @@ struct FullMapView: UIViewRepresentable {
                         for: line.zoneId,
                         in: conquestStatuses,
                         teams: teams,
-                        defaultColor: .primaryGreen
+                        defaultColor: .subA
                     )
                 } else {
                     stroke = UIColor.clear
@@ -279,8 +280,7 @@ struct FullMapView: UIViewRepresentable {
                 case .overall:
                     let stroke = ZoneColorResolver.leadingColorOrDefault(
                         for: line.zoneId,
-                        in: conquestStatuses,
-                        teams: teams,
+                        zoneStatuses: zoneStatuses,
                         defaultColor: .primaryGreen
                     )
                     renderer.strokeColor = stroke
@@ -384,12 +384,16 @@ struct FullMapScreen: View {
 
     var body: some View {
         FullMapView(
+            zoneStatuses: viewModel.zoneStatuses,
             conquestStatuses: conquestStatuses,
             teams: teams,
             mode: isRightSelected ? .personal : .overall,
             refreshToken: effectiveToken
         )
         .ignoresSafeArea()
+        .task {
+            await viewModel.loadMapInfo()
+        }
         .onAppear {
             // 부모에서 전달받은 토큰을 항상 채택
             effectiveToken = refreshToken
@@ -494,62 +498,63 @@ struct FullMapScreen: View {
 }
 
 #if DEBUG
-    #Preview("FullMap · Overall vs Personal") {
-        let demoTeams: [Team] = [
-            .init(id: UUID(), teamName: "white", teamColor: "SubA"),
-            .init(id: UUID(), teamName: "blue", teamColor: "SubB"),
-        ]
-        // zones 중 일부에 더미 승자 배정
-        let demoStatuses: [ZoneConquestStatus] = zones.prefix(10).enumerated()
-            .map { idx, z in
-                let winner = (idx % 2 == 0) ? "white" : "blue"
-                return ZoneConquestStatus(
-                    zoneId: z.zoneId,
-                    teamId: idx % 2,
-                    teamName: winner,
-                    teamScore: 10 + idx
-                )
-            }
-
-        VStack(spacing: 12) {
-            Text("Overall")
-                .font(.PR.caption2)
-                .foregroundColor(.gray2)
-            FullMapView(
-                conquestStatuses: demoStatuses,
-                teams: demoTeams,
-                mode: .overall
-            )
-            .frame(height: 220)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-
-            Text("Personal (임의로 짝수 구역만 완료로 가정)")
-                .font(.PR.caption2)
-                .foregroundColor(.gray2)
-            FullMapView(
-                conquestStatuses: demoStatuses,
-                teams: demoTeams,
-                mode: .personal
-            )
-            .frame(height: 220)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
-        .padding()
-        .task {
-            // 짝수 zoneId만 완료로 가정 (미리보기용 사이드 이펙트)
-            for status in demoStatuses {
-                if status.zoneId % 2 == 0 {
-                    StatusManager.shared.setZoneChecked(
-                        zoneId: status.zoneId,
-                        checked: true
-                    )
-                } else {
-                    StatusManager.shared.setZoneChecked(
-                        zoneId: status.zoneId,
-                        checked: false
-                    )
-                }
-            }
-        }
-    }
+//    #Preview("FullMap · Overall vs Personal") {
+//        let demoTeams: [Team] = [
+//            .init(id: UUID(), teamName: "white", teamColor: "SubA"),
+//            .init(id: UUID(), teamName: "blue", teamColor: "SubB"),
+//        ]
+//        // zones 중 일부에 더미 승자 배정
+//        let demoStatuses: [ZoneConquestStatus] = zones.prefix(10).enumerated()
+//            .map { idx, z in
+//                let winner = (idx % 2 == 0) ? "white" : "blue"
+//                return ZoneConquestStatus(
+//                    zoneId: z.zoneId,
+//                    teamId: idx % 2,
+//                    teamName: winner,
+//                    teamScore: 10 + idx
+//                )
+//            }
+//
+//        VStack(spacing: 12) {
+//            Text("Overall")
+//                .font(.PR.caption2)
+//                .foregroundColor(.gray2)
+//            FullMapView(
+//                zoneStatuses: viewModel.zoneStatuses,
+//                conquestStatuses: demoStatuses,
+//                teams: demoTeams,
+//                mode: .overall
+//            )
+//            .frame(height: 220)
+//            .clipShape(RoundedRectangle(cornerRadius: 12))
+//
+//            Text("Personal (임의로 짝수 구역만 완료로 가정)")
+//                .font(.PR.caption2)
+//                .foregroundColor(.gray2)
+//            FullMapView(
+//                conquestStatuses: demoStatuses,
+//                teams: demoTeams,
+//                mode: .personal
+//            )
+//            .frame(height: 220)
+//            .clipShape(RoundedRectangle(cornerRadius: 12))
+//        }
+//        .padding()
+//        .task {
+//            // 짝수 zoneId만 완료로 가정 (미리보기용 사이드 이펙트)
+//            for status in demoStatuses {
+//                if status.zoneId % 2 == 0 {
+//                    StatusManager.shared.setZoneChecked(
+//                        zoneId: status.zoneId,
+//                        checked: true
+//                    )
+//                } else {
+//                    StatusManager.shared.setZoneChecked(
+//                        zoneId: status.zoneId,
+//                        checked: false
+//                    )
+//                }
+//            }
+//        }
+//    }
 #endif

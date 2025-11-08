@@ -53,7 +53,6 @@ enum ZoneColorResolver {
             print("🎯 TeamName(lowercased): \(teamName.lowercased())")
             return .A
         case "Yellow":
-            
             return .B
         default:
             return defaultColor

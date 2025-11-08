@@ -275,16 +275,10 @@ struct MapView: UIViewRepresentable {
                         zoneStatuses: zoneStatuses,
                         defaultColor: .primaryGreen
                     )
-                    print("\(color)")
                     renderer.strokeColor = color
                 }
-                renderer.invalidatePath()
                 renderer.setNeedsDisplay()
             }
-            
-            // ✅ 이거 추가하면 컬러 변경이 확실히 반영됩니다.
-            uiView.removeOverlays(uiView.overlays)
-            uiView.addOverlays(uiView.overlays)
         }
     }
 }

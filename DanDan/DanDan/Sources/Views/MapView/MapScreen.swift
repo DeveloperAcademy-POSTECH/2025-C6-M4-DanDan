@@ -20,7 +20,6 @@ struct MapScreen: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             // 3D 부분 지도
-            if !viewModel.zoneStatuses.isEmpty {
                 MapView(
                     zoneStatuses: viewModel.zoneStatuses,
                     conquestStatuses: conquestStatuses,
@@ -28,8 +27,6 @@ struct MapScreen: View {
                     refreshToken: refreshToken
                 )
                 .ignoresSafeArea()
-            }
-            
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
