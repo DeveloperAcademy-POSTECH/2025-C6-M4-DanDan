@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct ServiceTermsView: View {
+    @Environment(\.dismiss) private var dismiss
+       private let navigationManager = NavigationManager.shared
+       private var needsCustomBackButton: Bool {
+           if #available(iOS 26.0, *) { return false } else { return true }
+       }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // 제목
@@ -328,6 +334,14 @@ struct ServiceTermsView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .navigationBarBackButtonHidden(needsCustomBackButton)
+        .toolbar {
+            if needsCustomBackButton {
+                ToolbarItem(placement: .topBarLeading) {
+                    BackButton { dismiss() }
+                }
+            }
+        }
     }
 }
 

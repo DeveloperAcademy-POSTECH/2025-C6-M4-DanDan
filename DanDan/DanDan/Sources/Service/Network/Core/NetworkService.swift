@@ -78,6 +78,13 @@ class NetworkService: NetworkServiceProtocol {
         .eraseToAnyPublisher()  // Combine 외부에 타입 노출 방지
     }
 
+    /// ✅ 네트워크 요청을 async/await로 수행하고 디코딩된 모델을 반환합니다.
+    /// - Parameter endpoint: 요청할 API 엔드포인트
+    /// - Returns: 디코딩된 모델 `T`
+    func requestAsync<T: Decodable>(_ endpoint: any APIEndpoint) async throws -> T {
+        return try await performRequest(endpoint)
+    }
+
     // MARK: - Private Methods
 
     /// ✅ 실제 네트워크 요청 수행 (async/await)

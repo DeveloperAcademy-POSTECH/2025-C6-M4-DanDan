@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GeneralSettingSection: View {
+    
     @StateObject private var viewModel = SettingViewModel()
 
     var body: some View {

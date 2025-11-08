@@ -8,7 +8,13 @@
 import SwiftUI
 
 struct MyPageView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     @StateObject private var viewModel = MyPageViewModel()
+    
+    private var needsCustomBackButton: Bool {
+        if #available(iOS 26.0, *) { return false } else { return true }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -23,6 +29,9 @@ struct MyPageView: View {
             }
 
             Spacer()
+        }
+        .task {
+            await viewModel.load()
         }
     }
 }

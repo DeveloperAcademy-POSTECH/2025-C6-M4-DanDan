@@ -9,6 +9,7 @@ import Foundation
 
 class StatusManager: ObservableObject {
     static let shared = StatusManager()
+    static let didResetNotification = Notification.Name("UserStatusDidReset")
 
     @Published var userStatus: UserStatus
     @Published var zoneStatuese: [ZoneConquestStatus] = []
@@ -47,6 +48,7 @@ class StatusManager: ObservableObject {
     func resetDailyStatus() {
         userStatus.userDailyScore = 0
         userStatus.zoneCheckedStatus = [:]
+        userStatus.rewardClaimedStatus = [:]
         save()
     }
 
@@ -66,10 +68,26 @@ class StatusManager: ObservableObject {
         }
     }
 
+    // MARK: - Reward Claim Helpers
+    /// 오늘 해당 구역의 보상을 이미 수령했는지 여부를 반환합니다.
+    func isRewardClaimed(zoneId: Int) -> Bool {
+        return userStatus.rewardClaimedStatus?[zoneId] == true
+    }
+
+    /// 오늘 해당 구역의 보상 수령 여부를 설정합니다.
+    func setRewardClaimed(zoneId: Int, claimed: Bool) {
+        if userStatus.rewardClaimedStatus == nil {
+            userStatus.rewardClaimedStatus = [:]
+        }
+        userStatus.rewardClaimedStatus?[zoneId] = claimed
+        save()
+    }
+
     /// 기존 유저의 ID를 유지한 채 UserStatus 상태를 초기화합니다.
     func resetUserStatus() {
         userStatus = UserStatus(from: userStatus)
         save()
+        NotificationCenter.default.post(name: Self.didResetNotification, object: nil)
     }
 
     /// 모든 구간의 점령 상태를 초기화합니다.
