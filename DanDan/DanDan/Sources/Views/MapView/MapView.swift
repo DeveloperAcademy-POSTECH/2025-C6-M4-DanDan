@@ -10,10 +10,18 @@ import MapKit
 
 // 부분 3D 지도(메인)
 struct MapView: UIViewRepresentable {
+    @StateObject private var viewModel = MapScreenViewModel()
+    
+//    var zoneStatuses: [ZoneStatus]
+    @State private var zoneStatuses: [ZoneStatus] = [] // ✅ 상태 프로퍼티로 변경
+
+    
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
     // 외부 상태 변경에 따른 갱신 트리거용 토큰 (뷰 재생성 없이 update만 유도)
     var refreshToken: UUID = UUID()
+    
+    private let service = MainMapInfoService()
     
     // MARK: - Bounds
     /// 철길숲의 남서쪽과 북동쪽 좌표를 기준으로 지도 표시 범위를 계산하는 내부 구조체
@@ -67,6 +75,7 @@ struct MapView: UIViewRepresentable {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
         
+        var zoneStatuses: [ZoneStatus] = []  
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
         
@@ -129,9 +138,8 @@ struct MapView: UIViewRepresentable {
             } else {
                 let color = ZoneColorResolver.leadingColorOrDefault(
                     for: line.zoneId,
-                    in: conquestStatuses,
-                    teams: teams,
-                    defaultColor: .primaryGreen // line.color - ui 보여주기 용
+                    zoneStatuses: zoneStatuses,
+                    defaultColor: .primaryGreen
                 )
                 renderer.strokeColor = color
                 renderer.lineWidth = 24
@@ -197,14 +205,43 @@ struct MapView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator() }
     
     func makeUIView(context: Context) -> MKMapView {
-        if !Thread.isMainThread {
-            var created: MKMapView!
-            DispatchQueue.main.sync {
-                created = self._createMap(context: context)
+        let map = _createMap(context: context)
+
+        Task {
+            do {
+                let fetchedStatuses = try await service.fetchZoneStatuses()
+                print("✅ ZoneStatuses API 응답 (\(fetchedStatuses.count))개")
+                for s in fetchedStatuses {
+                    print("   - Zone \(s.zoneId): \(s.leadingTeamName ?? "없음")")
+                }
+
+                // ✅ 상태 업데이트 및 코디네이터에 전달
+                self.zoneStatuses = fetchedStatuses
+                context.coordinator.zoneStatuses = fetchedStatuses
+
+                // ✅ 렌더러를 다시 갱신
+                DispatchQueue.main.async {
+                    for overlay in map.overlays {
+                        if let line = overlay as? ColoredPolyline,
+                           let renderer = map.renderer(for: overlay) as? MKPolylineRenderer {
+                            let color = ZoneColorResolver.leadingColorOrDefault(
+                                for: line.zoneId,
+                                zoneStatuses: fetchedStatuses,
+                                defaultColor: .primaryGreen
+                            )
+                            print("\(color)")
+                            renderer.strokeColor = color
+                            renderer.setNeedsDisplay()
+                        }
+                    }
+                }
+
+            } catch {
+                print("❌ Zone Status 불러오기 실패:", error.localizedDescription)
             }
-            return created
         }
-        return _createMap(context: context)
+
+        return map
     }
 
     private func _createMap(context: Context) -> MKMapView {
@@ -281,3 +318,4 @@ struct MapView: UIViewRepresentable {
         }
     }
 }
+

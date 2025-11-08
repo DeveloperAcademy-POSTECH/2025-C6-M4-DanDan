@@ -18,7 +18,12 @@ final class MainMapInfoService {
 
     /// 메인 맵 정보 조회 API
     func fetchMainMapInfo() async throws -> MainMapInfoResponseDTO {
-        guard let url = URL(string: "https://www.singyupark.cloud:8443/api/v1/conquest/main-map") else {
+        guard
+            let url = URL(
+                string:
+                    "https://www.singyupark.cloud:8443/api/v1/conquest/main-map"
+            )
+        else {
             throw URLError(.badURL)
         }
 
@@ -30,7 +35,10 @@ final class MainMapInfoService {
         // ✅ TokenManager에서 액세스 토큰 불러오기
         do {
             let token = try tokenManager.getAccessToken()
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue(
+                "Bearer \(token)",
+                forHTTPHeaderField: "Authorization"
+            )
         } catch {
             print("⚠️ 액세스 토큰 없음 — 로그인 필요")
             throw error
@@ -54,7 +62,35 @@ final class MainMapInfoService {
         }
 
         // JSON 디코딩
-        let decoded = try JSONDecoder().decode(MainMapInfoResponseDTO.self, from: data)
+        let decoded = try JSONDecoder().decode(
+            MainMapInfoResponseDTO.self,
+            from: data
+        )
         return decoded
+    }
+
+    func fetchZoneStatuses() async throws -> [ZoneStatus] {
+        guard
+            let url = URL(
+                string:
+                    "https://www.singyupark.cloud:8443/api/v1/conquest/zones/status"
+            )
+        else {
+            throw URLError(.badURL)
+        }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+            200..<300 ~= httpResponse.statusCode
+        else {
+            throw URLError(.badServerResponse)
+        }
+
+        let decodedResponse = try JSONDecoder().decode(
+            ZoneStatusResponseDTO.self,
+            from: data
+        )
+        return decodedResponse.data
     }
 }
