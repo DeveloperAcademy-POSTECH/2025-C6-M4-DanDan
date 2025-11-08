@@ -35,7 +35,7 @@ struct ProfileImageView: View {
         .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
     }
 }
-//
-//#Preview {
-//    ProfileImageView(image: UIImage(named: "default_avatar"), isMyRank: true)
-//}
+
+#Preview {
+    ProfileImageView(image: UIImage(named: "testImage"), isMyRank: true)
+}

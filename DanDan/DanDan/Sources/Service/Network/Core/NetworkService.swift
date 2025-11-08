@@ -111,9 +111,9 @@ class NetworkService: NetworkServiceProtocol {
                 // ✅ 실제 요청 전송
                 let (data, response) = try await session.data(for: request)
 
-//                if let raw = String(data: data, encoding: .utf8) {
-//                        print("📦 [DEBUG] Raw Response Body:\n\(raw)")
-//                    }
+                if let raw = String(data: data, encoding: .utf8) {
+                        print("📦 [DEBUG] Raw Response Body:\n\(raw)")
+                    }
                 
                 // ✅ 응답 유효성 검증
                 guard let httpResponse = response as? HTTPURLResponse else {
