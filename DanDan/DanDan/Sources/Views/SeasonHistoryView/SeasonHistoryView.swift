@@ -20,6 +20,9 @@ struct SeasonHistoryView: View {
         ScrollView {
             SeasonHistoryList(viewModel: viewModel)
         }
+        .onAppear {
+            Task { await viewModel.load(page: 1, size: 5) }
+        }
         .navigationBarBackButtonHidden(needsCustomBackButton)
         .toolbar {
             BackTitleToolbar(title: "시즌 히스토리") {dismiss()}

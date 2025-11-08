@@ -12,8 +12,10 @@ struct SeasonHistoryList: View {
 
     var body: some View {
         LazyVStack(spacing: 20) {
-            // 현재 진행 중인 시즌 카드
-            ActiveSeasonCard(viewModel: viewModel)
+            // 현재 진행 중인 시즌 카드 (없을 수 있음)
+            if viewModel.hasCurrentWeek {
+                ActiveSeasonCard(viewModel: viewModel)
+            }
 
             // 완료된 시즌 카드 리스트
             ForEach(viewModel.completed, id: \.id) { record in
