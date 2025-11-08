@@ -60,6 +60,7 @@ struct SchoolSelectView: View {
             )
             .padding(.bottom, 24)
         }
+        .padding(.bottom, 24)
         .frame(
             maxWidth: .infinity,
             maxHeight: .infinity,
@@ -102,7 +103,7 @@ struct SchoolSelectView: View {
                             StatusManager.shared.userStatus.userTeam = viewModel.teamName
                         }
                         
-                        navigationManager.navigate(to: .teamAssignment)
+                        navigationManager.replaceRoot(with: .teamAssignment)
                     }
                 }
             }

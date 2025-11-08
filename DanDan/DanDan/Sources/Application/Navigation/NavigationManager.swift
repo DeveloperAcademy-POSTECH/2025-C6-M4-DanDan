@@ -46,6 +46,12 @@ class NavigationManager: ObservableObject {
         path = NavigationPath()
     }
     
+    /// 현재 네비게이션 스택을 비우고 루트 화면을 교체합니다.
+    func replaceRoot(with destination: AppDestination) {
+        path = NavigationPath()
+        root = destination
+    }
+    
     /// 앱 시작 시 루트 화면 결정:
     /// - 로그인 O + 팀 배정뷰 아직 안봄 → .teamAssignment
     /// - 로그인 O + 팀 배정뷰 봄 → .main

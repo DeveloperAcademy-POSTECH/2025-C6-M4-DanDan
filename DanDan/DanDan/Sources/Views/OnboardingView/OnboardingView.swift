@@ -12,7 +12,7 @@ struct OnboardingView: View {
     
     var body: some View {
         Button {
-            navigationManager.navigate(to: .main)
+            navigationManager.replaceRoot(with: .main)
         } label: {
             Text("온보딩")
         }
