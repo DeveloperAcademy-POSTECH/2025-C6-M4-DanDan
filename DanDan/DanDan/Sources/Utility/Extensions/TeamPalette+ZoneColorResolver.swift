@@ -41,14 +41,16 @@ enum ZoneColorResolver {
         }
 
 //        // 👇 zoneStatuses 전체 데이터 확인용 디버그 로그
-//        print("📦 현재 zoneStatuses 데이터 (\(zoneStatuses.count)개):")
-//        for status in zoneStatuses {
-//            print("   - Zone \(status.zoneId): \(status.leadingTeamName)")
-//        }
+        print("📦 현재 zoneStatuses 데이터 (\(zoneStatuses.count)개):")
+        for status in zoneStatuses {
+            print("   - Zone \(status.zoneId): \(status.leadingTeamName)")
+        }
         
         // 팀 이름에 따라 색 지정 (여기서는 asset catalog 기준)
         switch teamName {
         case "Blue":
+            print("🎯 Zone \(zoneId) → TeamName(raw): \(teamName)")
+            print("🎯 TeamName(lowercased): \(teamName.lowercased())")
             return .A
         case "Yellow":
             

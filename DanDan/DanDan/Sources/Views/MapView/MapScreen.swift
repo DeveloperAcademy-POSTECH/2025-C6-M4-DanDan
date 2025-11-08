@@ -21,11 +21,12 @@ struct MapScreen: View {
         ZStack(alignment: .topLeading) {
             // 3D 부분 지도
             MapView(
-//                zoneStatuses: viewModel.zoneStatuses,
+                zoneStatuses: viewModel.zoneStatuses,
                 conquestStatuses: conquestStatuses,
                 teams: teams,
                 refreshToken: refreshToken
             )
+            
             .ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 10) {
