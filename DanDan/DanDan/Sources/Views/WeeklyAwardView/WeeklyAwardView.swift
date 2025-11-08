@@ -56,7 +56,7 @@ struct WeeklyAwardView: View {
             PrimaryButton(
                 "그래도 스틸워크와 계속 걷기",
                 action: {
-                    navigationManager.navigate(to: .main)
+                    navigationManager.replaceRoot(with: .main)
                     GamePhaseManager.shared.showWeeklyAward = false
                 }
             )

@@ -73,6 +73,6 @@ struct WaitingView: View {
     }
     
     private func navigateToMapScreen() {
-        navigationManager.navigate(to: .main)
+        navigationManager.replaceRoot(with: .main)
     }
 }

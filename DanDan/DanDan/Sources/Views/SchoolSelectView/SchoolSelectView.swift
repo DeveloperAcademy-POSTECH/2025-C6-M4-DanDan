@@ -62,6 +62,7 @@ struct SchoolSelectView: View {
             )
             .padding(.bottom, 24)
         }
+        .padding(.bottom, 24)
         .frame(
             maxWidth: .infinity,
             maxHeight: .infinity,
@@ -96,7 +97,7 @@ struct SchoolSelectView: View {
                         
                         await viewModel.registerGuest()
                         
-                        navigationManager.navigate(to: .teamAssignment)
+                        navigationManager.replaceRoot(with: .teamAssignment)
                     }
                 }
             }
