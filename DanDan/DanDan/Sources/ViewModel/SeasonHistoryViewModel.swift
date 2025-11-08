@@ -28,45 +28,6 @@ final class SeasonHistoryViewModel: ObservableObject {
     // 서버에서 내려주는 현재 주간 ConquestPeriod (월~일)
     private(set) var period: ConquestPeriod?
 
-    init(now: Date = Date(), autoRefresh: Bool = true) {
-        var cal = Calendar(identifier: .gregorian)
-        cal.locale = Locale(identifier: "ko_KR")
-        cal.timeZone = TimeZone(identifier: "Asia/Seoul")!
-        cal.firstWeekday = 2 // Monday
-        self.calendar = cal
-
-        let df = DateFormatter()
-        df.locale = cal.locale
-        df.timeZone = cal.timeZone
-        df.dateFormat = "yyyy.MM.dd"
-        self.dayFormatter = df
-
-        // 서버 수신 전 초기 표시값
-        self.weekLabel = ""
-        self.weekRange = ""
-        self.progress = 0
-        self.remainingText = ""
-        self.statusText = ""
-        self.currentDistanceKm = 0
-        self.currentWeekScore = 0
-        self.currentTeamRank = 0
-        self.period = nil
-
-        // 분 단위 갱신
-        if autoRefresh {
-            timerCancellable = Timer
-                .publish(every: 60, on: .main, in: .common)
-                .autoconnect()
-                .sink { [weak self] now in
-                    guard let self = self, let period = self.period else { return }
-                    let endOfWeek = period.endDate.endOfDay(calendar: self.calendar)
-                    self.progress = Self.progress(now: now, in: period, calendar: self.calendar)
-                    self.remainingText = Self.remainingText(now: now, to: endOfWeek, calendar: self.calendar)
-                    self.statusText = self.progress >= 1.0 ? "완료" : "진행 중"
-                }
-        }
-    }
-
     func load(page: Int = 1, size: Int = 5) async {
         do {
             let data = try await SeasonHistoryService.shared.fetchUserHistoryAsync(page: page, size: size)
@@ -131,6 +92,7 @@ final class SeasonHistoryViewModel: ObservableObject {
         let w = calendar.component(.weekOfMonth, from: record.startDate)
         return "\(y)년 \(m)월 \(w)주차"
     }
+    
     func completedWeekRange(for record: RankRecord) -> String {
         let monday = calendar.dateInterval(of: .weekOfYear, for: record.startDate)!.start
         let sunday = calendar.date(byAdding: .day, value: 6, to: monday)!
@@ -165,6 +127,45 @@ final class SeasonHistoryViewModel: ObservableObject {
         if h > 0 { return "\(h)시간 남음" }
         if m > 0 { return "\(m)분 남음" }
         return "종료"
+    }
+    
+    init(now: Date = Date(), autoRefresh: Bool = true) {
+        var cal = Calendar(identifier: .gregorian)
+        cal.locale = Locale(identifier: "ko_KR")
+        cal.timeZone = TimeZone(identifier: "Asia/Seoul")!
+        cal.firstWeekday = 2 // Monday
+        self.calendar = cal
+
+        let df = DateFormatter()
+        df.locale = cal.locale
+        df.timeZone = cal.timeZone
+        df.dateFormat = "yyyy.MM.dd"
+        self.dayFormatter = df
+
+        // 서버 수신 전 초기 표시값
+        self.weekLabel = ""
+        self.weekRange = ""
+        self.progress = 0
+        self.remainingText = ""
+        self.statusText = ""
+        self.currentDistanceKm = 0
+        self.currentWeekScore = 0
+        self.currentTeamRank = 0
+        self.period = nil
+
+        // 분 단위 갱신
+        if autoRefresh {
+            timerCancellable = Timer
+                .publish(every: 60, on: .main, in: .common)
+                .autoconnect()
+                .sink { [weak self] now in
+                    guard let self = self, let period = self.period else { return }
+                    let endOfWeek = period.endDate.endOfDay(calendar: self.calendar)
+                    self.progress = Self.progress(now: now, in: period, calendar: self.calendar)
+                    self.remainingText = Self.remainingText(now: now, to: endOfWeek, calendar: self.calendar)
+                    self.statusText = self.progress >= 1.0 ? "완료" : "진행 중"
+                }
+        }
     }
 }
 
