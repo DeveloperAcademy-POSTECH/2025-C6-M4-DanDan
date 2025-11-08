@@ -40,7 +40,6 @@ extension AppDestination {
             TeamAssignmentView()
         case .main:
             TabBarView()
-        //            LoginView()
         case .ranking:
             RankingView()
         case .myPage:
