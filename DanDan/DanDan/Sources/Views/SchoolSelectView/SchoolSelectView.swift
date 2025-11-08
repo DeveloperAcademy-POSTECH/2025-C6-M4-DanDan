@@ -47,8 +47,6 @@ struct SchoolSelectView: View {
             
             Spacer()
             
-            // MARK: - 가입하기 버튼
-            // 여기서 서버 API 호출
             PrimaryButton(
                 "시작하기",
                 action: {
@@ -82,6 +80,9 @@ struct SchoolSelectView: View {
         
         .alert("정확한 정보를 입력하셨나요?", isPresented: $showConfirm) {
             Button("수정하기", role: .cancel) {}
+            
+            // MARK: - 가입하기 버튼
+            // 여기서 서버 API 호출
             Button("가입하기") {
                 if let school = selected {
                     Task {
@@ -95,9 +96,14 @@ struct SchoolSelectView: View {
                             viewModel.teamName = "Blue"
                         }
                         
+                        
                         await viewModel.registerGuest()
                         
-                        navigationManager.replaceRoot(with: .teamAssignment)
+                        await MainActor.run {
+                            StatusManager.shared.userStatus.userTeam = viewModel.teamName
+                        }
+                        
+                        navigationManager.navigate(to: .teamAssignment)
                     }
                 }
             }
