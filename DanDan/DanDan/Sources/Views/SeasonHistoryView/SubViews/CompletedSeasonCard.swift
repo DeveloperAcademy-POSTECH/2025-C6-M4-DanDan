@@ -68,7 +68,7 @@ struct CompletedSeasonCard: View {
 
             Text("내가 얻은 구역")
                 .font(.PR.body4)
-                .foregroundColor(.steelBlack)
+                .foregroundColor(.gray3)
                 .padding(.bottom, 8)
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.gray)
