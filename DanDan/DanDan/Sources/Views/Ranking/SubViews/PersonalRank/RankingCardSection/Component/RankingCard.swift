@@ -21,7 +21,7 @@ struct RankingCard: View {
         myUserId: UUID,
         name: String,
         score: Int,
-        image: Image = Image("testImage"),
+        image: Image = Image("default_avatar"),
         color: Color = .gray3,
         rank: Int
     ) {
@@ -90,32 +90,32 @@ struct RankingCard: View {
     }
 }
 
-#Preview {
-    VStack(spacing: 12) {
-        RankingCard(
-            userId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
-            myUserId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
-            name: "황세연",
-            score: 9,
-            image: Image("testImage"),
-            color: .subA50,
-            rank: 1
-        )
-
-        RankingCard(
-            userId: UUID(uuidString: "22222222-2222-2222-2222-222222222222")!,
-            myUserId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
-            name: "김철수",
-            score: 12,
-            rank: 2
-        )
-
-        RankingCard(
-            userId: UUID(uuidString: "33333333-3333-3333-3333-333333333333")!,
-            myUserId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
-            name: "박지현",
-            score: 7,
-            rank: 3
-        )
-    }
-}
+//#Preview {
+//    VStack(spacing: 12) {
+//        RankingCard(
+//            userId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
+//            myUserId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
+//            name: "황세연",
+//            score: 9,
+//            image: Image("default_avatar"),
+//            color: .subA50,
+//            rank: 1
+//        )
+//
+//        RankingCard(
+//            userId: UUID(uuidString: "22222222-2222-2222-2222-222222222222")!,
+//            myUserId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
+//            name: "김철수",
+//            score: 12,
+//            rank: 2
+//        )
+//
+//        RankingCard(
+//            userId: UUID(uuidString: "33333333-3333-3333-3333-333333333333")!,
+//            myUserId: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
+//            name: "박지현",
+//            score: 7,
+//            rank: 3
+//        )
+//    }
+//}
