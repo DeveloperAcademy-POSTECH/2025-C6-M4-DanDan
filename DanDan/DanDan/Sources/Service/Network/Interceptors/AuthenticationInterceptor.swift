@@ -28,7 +28,7 @@ class AuthenticationInterceptor: RequestInterceptor {
     ) {
         self.tokenManager = tokenManager
         self.maxRetryCount = maxRetryCount
-        self.onRefreshFailure = onRefreshFailure
+        self.onRefreshFailure = onRefreshFailure ?? { SessionLogoutHandler.perform() }
     }
 
     // MARK: - RequestInterceptor

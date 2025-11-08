@@ -20,8 +20,10 @@ struct CompletedSeasonCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(label)
                         .font(.PR.body2)
+                        .foregroundColor(.steelBlack)
                     Text(range)
                         .font(.PR.caption4)
+                        .foregroundColor(.gray3)
                 }
                 Spacer()
                 StatusTag(text: "완료")
@@ -39,23 +41,26 @@ struct CompletedSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("거리")
                             .font(.PR.body4)
-                            .foregroundStyle(.secondary)
+                            .foregroundColor(.gray3)
                         Text("\(Int(record.distanceKm ?? 0))km")
                             .font(.PR.title2)
+                            .foregroundColor(.steelBlack)
                     }
                     VStack(spacing: 8) {
                         Text("점수")
                             .font(.PR.body4)
-                            .foregroundStyle(.secondary)
-                        Text("\(record.weekScore)")
+                            .foregroundColor(.gray3)
+                        Text("\(record.weekScore)점")
                             .font(.PR.title2)
+                            .foregroundColor(.steelBlack)
                     }
                     VStack(spacing: 8) {
                         Text("팀 내 순위")
                             .font(.PR.body4)
-                            .foregroundStyle(.secondary)
+                            .foregroundColor(.gray3)
                         Text("\(record.rank)위")
                             .font(.PR.title2)
+                            .foregroundColor(.steelBlack)
                     }
                 }
             }
@@ -63,21 +68,22 @@ struct CompletedSeasonCard: View {
 
             Text("내가 얻은 구역")
                 .font(.PR.body4)
+                .foregroundColor(.gray3)
                 .padding(.bottom, 8)
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.yellow.opacity(0.9))
+                .fill(Color.gray)
                 .frame(height: 160)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 24)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.green))
+                .fill(.lightGreen)
         )
         .padding(.horizontal, 20)
     }
 }
-//
+
 //#Preview {
 //    let rr = RankRecord(
 //        periodID: UUID(),

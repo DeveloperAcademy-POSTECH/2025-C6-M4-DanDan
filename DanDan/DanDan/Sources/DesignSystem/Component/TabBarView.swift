@@ -30,6 +30,7 @@ struct TabBarView: View {
         }
         .tint(.primaryGreen)
         .environmentObject(viewModel)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if selection == .my {
                 TitleIconToolBar(

@@ -36,11 +36,3 @@ struct TeamRanking: Codable, Identifiable {
         case teamName, teamColor, conqueredZones, rank
     }
 }
-
-// MARK: - Meta
-struct MetaData: Codable {
-    let timestamp: String
-    let path: String
-    let requestId: String
-    let durationMs: Int
-}

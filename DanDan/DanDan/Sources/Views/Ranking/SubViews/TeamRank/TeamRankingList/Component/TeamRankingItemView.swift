@@ -20,9 +20,7 @@ struct TeamRankingItemView: View {
             // TODO: 팀 이미지 추가
 //            ProfileImageView(image: teamRankings.userImage, isMyRank: isMyRank)
 
-            Text(teamRankings.teamName == "Blue" ? "A팀" :
-                 teamRankings.teamName == "Yellow" ? "B팀" :
-                 teamRankings.teamName)
+            Text("\(teamRankings.teamName)")
                 .font(.PR.body2)
                 .lineLimit(1)
                 .padding(.leading, 12)

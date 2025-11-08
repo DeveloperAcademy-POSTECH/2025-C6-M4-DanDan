@@ -14,24 +14,23 @@ struct RemainingProgressBar: View {
     /// 오른쪽에 표시할 텍스트 (예: "3일 9시간 남음")
     var trailingText: String
 
-    var trackHeight: CGFloat = 18
-    var dashWidth: CGFloat = 16
+    var trackHeight: CGFloat = 10
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 4) {
             // 오른쪽 남은 시간 텍스트
             Text(trailingText)
                 .font(.PR.caption4)
-                .foregroundStyle(Color.gray)
+                .foregroundStyle(.gray3)
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(Color(.systemGray5))
+                        .fill(.gray5)
                         .frame(height: trackHeight)
 
                     Capsule()
-                        .fill(Color.blue.opacity(0.6))
+                        .fill(.A)
                         .frame(
                             width: max(0, min(1, progress)) * geo.size.width,
                             height: trackHeight

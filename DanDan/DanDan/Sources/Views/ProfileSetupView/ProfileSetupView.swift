@@ -75,8 +75,9 @@ struct ProfileSetupView: View {
             )
             .padding(.bottom, 24)
         }
+        .padding(.top, 68)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        
+        .navigationBarBackButtonHidden(true)
         .onChange(of: selectedItem) { _, newValue in
             guard let item = newValue else { return }
             Task {

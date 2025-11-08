@@ -9,13 +9,16 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var navigationManager = NavigationManager.shared
+    @StateObject private var gamePhase = GamePhaseManager.shared
     
     var body: some View {
         NavigationStack(path: $navigationManager.path) {
             navigationManager.getRootView()
-                .navigationDestination(for: AppDestination.self) { destination in
-                    destination.view()
-            }
+                .navigationDestination(for: AppDestination.self) { $0.view()
+                }
+        }
+        .fullScreenCover(isPresented: $gamePhase.showWeeklyAward) {
+            WeeklyAwardView()
         }
     }
 }
