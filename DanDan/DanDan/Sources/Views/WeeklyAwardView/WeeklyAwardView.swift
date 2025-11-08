@@ -57,6 +57,7 @@ struct WeeklyAwardView: View {
                 "그래도 스틸워크와 계속 걷기",
                 action: {
                     navigationManager.navigate(to: .main)
+                    GamePhaseManager.shared.showWeeklyAward = false
                 }
             )
         }

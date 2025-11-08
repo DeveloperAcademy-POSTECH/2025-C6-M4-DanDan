@@ -41,22 +41,30 @@ class NavigationManager: ObservableObject {
         guard path.count >= count else { return }
         path.removeLast(count)
     }
-
+    
     func popToRoot() {
         path = NavigationPath()
     }
-
+    
+    /// 앱 시작 시 루트 화면 결정:
+    /// - 로그인 O + 팀 배정뷰 아직 안봄 → .teamAssignment
+    /// - 로그인 O + 팀 배정뷰 봄 → .main
+    /// - 로그인 X → .login
     func setRootView() {
         let tokenManager = TokenManager()
         let isAuthenticated = tokenManager.isAuthenticated()
-
+        
         if isAuthenticated {
-            self.root = .main
+            if UserDefaults.standard.hasSeenTeamAssignment {
+                self.root = .main
+            } else {
+                self.root = .teamAssignment
+            }
         } else {
             self.root = .login
         }
     }
-
+    
     func getRootView() -> some View {
         return root.view()
     }
