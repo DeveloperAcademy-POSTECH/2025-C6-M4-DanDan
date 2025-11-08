@@ -9,30 +9,35 @@ import Combine
 import SwiftUI
 
 struct DDayView: View {
+    let dday: Int
     let period: ConquestPeriod
-    var now: () -> Date = { Date() }   // 테스트/프리뷰 주입 용
+    var now: () -> Date = { Date() }  // 테스트/프리뷰 주입 용
     @State private var cancellable: AnyCancellable?
-    
+
     @ObservedObject private var gamePhase = GamePhaseManager.shared
-    
+
     // 게임 종료까지 남은 일수 계산
     private var daysRemaining: Int {
         let cal = Calendar.current
         let todayStartOfDay = cal.startOfDay(for: now())
-        let endOfWeek   = cal.startOfDay(for: period.endDate)
-        return max(0, cal.dateComponents([.day], from: todayStartOfDay, to: endOfWeek).day ?? 0)
+        let endOfWeek = cal.startOfDay(for: period.endDate)
+        return max(
+            0,
+            cal.dateComponents([.day], from: todayStartOfDay, to: endOfWeek).day
+                ?? 0
+        )
     }
-    
+
     private var ddayText: String {
-        daysRemaining == 0 ? "D-Day" : "D-\(daysRemaining)"
+        dday == 0 ? "D-Day" : "D-\(dday)"
     }
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Text("경기 종료까지")
                 .font(.PR.body4)
                 .foregroundStyle(.gray1)
-            
+
             Text(ddayText)
                 .font(.PR.title2)
                 .foregroundStyle(.steelBlack)
@@ -51,9 +56,9 @@ struct DDayView: View {
         .fixedSize()
         .onAppear { startChecking() }
     }
-    
+
     private func startChecking() {
-        cancellable = Timer.publish(every: 60, on: .main, in: .common) // 1분마다 체크
+        cancellable = Timer.publish(every: 60, on: .main, in: .common)  // 1분마다 체크
             .autoconnect()
             .sink { _ in
                 let remaining = daysRemaining

@@ -22,7 +22,7 @@ struct RankingListView: View {
     private var remainingItems: [RankingViewModel.RankingItemData] {
         Array(sortedItems.dropFirst(3))
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -34,10 +34,13 @@ struct RankingListView: View {
                     .padding(.vertical, 36)
                 }
 
-                ForEach(remainingItems) { item in
+                ForEach(Array(remainingItems.enumerated()), id: \.element.id) {
+                    index,
+                    item in
                     RankingItemView(
                         rank: item,
-                        isMyRank: item.id == myUserId
+                        isMyRank: item.id == myUserId,
+                        displayRank: index + 4  // 상위 3개 이후라 +4 (index는 0부터 시작)
                     )
                 }
             }

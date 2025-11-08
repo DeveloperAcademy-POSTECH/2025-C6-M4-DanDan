@@ -31,11 +31,21 @@ class RankingViewModel: ObservableObject {
     private let rankingService = RankingService.shared
     private let rankingManager = RankingManager.shared
     private let navigationManager = NavigationManager.shared
+    private let tokenManager = TokenManager()
 
     // TODO: 더미 데이터 - 현재 유저
-    var currentUserId: UUID = UUID(
-        uuidString: "6699BDBD-46AA-49B7-AB77-4B2BB985E8CC"
-    )!
+    var currentUserId: UUID = UUID()
+
+    init() {
+        if let token = try? tokenManager.getAccessToken(),
+            let userId = AccessTokenDecoder.extractUserId(from: token)
+        {
+            self.currentUserId = userId
+            print("✅ currentUserId 세팅 완료: \(userId)")
+        } else {
+            print("⚠️ AccessToken에서 userId 추출 실패 — 게스트 상태")
+        }
+    }
 
     /// 주어진 점수 배열을 기반으로 각 구역의 점령 상태를 계산하여 업데이트합니다.
     /// - Parameter scores: 구간별 팀 점수 정보 배열
