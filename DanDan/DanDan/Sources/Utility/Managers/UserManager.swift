@@ -43,4 +43,17 @@ class UserManager: ObservableObject {
         userInfo.rankHistory.append(record)
         save()
     }
+
+    /// 로그아웃 시 사용자 정보를 초기 상태로 복구합니다.
+    func reset() {
+        userInfo = UserInfo(
+            id: UUID(),
+            userName: "익명 사용자",
+            userVictoryCnt: 0,
+            userTotalScore: 0,
+            userImage: [],
+            rankHistory: []
+        )
+        save()
+    }
 }
