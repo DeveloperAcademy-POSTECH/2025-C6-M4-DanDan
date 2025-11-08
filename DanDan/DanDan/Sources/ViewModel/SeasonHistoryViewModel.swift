@@ -22,7 +22,6 @@ final class SeasonHistoryViewModel: ObservableObject {
     @Published private(set) var hasCurrentWeek: Bool = false
 
     private var timerCancellable: AnyCancellable?
-    private var cancellables: Set<AnyCancellable> = []
     private let calendar: Calendar
     private let dayFormatter: DateFormatter
 
@@ -68,78 +67,6 @@ final class SeasonHistoryViewModel: ObservableObject {
         }
     }
 
-    // MARK: - API
-    func fetchHistory(page: Int = 1, size: Int = 5) {
-        SeasonHistoryService.shared
-            .fetchUserHistory(page: page, size: size)
-            .receive(on: DispatchQueue.main)
-            .sink { completion in
-                if case let .failure(error) = completion {
-                    print("❌ SeasonHistory fetch failed: \(error)")
-                    // 서버 오류 시 안전한 표시 상태 유지
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self = self else { return }
-                        self.hasCurrentWeek = false
-                        self.completed = []
-                        self.weekLabel = ""
-                        self.weekRange = ""
-                        self.statusText = ""
-                        self.progress = 0
-                        self.remainingText = ""
-                        self.currentDistanceKm = 0
-                        self.currentWeekScore = 0
-                        self.currentTeamRank = 0
-                    }
-                }
-            } receiveValue: { [weak self] data in
-                guard let self = self else { return }
-
-                // currentWeek 반영
-                if let cw = data.currentWeek {
-                    self.hasCurrentWeek = true
-
-                    if let s = SeasonHistoryDateParser.parse(cw.startDate),
-                       let _ = SeasonHistoryDateParser.parse(cw.endDate) {
-                        let period = ConquestPeriod(startDate: s, durationInDays: 6, weekIndex: cw.weekIndex)
-                        self.period = period
-
-                        self.weekLabel = Self.makeWeekLabel(for: s, weekIndex: cw.weekIndex, calendar: self.calendar)
-                        let monday = self.calendar.dateInterval(of: .weekOfYear, for: s)!.start
-                        let sunday = self.calendar.date(byAdding: .day, value: 6, to: monday)!
-                        self.weekRange = "\(self.dayFormatter.string(from: monday)) ~ \(self.dayFormatter.string(from: sunday))"
-                        self.progress = Self.progress(now: Date(), in: period, calendar: self.calendar)
-                        self.remainingText = Self.remainingText(now: Date(), to: sunday.endOfDay(calendar: self.calendar), calendar: self.calendar)
-                        self.statusText = self.progress >= 1.0 ? "완료" : "진행 중"
-                    }
-
-                    self.currentWeekScore = cw.userWeekScore
-                    self.currentTeamRank = cw.ranking
-                    self.currentDistanceKm = cw.distanceKm ?? 0
-                } else {
-                    self.hasCurrentWeek = false
-                }
-
-                // pastWeeks → RankRecord 매핑
-                let mapped: [RankRecord] = data.pastWeeks.data.map { item in
-                    let start = item.startDate.flatMap { SeasonHistoryDateParser.parse($0) } ?? Date()
-                    let endCandidate = item.endDate.flatMap { SeasonHistoryDateParser.parse($0) }
-                    let end = endCandidate ?? self.calendar.date(byAdding: .day, value: 6, to: start) ?? start
-                    return RankRecord(
-                        periodID: UUID(),
-                        startDate: start,
-                        endDate: end,
-                        rank: item.rank,
-                        weekScore: item.weekScore,
-                        distanceKm: item.distanceKm
-                    )
-                }
-                // 최신순 보장 (서버가 최신순이라도 방어적으로 정렬)
-                self.completed = mapped.sorted { $0.startDate > $1.startDate }
-            }
-            .store(in: &cancellables)
-    }
-
-    /// async/await 버전 (MyPage 스타일)
     func load(page: Int = 1, size: Int = 5) async {
         do {
             let data = try await SeasonHistoryService.shared.fetchUserHistoryAsync(page: page, size: size)
@@ -197,46 +124,6 @@ final class SeasonHistoryViewModel: ObservableObject {
         }
     }
 
-#if DEBUG
-    /// 프리뷰/디버그 전용: 과거 RankRecord 목록을 주입합니다.
-    func debugSetCompleted(_ records: [RankRecord]) {
-        self.completed = records
-    }
-#endif
-
-    /// 실제 앱에서는 Keychain/UserDefaults/서버에서 가입 시점을 가져온다.
-    private static func fetchSignupDate() -> Date {
-        // 임시: 프리뷰/로컬 개발용으로 6주 전 월요일을 반환
-        var cal = Calendar(identifier: .gregorian)
-        cal.locale = Locale(identifier: "ko_KR")
-        cal.timeZone = TimeZone(identifier: "Asia/Seoul")!
-        cal.firstWeekday = 2
-        let now = Date()
-        let sixWeeksAgo = cal.date(byAdding: .weekOfYear, value: -6, to: now)!
-        let startOfWeek = cal.dateInterval(of: .weekOfYear, for: sixWeeksAgo)!.start
-        return startOfWeek
-    }
-
-    // MARK: - Completed Accessors
-    var completedCount: Int { completed.count }
-    func completedId(at index: Int) -> UUID { completed[index].id }
-    func completedWeekLabel(at index: Int) -> String {
-        let rr = completed[index]
-        let y = calendar.component(.year, from: rr.startDate)
-        let m = calendar.component(.month, from: rr.startDate)
-        let w = calendar.component(.weekOfMonth, from: rr.startDate)
-        return "\(y)년 \(m)월 \(w)주차"
-    }
-    func completedWeekRange(at index: Int) -> String {
-        let rr = completed[index]
-        let monday = calendar.dateInterval(of: .weekOfYear, for: rr.startDate)!.start
-        let sunday = calendar.date(byAdding: .day, value: 6, to: monday)!
-        return "\(dayFormatter.string(from: monday)) ~ \(dayFormatter.string(from: sunday))"
-    }
-    func completedDistanceKm(at index: Int) -> Double { completed[index].distanceKm ?? 0 }
-    func completedScore(at index: Int) -> Int { completed[index].weekScore }
-    func completedTeamRank(at index: Int) -> Int { completed[index].rank }
-
     // Record 기반 접근자 (카드에 레코드와 함께 문자열 내려주기용)
     func completedWeekLabel(for record: RankRecord) -> String {
         let y = calendar.component(.year, from: record.startDate)
@@ -251,13 +138,6 @@ final class SeasonHistoryViewModel: ObservableObject {
     }
 
     // MARK: - Helpers
-
-    private static func currentWeekBounds(from date: Date, calendar: Calendar) -> (monday: Date, sunday: Date) {
-        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: date)!.start
-        let monday = startOfWeek // firstWeekday = 2 (Mon)
-        let sunday = calendar.date(byAdding: .day, value: 6, to: monday)!
-        return (monday, sunday)
-    }
 
     /// 서버에서 내려준 주차 인덱스를 그대로 사용하여 라벨을 구성합니다.
     private static func makeWeekLabel(for monday: Date, weekIndex: Int, calendar: Calendar) -> String {
