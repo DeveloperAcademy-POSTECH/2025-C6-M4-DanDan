@@ -24,7 +24,7 @@ class MyPageViewModel: ObservableObject {
         if let data = userInfo.userImage.last, let ui = UIImage(data: data) {
             return Image(uiImage: ui)
         }
-        return Image("testImage")
+        return Image("default_avatar")
     }
 
     var displayName: String { userInfo.userName }
@@ -48,6 +48,12 @@ class MyPageViewModel: ObservableObject {
     var weekDistanceKmText: String {
         // 현 단계에서는 누적 완료 구역 거리를 주간 카드에도 동일 반영
         return totalDistanceKmText
+    }
+
+    /// 주간 거리의 정수부 텍스트 (km)
+    var weekDistanceKmIntText: String {
+        let km = totalDistanceMeters / 1000.0
+        return String(Int(km))
     }
 
     var totalDistanceMeters: Double {

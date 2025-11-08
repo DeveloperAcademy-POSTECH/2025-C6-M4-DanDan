@@ -32,7 +32,7 @@ struct SettingView: View {
         .padding(.top, 45)
         .navigationBarBackButtonHidden(needsCustomBackButton)
         .toolbar {
-            BackTitleToolbar(title: "설정") {dismiss()}
+            BackTitleToolbar(title: "환경설정") {dismiss()}
         }
         
     }

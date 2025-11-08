@@ -33,7 +33,7 @@ struct WeeklyActivityCard: View {
                     Text("거리")
                         .font(.PR.caption4)
                         .foregroundColor(.gray3)
-                    Text("\(viewModel.weekDistanceKmText)km")
+                    Text("\(viewModel.weekDistanceKmIntText)km")
                         .font(.PR.title2)
                         .foregroundColor(.steelBlack)
                 }
