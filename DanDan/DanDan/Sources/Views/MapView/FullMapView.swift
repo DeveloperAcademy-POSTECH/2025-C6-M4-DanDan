@@ -403,11 +403,11 @@ struct FullMapScreen: View {
                 HStack(spacing: 8) {
                     if viewModel.teams.count >= 2 {
                         ScoreBoardView(
-                            leftTeamName: viewModel.teams[0].teamName,
-                            rightTeamName: viewModel.teams[1].teamName,
-                            leftTeamScore: viewModel.teams[0]
+                            leftTeamName: viewModel.teams[1].teamName,
+                            rightTeamName: viewModel.teams[0].teamName,
+                            leftTeamScore: viewModel.teams[1]
                                 .conqueredZones,
-                            rightTeamScore: viewModel.teams[1]
+                            rightTeamScore: viewModel.teams[0]
                                 .conqueredZones
                         )
                     } else {
