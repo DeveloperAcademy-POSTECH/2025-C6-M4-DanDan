@@ -10,6 +10,7 @@ import MapKit
 
 // 부분 3D 지도(메인)
 struct MapView: UIViewRepresentable {
+    let zoneStatuses: [ZoneStatus]
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
     // 외부 상태 변경에 따른 갱신 트리거용 토큰 (뷰 재생성 없이 update만 유도)
@@ -67,6 +68,7 @@ struct MapView: UIViewRepresentable {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
         
+        var zoneStatuses: [ZoneStatus] = []  
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
         
@@ -129,9 +131,8 @@ struct MapView: UIViewRepresentable {
             } else {
                 let color = ZoneColorResolver.leadingColorOrDefault(
                     for: line.zoneId,
-                    in: conquestStatuses,
-                    teams: teams,
-                    defaultColor: .primaryGreen // line.color - ui 보여주기 용
+                    zoneStatuses: zoneStatuses,
+                    defaultColor: .primaryGreen
                 )
                 renderer.strokeColor = color
                 renderer.lineWidth = 24
@@ -258,6 +259,7 @@ struct MapView: UIViewRepresentable {
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
         // 데이터 변경 시 렌더러 컬러만 업데이트 (오버레이는 제거/재추가하지 않음)
+        context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.conquestStatuses = conquestStatuses
         context.coordinator.teams = teams
         DispatchQueue.main.async {
@@ -270,8 +272,7 @@ struct MapView: UIViewRepresentable {
                 } else {
                     let color = ZoneColorResolver.leadingColorOrDefault(
                         for: line.zoneId,
-                        in: conquestStatuses,
-                        teams: teams,
+                        zoneStatuses: zoneStatuses,
                         defaultColor: .primaryGreen
                     )
                     renderer.strokeColor = color

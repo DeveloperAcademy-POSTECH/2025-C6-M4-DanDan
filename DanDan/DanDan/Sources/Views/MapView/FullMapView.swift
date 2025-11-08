@@ -10,6 +10,7 @@ import SwiftUI
 
 // 전체 2D 지도
 struct FullMapView: UIViewRepresentable {
+    let zoneStatuses: [ZoneStatus]
     enum Mode { case overall, personal }
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
@@ -78,6 +79,7 @@ struct FullMapView: UIViewRepresentable {
     {
         let manager = CLLocationManager()
 
+        var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
         var mode: Mode = .overall
@@ -104,8 +106,7 @@ struct FullMapView: UIViewRepresentable {
             case .overall:
                 stroke = ZoneColorResolver.leadingColorOrDefault(
                     for: line.zoneId,
-                    in: conquestStatuses,
-                    teams: teams,
+                    zoneStatuses: zoneStatuses,
                     defaultColor: .primaryGreen
                 )
             case .personal:
@@ -118,7 +119,7 @@ struct FullMapView: UIViewRepresentable {
                         for: line.zoneId,
                         in: conquestStatuses,
                         teams: teams,
-                        defaultColor: .primaryGreen
+                        defaultColor: .subA
                     )
                 } else {
                     stroke = UIColor.clear
@@ -279,8 +280,7 @@ struct FullMapView: UIViewRepresentable {
                 case .overall:
                     let stroke = ZoneColorResolver.leadingColorOrDefault(
                         for: line.zoneId,
-                        in: conquestStatuses,
-                        teams: teams,
+                        zoneStatuses: zoneStatuses,
                         defaultColor: .primaryGreen
                     )
                     renderer.strokeColor = stroke
@@ -384,12 +384,16 @@ struct FullMapScreen: View {
 
     var body: some View {
         FullMapView(
+            zoneStatuses: viewModel.zoneStatuses,
             conquestStatuses: conquestStatuses,
             teams: teams,
             mode: isRightSelected ? .personal : .overall,
             refreshToken: effectiveToken
         )
         .ignoresSafeArea()
+        .task {
+            await viewModel.loadMapInfo()
+        }
         .onAppear {
             // 부모에서 전달받은 토큰을 항상 채택
             effectiveToken = refreshToken
@@ -516,6 +520,7 @@ struct FullMapScreen: View {
 //                .font(.PR.caption2)
 //                .foregroundColor(.gray2)
 //            FullMapView(
+//                zoneStatuses: viewModel.zoneStatuses,
 //                conquestStatuses: demoStatuses,
 //                teams: demoTeams,
 //                mode: .overall
