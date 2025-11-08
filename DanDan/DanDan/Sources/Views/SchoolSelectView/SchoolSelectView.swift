@@ -103,7 +103,7 @@ struct SchoolSelectView: View {
                             StatusManager.shared.userStatus.userTeam = viewModel.teamName
                         }
                         
-                        navigationManager.navigate(to: .teamAssignment)
+                        navigationManager.replaceRoot(with: .teamAssignment)
                     }
                 }
             }
