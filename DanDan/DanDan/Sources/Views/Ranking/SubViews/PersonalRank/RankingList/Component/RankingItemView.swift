@@ -10,10 +10,11 @@ import SwiftUI
 struct RankingItemView: View {
     let rank: RankingViewModel.RankingItemData
     let isMyRank: Bool
-
+    let displayRank: Int
+    
     var body: some View {
         HStack {
-            Text("\(rank.ranking)")
+            Text("\(displayRank)")
                 .font(.PR.title2)
                 .padding(.horizontal, 24)
                 .overlay() {
@@ -47,43 +48,4 @@ struct RankingItemView: View {
         )
         .padding(.bottom, 8)
     }
-}
-
-#Preview {
-    VStack(spacing: 0) {
-        RankingItemView(
-            rank: .init(
-                ranking: 1,
-                userName: "소연수",
-                userImage: UIImage(named: "testImage"),
-                userWeekScore: 12,
-                userTeam: "blue",
-                backgroundColor: .blue.opacity(0.1)
-            )
-            , isMyRank: false
-        )
-        RankingItemView(
-            rank: .init(
-                ranking: 2,
-                userName: "김소원",
-                userImage: UIImage(named: "testImage"),
-                userWeekScore: 9,
-                userTeam: "blue",
-                backgroundColor: .blue.opacity(0.1)
-            )
-            , isMyRank: true
-        )
-        RankingItemView(
-            rank: .init(
-                ranking: 3,
-                userName: "허찬욱",
-                userImage: nil,
-                userWeekScore: 7,
-                userTeam: "yellow",
-                backgroundColor: .yellow.opacity(0.1)
-            )
-            , isMyRank: false
-        )
-    }
-    .padding()
 }

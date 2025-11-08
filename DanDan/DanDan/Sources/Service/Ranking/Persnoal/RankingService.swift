@@ -32,18 +32,18 @@ class RankingService {
     // MARK: - 팀 랭킹
     
     func fetchTeamRankings() async throws -> [TeamRanking] {
-            guard let url = URL(string: "https://www.singyupark.cloud:8443/api/v1/conquest/rankings/teams") else {
-                throw URLError(.badURL)
-            }
-
-            let (data, response) = try await URLSession.shared.data(from: url)
-
-            guard let httpResponse = response as? HTTPURLResponse,
-                  200..<300 ~= httpResponse.statusCode else {
-                throw URLError(.badServerResponse)
-            }
-
-            let decodedResponse = try JSONDecoder().decode(TeamRankingResponseDTO.self, from: data)
-            return decodedResponse.data.rankings
+        guard let url = URL(string: "https://www.singyupark.cloud:8443/api/v1/conquest/rankings/teams") else {
+            throw URLError(.badURL)
         }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+
+        let decodedResponse = try JSONDecoder().decode(TeamRankingResponseDTO.self, from: data)
+        return decodedResponse.data.rankings
+    }
 }

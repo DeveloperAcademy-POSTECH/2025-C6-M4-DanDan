@@ -40,3 +40,14 @@ struct UserStatus: Identifiable, Codable {
         self.rank = 0
     }
 }
+
+extension UserStatus {
+    init(userDailyScore: Int) {
+        self.id = UUID()
+        self.userTeam = ""
+        self.userWeekScore = 0
+        self.userDailyScore = userDailyScore
+        self.zoneCheckedStatus = [:]
+        self.rank = 0
+    }
+}
