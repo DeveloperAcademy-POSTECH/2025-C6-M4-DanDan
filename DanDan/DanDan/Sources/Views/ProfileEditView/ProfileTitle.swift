@@ -1,0 +1,34 @@
+//
+//  ProfileTitle.swift
+//  DanDan
+//
+//  Created by Hwnag Seyeon on 11/8/25.
+//
+
+import SwiftUI
+
+struct ProfileTitle: View {
+    var title: String
+    var description: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8){
+            Text(title)
+                .font(.PR.title1)
+                .foregroundColor(.steelBlack)
+                .frame(height: 32)
+
+            Text(description)
+                .font(.PR.body4)
+                .foregroundColor(.gray2)
+                .frame(height: 22)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 24)
+        .padding(.horizontal, 20)
+    }
+}
+
+#Preview {
+    ProfileTitle(title: "수정", description: "tnwwjd")
+}
