@@ -8,8 +8,7 @@
 import SwiftUI
 import Combine
 
-// 오로지 UT용 화면
-// 11월 14일 16시에 TeamAssignmentView로 이동
+// 점령전 시작 때 TeamAssignmentView로 이동
 struct WaitingView: View {
     private let navigationManager = NavigationManager.shared
     
@@ -25,6 +24,10 @@ struct WaitingView: View {
         date.minute = 0
         return Calendar.current.date(from: date)!
     }()
+
+    var month: Int
+    var day: Int
+    var hour: Int
     
     var body: some View {
         ZStack {
@@ -34,7 +37,7 @@ struct WaitingView: View {
                 .ignoresSafeArea(edges: .all)
                 .offset(y: 100)
             
-            TitleSectionView(title: "11월 14일 16시에 게임이 시작돼요", description: "몸을 풀며 기다려주세요!")
+            TitleSectionView(title: "\(month)월 \(day)일 \(hour)시에 게임이 시작돼요", description: "몸을 풀며 기다려주세요!")
                 .padding(.top, 50)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
