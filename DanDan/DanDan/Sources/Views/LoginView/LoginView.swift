@@ -26,6 +26,11 @@ struct LoginView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             .padding(.bottom, 30)
         }
+        .alert("소셜 로그인 준비중", isPresented: $showSocialAlert) {
+                   Button("확인", role: .cancel) { }
+               } message: {
+                   Text("테스트 버전이라 게스트로 로그인만 가능해요")
+               }
     }
 }
 
