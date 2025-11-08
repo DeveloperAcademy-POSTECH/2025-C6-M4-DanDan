@@ -69,7 +69,7 @@ final class SeasonHistoryViewModel: ObservableObject {
     }
 
     // MARK: - API
-    func fetchHistory(page: Int = 0, size: Int = 10) {
+    func fetchHistory(page: Int = 1, size: Int = 5) {
         SeasonHistoryService.shared
             .fetchUserHistory(page: page, size: size)
             .receive(on: DispatchQueue.main)
@@ -120,7 +120,7 @@ final class SeasonHistoryViewModel: ObservableObject {
                 }
 
                 // pastWeeks → RankRecord 매핑
-                let mapped: [RankRecord] = data.pastWeeks.map { item in
+                let mapped: [RankRecord] = data.pastWeeks.data.map { item in
                     let start = item.startDate.flatMap { SeasonHistoryDateParser.parse($0) } ?? Date()
                     let endCandidate = item.endDate.flatMap { SeasonHistoryDateParser.parse($0) }
                     let end = endCandidate ?? self.calendar.date(byAdding: .day, value: 6, to: start) ?? start
@@ -137,6 +137,64 @@ final class SeasonHistoryViewModel: ObservableObject {
                 self.completed = mapped.sorted { $0.startDate > $1.startDate }
             }
             .store(in: &cancellables)
+    }
+
+    /// async/await 버전 (MyPage 스타일)
+    func load(page: Int = 1, size: Int = 5) async {
+        do {
+            let data = try await SeasonHistoryService.shared.fetchUserHistoryAsync(page: page, size: size)
+
+            if let cw = data.currentWeek {
+                self.hasCurrentWeek = true
+
+                if let s = SeasonHistoryDateParser.parse(cw.startDate),
+                   let _ = SeasonHistoryDateParser.parse(cw.endDate) {
+                    let period = ConquestPeriod(startDate: s, durationInDays: 6, weekIndex: cw.weekIndex)
+                    self.period = period
+
+                    self.weekLabel = Self.makeWeekLabel(for: s, weekIndex: cw.weekIndex, calendar: self.calendar)
+                    let monday = self.calendar.dateInterval(of: .weekOfYear, for: s)!.start
+                    let sunday = self.calendar.date(byAdding: .day, value: 6, to: monday)!
+                    self.weekRange = "\(self.dayFormatter.string(from: monday)) ~ \(self.dayFormatter.string(from: sunday))"
+                    self.progress = Self.progress(now: Date(), in: period, calendar: self.calendar)
+                    self.remainingText = Self.remainingText(now: Date(), to: sunday.endOfDay(calendar: self.calendar), calendar: self.calendar)
+                    self.statusText = self.progress >= 1.0 ? "완료" : "진행 중"
+                }
+
+                self.currentWeekScore = cw.userWeekScore
+                self.currentTeamRank = cw.ranking
+                self.currentDistanceKm = cw.distanceKm ?? 0
+            } else {
+                self.hasCurrentWeek = false
+            }
+
+            let mapped: [RankRecord] = data.pastWeeks.data.map { item in
+                let start = item.startDate.flatMap { SeasonHistoryDateParser.parse($0) } ?? Date()
+                let endCandidate = item.endDate.flatMap { SeasonHistoryDateParser.parse($0) }
+                let end = endCandidate ?? self.calendar.date(byAdding: .day, value: 6, to: start) ?? start
+                return RankRecord(
+                    periodID: UUID(),
+                    startDate: start,
+                    endDate: end,
+                    rank: item.rank,
+                    weekScore: item.weekScore,
+                    distanceKm: item.distanceKm
+                )
+            }
+            self.completed = mapped.sorted { $0.startDate > $1.startDate }
+        } catch {
+            print("❌ SeasonHistory load failed: \(error)")
+            self.hasCurrentWeek = false
+            self.completed = []
+            self.weekLabel = ""
+            self.weekRange = ""
+            self.statusText = ""
+            self.progress = 0
+            self.remainingText = ""
+            self.currentDistanceKm = 0
+            self.currentWeekScore = 0
+            self.currentTeamRank = 0
+        }
     }
 
 #if DEBUG
@@ -227,6 +285,34 @@ final class SeasonHistoryViewModel: ObservableObject {
         if h > 0 { return "\(h)시간 남음" }
         if m > 0 { return "\(m)분 남음" }
         return "종료"
+    }
+}
+
+// MARK: - Date Parsing Helper (moved from DTO)
+enum SeasonHistoryDateParser {
+    /// 서버 날짜 문자열을 Date로 파싱 (여러 포맷 지원)
+    static func parse(_ value: String) -> Date? {
+        // 1) ISO8601 우선
+        if let iso = ISO8601DateFormatter().date(from: value) {
+            return iso
+        }
+        // 2) yyyy-MM-dd 및 기타 포맷
+        let fmts = [
+            "yyyy-MM-dd",
+            "yyyy.MM.dd",
+            "yyyy-MM-dd'T'HH:mm:ssXXXXX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
+        ]
+        for f in fmts {
+            let df = DateFormatter()
+            df.locale = Locale(identifier: "ko_KR")
+            df.timeZone = TimeZone(identifier: "Asia/Seoul")
+            df.dateFormat = f
+            if let d = df.date(from: value) {
+                return d
+            }
+        }
+        return nil
     }
 }
 
