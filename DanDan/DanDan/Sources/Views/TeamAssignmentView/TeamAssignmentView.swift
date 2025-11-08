@@ -47,6 +47,7 @@ struct TeamAssignmentView: View {
         }
         .contentShape(Rectangle()) // ZStack 전체 터치 영역 활성화
         .onTapGesture {
+            UserDefaults.standard.hasSeenTeamAssignment = true // 앞으로 앱 진입 시 TeamAssignmentView 건너 뛰기 (setRootView에서 관리)
             navigationManager.navigate(to: .main)
         }
     }

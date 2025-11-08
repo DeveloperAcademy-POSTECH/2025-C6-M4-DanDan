@@ -12,41 +12,41 @@ enum School: String, CaseIterable, Identifiable {
     case pohangSteelMiddle = "포항제철중학교"
     case semyeongHigh = "세명고등학교"
     case pohangIdongHigh = "포항이동고등학교"
-
+    
     var id: String { rawValue }
 }
 
 struct SchoolSelectView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = SchoolSelectViewModel()
-
+    
     @State private var selected: School? = nil
     @State private var showConfirm = false
-
+    
     private let navigationManager = NavigationManager.shared
     private var needsCustomBackButton: Bool {
         if #available(iOS 26.0, *) { return false } else { return true }
     }
-
+    
     let nickname: String
     let profileImage: UIImage?
-
+    
     // MARK: - 저장 이벤트 콜벡 (서버 연결)
     // 가입하기 버튼 탭 -> 선택된 학교 데이터 전달
     var onComplete: ((School) -> Void)?
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
-
+            
             TitleSectionView(
                 title: "학교 선택하기",
                 description: "내가 다니고 있는 학교를 선택해주세요."
             )
-
+            
             SchoolListSection(selected: $selected)
-
+            
             Spacer()
-
+            
             // MARK: - 가입하기 버튼
             // 여기서 서버 API 호출
             PrimaryButton(
@@ -67,9 +67,9 @@ struct SchoolSelectView: View {
             maxHeight: .infinity,
             alignment: .topLeading
         )
-
+        
         .navigationBarBackButtonHidden(needsCustomBackButton)
-
+        
         // MARK: - Back Button
         .toolbar {
             if needsCustomBackButton {
@@ -78,7 +78,7 @@ struct SchoolSelectView: View {
                 }
             }
         }
-
+        
         .alert("정확한 정보를 입력하셨나요?", isPresented: $showConfirm) {
             Button("수정하기", role: .cancel) {}
             Button("가입하기") {
@@ -86,21 +86,21 @@ struct SchoolSelectView: View {
                     Task {
                         viewModel.userName = nickname
                         viewModel.profileImage = profileImage
-
+                        
                         switch school {
                         case .daedongMiddle, .pohangSteelMiddle:
                             viewModel.teamName = "Yellow"
                         case .semyeongHigh, .pohangIdongHigh:
                             viewModel.teamName = "Blue"
                         }
-
+                        
                         await viewModel.registerGuest()
                         
-                        navigationManager.navigate(to: .main)
+                        navigationManager.navigate(to: .teamAssignment)
                     }
                 }
             }
-
+            
         } message: {
             Text("가입 이후에는 닉네임과 프로필, 학교를 \n바꿀 수 없어요!")
         }
@@ -110,13 +110,13 @@ struct SchoolSelectView: View {
 // MARK: - 선택 리스트 전체 컨테이너
 private struct SchoolListSection: View {
     @Binding var selected: School?
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(School.allCases.enumerated()), id: \.element.id) {
                 index,
                 school in
-
+                
                 SchoolOptionRow(
                     title: school.rawValue,
                     isSelected: selected == school
@@ -140,7 +140,7 @@ private struct SchoolOptionRow: View {
     let title: String
     let isSelected: Bool
     let onTap: () -> Void
-
+    
     var body: some View {
         Button(action: onTap) {
             HStack {
