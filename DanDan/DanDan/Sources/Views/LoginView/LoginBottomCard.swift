@@ -18,7 +18,7 @@ struct LoginBottomCard: View {
                 .foregroundStyle(.steelBlack)
                 .padding(.leading, 10)
             
-            Text("철길숲을 걸어 구역을 점령하고\nㅊ1우리 팀을 우승으로 이끌어보세요.")
+            Text("철길숲을 걸어 구역을 점령하고\n우리 팀을 우승으로 이끌어보세요.")
                 .font(.PR.caption3)
                 .foregroundStyle(.gray1)
                 .lineSpacing(4)
@@ -41,7 +41,23 @@ struct LoginBottomCard: View {
                 background: .primaryGreen,
                 foreground: .white
             )
-                        
+            
+//            // MARK: - Apple
+
+//            Button {
+//                showSocialAlert = true
+//            } label: {
+//                HStack(spacing: 10) {
+//                    Image(systemName: "apple.logo")
+//                        .renderingMode(.template)
+//                        .font(.system(size: 20))
+//                    Text("Sign in with Apple")
+//                        .font(.system(size: 19, weight: .bold))
+//                }
+//                .frame(maxWidth: .infinity, minHeight: 58)
+//            }
+//            .buttonStyle(FilledCapsuleButtonStyle(fill: .black, foreground: .white))
+//            
 //            // MARK: - Naver
             
 //            Button {

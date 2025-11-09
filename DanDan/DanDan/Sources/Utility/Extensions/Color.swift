@@ -58,10 +58,3 @@ extension Color {
         }
     }
 }
-
-// MARK: - Brand Colors
-
-extension Color {
-    static let naverGreen  = Color(red: 0/255,   green: 199/255, blue: 60/255)
-    static let kakaoYellow = Color(red: 254/255, green: 229/255, blue: 0/255)
-}
