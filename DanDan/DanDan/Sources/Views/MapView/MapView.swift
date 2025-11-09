@@ -16,51 +16,20 @@ struct MapView: UIViewRepresentable {
     // 외부 상태 변경에 따른 갱신 트리거용 토큰 (뷰 재생성 없이 update만 유도)
     var refreshToken: UUID = UUID()
     
-    // MARK: - Bounds
-    /// 철길숲의 남서쪽과 북동쪽 좌표를 기준으로 지도 표시 범위를 계산하는 내부 구조체
-    private struct Bounds {
-        let southWest: CLLocationCoordinate2D
-        let northEast: CLLocationCoordinate2D
-        let margin: Double = 0.55
-        
-        var center: CLLocationCoordinate2D {
-            CLLocationCoordinate2D(
-                latitude: (southWest.latitude + northEast.latitude) / 2.0,
-                longitude: (southWest.longitude + northEast.longitude) / 2.0
-            )
-        }
-        
-        var region: MKCoordinateRegion {
-            let spanLat = abs(northEast.latitude - southWest.latitude) * margin
-            let spanLon = abs(northEast.longitude - southWest.longitude) * margin
-            return MKCoordinateRegion(
-                center: self.center,
-                span: MKCoordinateSpan(latitudeDelta: spanLat, longitudeDelta: spanLon)
-            )
-        }
-        
-        var span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-    }
-    
-    private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
-        guard !coords.isEmpty else { return bounds.center }
-        let lat = coords.map { $0.latitude }.reduce(0, +) / Double(coords.count)
-        let lon = coords.map { $0.longitude }.reduce(0, +) / Double(coords.count)
-        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-    }
-    
     // MARK: - Constants
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표
-    private let bounds = Bounds(
+    private let bounds = MapBounds(
         southWest: .init(latitude: 35.998605, longitude: 129.316145),
-        northEast: .init(latitude: 36.057920, longitude: 129.361197)
+        northEast: .init(latitude: 36.057920, longitude: 129.361197),
+        margin: 0.55
     )
     
-    // MARK: - Overlays
-    final class ColoredPolyline: MKPolyline {
-        var color: UIColor = .white
-        var isOutline: Bool = false
-        var zoneId: Int = 0
+    // 중심점 계산
+    private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
+        guard !coords.isEmpty else { return bounds.center }
+        let lat = coords.map(\.latitude).reduce(0, +) / Double(coords.count)
+        let lon = coords.map(\.longitude).reduce(0, +) / Double(coords.count)
+        return .init(latitude: lat, longitude: lon)
     }
     
     // MARK: - Coordinator
@@ -71,6 +40,7 @@ struct MapView: UIViewRepresentable {
         var zoneStatuses: [ZoneStatus] = []  
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
+        var strokeProvider = ZoneStrokeProvider(zoneStatuses: [])
         
         override init() {
             super.init()
@@ -84,6 +54,8 @@ struct MapView: UIViewRepresentable {
                 self.manager.startUpdatingHeading() // 나침반(방향) 업데이트 시작
             }
         }
+        
+        // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
         
         // 사용자의 위치에 따라 카메라 중심 이동
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -115,31 +87,50 @@ struct MapView: UIViewRepresentable {
             }
         }
         
-        // Polyline renderer
+        // 테스트용 주석 처리 부분 여기까지
+        
+        // 오버레이(선) 생성
+        func installOverlays(for zones: [Zone], on map: MKMapView) {
+            for z in zones {
+                let coords = z.coordinates
+                
+                // 1) 기본 폴리라인(팀 색칠용)
+                let base = ColoredPolyline(coordinates: coords, count: coords.count)
+                base.zoneId = z.zoneId
+                map.addOverlay(base, level: .aboveRoads)
+                
+                // 2) 외곽선 폴리라인(오늘 지나간 구역 하이라이트용)
+                let outline = ColoredPolyline(coordinates: coords, count: coords.count)
+                outline.zoneId = z.zoneId
+                outline.isOutline = true
+                map.addOverlay(outline, level: .aboveRoads)
+            }
+        }
+        
+        // 어노테이션(정류소) 생성
+        func installStations(
+            for zones: [Zone],
+            statuses: [ZoneConquestStatus],
+            centroidOf: ([CLLocationCoordinate2D]) -> CLLocationCoordinate2D,
+            on map: MKMapView)
+        {
+            for z in zones {
+                let c = centroidOf(z.coordinates)
+                let zoneStatuses = statuses.filter { $0.zoneId == z.zoneId }
+                let ann = StationAnnotation(coordinate: c, zone: z, statusesForZone: zoneStatuses)
+                map.addAnnotation(ann)
+            }
+        }
+        
+        // MARK: - MKMapViewDelegate
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             guard let line = overlay as? ColoredPolyline else { return MKOverlayRenderer() }
-            
-            // 실제 색상 적용
-            let renderer = MKPolylineRenderer(overlay: line)
-            if line.isOutline {
-                let checked = StatusManager.shared.userStatus.zoneCheckedStatus[line.zoneId] == true
-                renderer.strokeColor = checked ? UIColor.white.withAlphaComponent(0.85) : UIColor.clear
-                renderer.lineWidth = 16
-                renderer.lineCap = .round
-                renderer.lineJoin = .round
-                return renderer
-            } else {
-                let color = ZoneColorResolver.leadingColorOrDefault(
-                    for: line.zoneId,
-                    zoneStatuses: zoneStatuses,
-                    defaultColor: .primaryGreen
-                )
-                renderer.strokeColor = color
-                renderer.lineWidth = 36
-                renderer.lineCap = .round
-                renderer.lineJoin = .round
-                return renderer
-            }
+            let r = MKPolylineRenderer(overlay: line)
+            r.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
+            r.lineWidth = line.isOutline ? 9 : 36
+            r.lineCap = .round
+            r.lineJoin = .round
+            return r
         }
         
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -154,29 +145,22 @@ struct MapView: UIViewRepresentable {
                 view = HostingAnnotationView(annotation: ann, reuseIdentifier: id)
             }
             
-            // SwiftUI 버튼 + 정복 버튼 주입
+            // SwiftUI 정류소 버튼 + 정복 버튼 주입
             let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
+            
             let swiftUIView = ZStack {
-                ZoneStationButton(
-                    zone: ann.zone,
-                    statusesForZone: ann.statusesForZone
-                )
-
+                ZoneStationButton(zone: ann.zone, statusesForZone: ann.statusesForZone)
                 if isChecked && !isClaimed {
                     ConqueredButton(zoneId: ann.zone.zoneId) { id in
-                        // 순차 호출: complete -> score/acquire
                         ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
-                            if !ok {
-                                print("🚨 postChecked failed for zoneId=\(id)")
-                                return
-                            }
+                            guard ok else { print("🚨 postChecked failed: \(id)"); return }
                             ZoneCheckedService.shared.acquireScore(zoneId: id) { ok2 in
                                 if ok2 {
                                     StatusManager.shared.incrementDailyScore()
                                     StatusManager.shared.setRewardClaimed(zoneId: id, claimed: true)
                                 } else {
-                                    print("🚨 acquireScore failed for zoneId=\(id)")
+                                    print("🚨 acquireScore failed: \(id)")
                                 }
                             }
                         }
@@ -185,12 +169,9 @@ struct MapView: UIViewRepresentable {
                 }
             }
             view.setSwiftUIView(swiftUIView)
-
             view.contentSize = CGSize(width: 160, height: 190)
-
             view.centerOffset = CGPoint(x: 10, y: -36)
             view.canShowCallout = false
-            
             return view
         }
     }
@@ -200,9 +181,7 @@ struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         if !Thread.isMainThread {
             var created: MKMapView!
-            DispatchQueue.main.sync {
-                created = self._createMap(context: context)
-            }
+            DispatchQueue.main.sync { created = self._createMap(context: context) }
             return created
         }
         return _createMap(context: context)
@@ -211,11 +190,15 @@ struct MapView: UIViewRepresentable {
     private func _createMap(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
         
+        // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
+
         map.isScrollEnabled = false
         map.isZoomEnabled = false
         map.isRotateEnabled = false
         map.isPitchEnabled = false
         map.showsCompass = false
+        
+        // 테스트용 주석 처리 부분 여기까지
         
         let config = MKStandardMapConfiguration(elevationStyle: .realistic)
         config.pointOfInterestFilter = .excludingAll
@@ -226,57 +209,35 @@ struct MapView: UIViewRepresentable {
         context.coordinator.mapView = map
         context.coordinator.conquestStatuses = conquestStatuses
         context.coordinator.teams = teams
+        context.coordinator.zoneStatuses = zoneStatuses
+        context.coordinator.strokeProvider = .init(zoneStatuses: zoneStatuses)
         
-        for zone in zones {
-            let coords = zone.coordinates
-            let base = ColoredPolyline(coordinates: coords, count: coords.count)
-            base.zoneId = zone.zoneId
-            base.color = zone.zoneColor
-            map.addOverlay(base, level: .aboveRoads)
-
-            // 하이라이트(오늘 체크한 구역) 오버레이
-            let outline = ColoredPolyline(coordinates: coords, count: coords.count)
-            outline.zoneId = zone.zoneId
-            outline.isOutline = true
-            map.addOverlay(outline, level: .aboveRoads)
-        }
+        // 오버레이/정류소 설치
+        context.coordinator.installOverlays(for: zones, on: map)
+        context.coordinator.installStations(for: zones, statuses: conquestStatuses, centroidOf: centroid(of:), on: map)
         
-        let region = bounds.region
-        map.setRegion(region, animated: true)
-        let camera = MKMapCamera(
-            lookingAtCenter: bounds.center,
-            fromDistance: 500,
-            pitch: 80,
-            heading: 0
-        )
-        map.setCamera(camera, animated: false)
+        // 카메라/영역
+        map.setRegion(bounds.region, animated: true)
+        map.setCamera(.init(lookingAtCenter: bounds.center, fromDistance: 500, pitch: 80, heading: 0), animated: false)
         
         map.showsUserLocation = true
         context.coordinator.request()
-        
         return map
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        // 데이터 변경 시 렌더러 컬러만 업데이트 (오버레이는 제거/재추가하지 않음)
+        // 변경된 상태 주입
         context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.conquestStatuses = conquestStatuses
         context.coordinator.teams = teams
+        context.coordinator.strokeProvider = .init(zoneStatuses: zoneStatuses)
+        
+        // 렌더러만 색 갱신
         DispatchQueue.main.async {
             for overlay in uiView.overlays {
                 guard let line = overlay as? ColoredPolyline,
                       let renderer = uiView.renderer(for: overlay) as? MKPolylineRenderer else { continue }
-                if line.isOutline {
-                    let checked = StatusManager.shared.userStatus.zoneCheckedStatus[line.zoneId] == true
-                    renderer.strokeColor = checked ? UIColor.white.withAlphaComponent(0.85) : UIColor.clear
-                } else {
-                    let color = ZoneColorResolver.leadingColorOrDefault(
-                        for: line.zoneId,
-                        zoneStatuses: zoneStatuses,
-                        defaultColor: .primaryGreen
-                    )
-                    renderer.strokeColor = color
-                }
+                renderer.strokeColor = context.coordinator.strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
                 renderer.setNeedsDisplay()
             }
         }
