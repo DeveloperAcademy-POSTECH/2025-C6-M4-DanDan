@@ -5,57 +5,49 @@
 //  Created by Hwnag Seyeon on 11/2/25.
 //
 
-import PhotosUI
 import SwiftUI
 
 struct ProfileEditView: View {
-    @State private var nickname: String = ""
-    @State private var selectedItem: PhotosPickerItem?
-    @State private var profileImage: UIImage? = UIImage(named: "default_avatar")
-    @State private var showPicker: Bool = false
-    @State private var isNicknameTooLong: Bool = false
+    @StateObject private var viewModel = ProfileEditViewModel()
+
+    private var needsCustomBackButton: Bool {
+        if #available(iOS 26.0, *) { return false } else { return true }
+    }
 
     var body: some View {
-        VStack(spacing: 45) {
-            
+        VStack(spacing: 40) {
             ProfileTitle(
                 title: "프로필 수정하기",
                 description: "나만의 닉네임과 프로필을 설정해주세요."
             )
+            
+            ProfileEditImage(viewModel: viewModel)
 
-            VStack(spacing: 40) {
-                AvatarEditButton(
-                    image: profileImage,
-                    diameter: 120,
-                    overlayHeight: 38,
-                    overlayColor: .darkGreen.opacity(0.8)
-                ) {
-                    showPicker = true
-                }
-                .photosPicker(isPresented: $showPicker, selection: $selectedItem, matching: .images)
+            ProfileEditName(viewModel: viewModel)
+            
 
-                CustomTextField(text: $nickname, prompt: "닉네임 입력")
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(isNicknameTooLong ? Color.red : Color.clear, lineWidth: 1)
-                            .padding(.horizontal, 20)
-                    )
-                if isNicknameTooLong {
-                    Text("닉네임은 7자 이하로 설정해주세요")
-                        .font(.PR.body4)
-                        .foregroundColor(.red)
-                        .padding(.leading, 4)
-                        .padding(.top, -12)
-                }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .safeAreaInset(edge: .bottom) {
+            ProfileEditSaveButton(viewModel: viewModel)
+        }
+        .task {
+            await viewModel.load()
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                BackButton { viewModel.handleBackTapped() }
             }
-            .frame(maxWidth: .infinity)
-
-            Spacer()
-
-            PrimaryButton(
-                "수정하기",
-                action: { () }
-            )
+        }
+        .alert("저장되지 않아요 !", isPresented: $viewModel.showDiscardAlert) {
+            Button("계속 수정하기", role: .cancel) {}
+            Button("뒤로가기", role: .destructive) {
+                viewModel.confirmDiscardAndPop()
+            }
+        } message: {
+            Text("수정하기 버튼을 누르지 않으면 변경사항이 반영되지 않아요")
         }
     }
 }
