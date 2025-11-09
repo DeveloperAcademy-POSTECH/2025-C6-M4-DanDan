@@ -18,10 +18,12 @@ struct MyPageView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ProfileHeader(viewModel: viewModel) {
-//                viewModel.tapProfileEditButton()
-                ()
-            }
+            ProfileHeader(
+                profileImage: viewModel.profileImage,
+                displayName: viewModel.displayName,
+                winCount: viewModel.winCount,
+                totalScore: viewModel.totalScore
+            )
             
             WeeklyActivityCard(viewModel: viewModel)
 
