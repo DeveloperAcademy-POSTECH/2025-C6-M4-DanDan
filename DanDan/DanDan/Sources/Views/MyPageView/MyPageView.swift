@@ -19,8 +19,7 @@ struct MyPageView: View {
     var body: some View {
         VStack(spacing: 0) {
             ProfileHeader(viewModel: viewModel) {
-//                viewModel.tapProfileEditButton()
-                ()
+                viewModel.tapProfileEditButton()
             }
             
             WeeklyActivityCard(viewModel: viewModel)
@@ -33,6 +32,9 @@ struct MyPageView: View {
         }
         .task {
             await viewModel.load()
+        }
+        .onAppear {
+            Task { await viewModel.load() }
         }
     }
 }
