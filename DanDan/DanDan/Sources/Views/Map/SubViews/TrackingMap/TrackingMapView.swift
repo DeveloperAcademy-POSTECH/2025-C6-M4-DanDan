@@ -8,23 +8,23 @@
 import SwiftUI
 import MapKit
 
-// 부분 3D 지도(메인)
-struct MapView: UIViewRepresentable {
+// 부분 3D 지도(메인) - MKMapView를 SwiftUI에서 쓰기 위한 래퍼
+struct TrackingMapView: UIViewRepresentable {
     let zoneStatuses: [ZoneStatus]
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
-    // 외부 상태 변경에 따른 갱신 트리거용 토큰 (뷰 재생성 없이 update만 유도)
+    // 외부 상태 변경 시 강제 update 트리거(렌더러만 갱신)
     var refreshToken: UUID = UUID()
     
     // MARK: - Constants
-    /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표
+    /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표, 표시 범위(경계/마진) 정의
     private let bounds = MapBounds(
         southWest: .init(latitude: 35.998605, longitude: 129.316145),
         northEast: .init(latitude: 36.057920, longitude: 129.361197),
         margin: 0.55
     )
     
-    // 중심점 계산
+    // 중심점 계산 - 정류소 버튼 위치 잡기
     private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
         guard !coords.isEmpty else { return bounds.center }
         let lat = coords.map(\.latitude).reduce(0, +) / Double(coords.count)
@@ -40,13 +40,14 @@ struct MapView: UIViewRepresentable {
         var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
-        var strokeProvider = ZoneStrokeProvider(zoneStatuses: [])
+        var strokeProvider = ZoneStrokeProvider(zoneStatuses: []) // 구역별 선 색상 계산기
         
         override init() {
             super.init()
             manager.delegate = self
         }
         
+        // 위치 권한 요청 및 위치/방위 업데이트 시작
         func request() {
             DispatchQueue.main.async {
                 self.manager.requestWhenInUseAuthorization() // 위치 정보 접근 권한 요청
@@ -90,6 +91,7 @@ struct MapView: UIViewRepresentable {
         // 테스트용 주석 처리 부분 여기까지
         
         // MARK: - MKMapViewDelegate
+        /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             guard let line = overlay as? ColoredPolyline else { return MKOverlayRenderer() }
             let r = MKPolylineRenderer(overlay: line)
@@ -100,6 +102,7 @@ struct MapView: UIViewRepresentable {
             return r
         }
         
+        /// 어노테이션 뷰 - 정류소 버튼 + 정복 버튼 주입
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
             guard let ann = annotation as? StationAnnotation else { return nil }
             
@@ -112,7 +115,7 @@ struct MapView: UIViewRepresentable {
                 view = HostingAnnotationView(annotation: ann, reuseIdentifier: id)
             }
             
-            // SwiftUI 정류소 버튼 + 정복 버튼 주입
+            // 정복 조건(오늘 체크했고, 보상 미수령) 판단 후 뷰 구성
             let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
             
@@ -142,6 +145,7 @@ struct MapView: UIViewRepresentable {
         return _createMap(context: context)
     }
 
+    // MKMapView 구성(지도 옵션/오버레이/어노테이션)
     private func _createMap(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
         
@@ -195,6 +199,68 @@ struct MapView: UIViewRepresentable {
         // 렌더러만 색 갱신
         DispatchQueue.main.async {
             MapOverlayRefresher.refreshColors(on: uiView, with: context.coordinator.strokeProvider)
+        }
+    }
+}
+
+struct MapScreen: View {
+    @StateObject private var viewModel = MapScreenViewModel()
+
+    let conquestStatuses: [ZoneConquestStatus]
+    let teams: [Team]
+    let userStatus: UserStatus
+    let period: ConquestPeriod
+    let refreshToken: UUID
+
+    // MARK: - Body
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            // 3D 부분 지도
+                TrackingMapView(
+                    zoneStatuses: viewModel.zoneStatuses,
+                    conquestStatuses: conquestStatuses,
+                    teams: teams,
+                    refreshToken: refreshToken
+                )
+                .ignoresSafeArea()
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 8) {
+                    if viewModel.teams.count >= 2 {
+                        ScoreBoardView(
+                            leftTeamName: viewModel.teams[1].teamName,
+                            rightTeamName: viewModel.teams[0].teamName,
+                            leftTeamScore: viewModel.teams[1].conqueredZones,
+                            rightTeamScore: viewModel.teams[0].conqueredZones
+                        )
+                    } else {
+                        // 로딩 중일 때는 기본값 표시
+                        ScoreBoardView(
+                            leftTeamName: "—",
+                            rightTeamName: "—",
+                            leftTeamScore: 0,
+                            rightTeamScore: 0
+                        )
+                    }
+
+                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
+                }
+
+                if !viewModel.startDate.isEmpty {
+                    DDayView(
+                        dday: ConquestPeriod.from(
+                            endDateString: viewModel.endDate
+                        ),
+                        period: period
+                    )
+                    .padding(.leading, 4)
+                }
+            }
+            .padding(.top, 60)
+            .padding(.leading, 14)
+        }
+        .task {
+            await viewModel.loadMapInfo()
         }
     }
 }
