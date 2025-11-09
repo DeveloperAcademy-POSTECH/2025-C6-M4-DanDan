@@ -15,7 +15,7 @@ struct ZoneScorePair {
     let rightScore: Int?
 }
 
-struct ZoneStationSignView: View {
+struct ZoneStationSign: View {
     let zone: Zone
     /// 같은 zoneId를 가진 두 팀의 상태들 (순서는 무관)
     let statusesForZone: [ZoneConquestStatus]
@@ -38,9 +38,9 @@ struct ZoneStationSignView: View {
     var body: some View {
         VStack(spacing: 6) {
             // 상단: 구역 번호 + 이름
-            ZoneHeaderView(zoneId: zone.zoneId, zoneName: zone.zoneName)
+            ZoneStationSignHeader(zoneId: zone.zoneId, zoneName: zone.zoneName)
             // 하단: 팀명 + 팀 점수
-            ZoneScoreView(scorePair: scorePair)
+            ZoneStationSignScore(scorePair: scorePair)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
@@ -68,6 +68,6 @@ struct ZoneStationSignView: View {
     let teamBlue  = ZoneConquestStatus(zoneId: 10, teamId: 1, teamName: "Blue",  teamScore: 73)
     let teamYellow = ZoneConquestStatus(zoneId: 10, teamId: 2, teamName: "Yellow", teamScore: 23)
     
-    return ZoneStationSignView(zone: dummyZone, statusesForZone: [teamBlue, teamYellow])
+    return ZoneStationSign(zone: dummyZone, statusesForZone: [teamBlue, teamYellow])
         .padding()
 }

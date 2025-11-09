@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ScoreBoardView: View {
+struct ScoreBoard: View {
     let leftTeamName: String
     let rightTeamName: String
     let leftTeamScore: Int

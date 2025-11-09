@@ -398,15 +398,15 @@ struct FullMapScreen: View {
             // 부모에서 전달받은 토큰을 항상 채택
             effectiveToken = refreshToken
         }
-        .onChange(of: refreshToken) { newValue in
+        .onChange(of: refreshToken) {
             // 부모 갱신 토큰 변화도 반영
-            effectiveToken = newValue
+            effectiveToken = refreshToken
         }
         .overlay(alignment: .topLeading) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
                     if viewModel.teams.count >= 2 {
-                        ScoreBoardView(
+                        ScoreBoard(
                             leftTeamName: viewModel.teams[1].teamName,
                             rightTeamName: viewModel.teams[0].teamName,
                             leftTeamScore: viewModel.teams[1]
@@ -416,7 +416,7 @@ struct FullMapScreen: View {
                         )
                     } else {
                         // 로딩 중일 때는 기본값 표시
-                        ScoreBoardView(
+                        ScoreBoard(
                             leftTeamName: "—",
                             rightTeamName: "—",
                             leftTeamScore: 0,

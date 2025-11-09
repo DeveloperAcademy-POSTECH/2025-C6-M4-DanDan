@@ -227,7 +227,7 @@ struct TrackingMapScreen: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
                     if viewModel.teams.count >= 2 {
-                        ScoreBoardView(
+                        ScoreBoard(
                             leftTeamName: viewModel.teams[1].teamName,
                             rightTeamName: viewModel.teams[0].teamName,
                             leftTeamScore: viewModel.teams[1].conqueredZones,
@@ -235,7 +235,7 @@ struct TrackingMapScreen: View {
                         )
                     } else {
                         // 로딩 중일 때는 기본값 표시
-                        ScoreBoardView(
+                        ScoreBoard(
                             leftTeamName: "—",
                             rightTeamName: "—",
                             leftTeamScore: 0,
