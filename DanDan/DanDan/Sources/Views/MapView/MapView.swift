@@ -124,7 +124,7 @@ struct MapView: UIViewRepresentable {
             if line.isOutline {
                 let checked = StatusManager.shared.userStatus.zoneCheckedStatus[line.zoneId] == true
                 renderer.strokeColor = checked ? UIColor.white.withAlphaComponent(0.85) : UIColor.clear
-                renderer.lineWidth = 8
+                renderer.lineWidth = 16
                 renderer.lineCap = .round
                 renderer.lineJoin = .round
                 return renderer
@@ -135,7 +135,7 @@ struct MapView: UIViewRepresentable {
                     defaultColor: .primaryGreen
                 )
                 renderer.strokeColor = color
-                renderer.lineWidth = 24
+                renderer.lineWidth = 36
                 renderer.lineCap = .round
                 renderer.lineJoin = .round
                 return renderer
