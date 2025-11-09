@@ -25,10 +25,7 @@ struct ProfileTitle: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 24)
+        .padding(.bottom, 5)
         .padding(.horizontal, 20)
     }
-}
-
-#Preview {
-    ProfileTitle(title: "수정", description: "tnwwjd")
 }
