@@ -203,7 +203,7 @@ struct TrackingMapView: UIViewRepresentable {
     }
 }
 
-struct MapScreen: View {
+struct TrackingMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
 
     let conquestStatuses: [ZoneConquestStatus]
