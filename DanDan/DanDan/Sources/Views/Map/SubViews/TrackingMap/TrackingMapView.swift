@@ -5,10 +5,10 @@
 //  Created by soyeonsoo on 10/26/25.
 //
 
-import SwiftUI
 import MapKit
+import SwiftUI
 
-// 부분 3D 지도(메인) - MKMapView를 SwiftUI에서 쓰기 위한 래퍼
+// 트래킹 3D 지도
 struct TrackingMapView: UIViewRepresentable {
     let zoneStatuses: [ZoneStatus]
     var conquestStatuses: [ZoneConquestStatus]
@@ -24,7 +24,7 @@ struct TrackingMapView: UIViewRepresentable {
         margin: 0.55
     )
     
-    // 중심점 계산 - 정류소 버튼 위치 잡기
+    /// 중심점 계산 - 정류소 버튼 위치 잡기
     private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
         guard !coords.isEmpty else { return bounds.center }
         let lat = coords.map(\.latitude).reduce(0, +) / Double(coords.count)
@@ -93,13 +93,15 @@ struct TrackingMapView: UIViewRepresentable {
         // MARK: - MKMapViewDelegate
         /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            guard let line = overlay as? ColoredPolyline else { return MKOverlayRenderer() }
-            let r = MKPolylineRenderer(overlay: line)
-            r.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
-            r.lineWidth = line.isOutline ? 9 : 36
-            r.lineCap = .round
-            r.lineJoin = .round
-            return r
+            guard let line = overlay as? ColoredPolyline else {
+                return MKOverlayRenderer()
+            }
+            let renderer = MKPolylineRenderer(overlay: line)
+            renderer.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
+            renderer.lineWidth = line.isOutline ? 9 : 36
+            renderer.lineCap = .round
+            renderer.lineJoin = .round
+            return renderer
         }
         
         /// 어노테이션 뷰 - 정류소 버튼 + 정복 버튼 주입
