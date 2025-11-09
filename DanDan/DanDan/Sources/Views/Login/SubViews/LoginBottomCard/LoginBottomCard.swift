@@ -18,7 +18,7 @@ struct LoginBottomCard: View {
                 .foregroundStyle(.steelBlack)
                 .padding(.leading, 10)
             
-            Text("철길숲을 걸어 구역을 점령하고\nㅊ1우리 팀을 우승으로 이끌어보세요.")
+            Text("철길숲을 걸어 구역을 점령하고\n우리 팀을 우승으로 이끌어보세요.")
                 .font(.PR.caption3)
                 .foregroundStyle(.gray1)
                 .lineSpacing(4)
