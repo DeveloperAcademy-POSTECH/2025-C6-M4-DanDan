@@ -22,7 +22,3 @@ struct MyRankBadgeView: View {
                 )
     }
 }
-
-#Preview {
-    MyRankBadgeView()
-}

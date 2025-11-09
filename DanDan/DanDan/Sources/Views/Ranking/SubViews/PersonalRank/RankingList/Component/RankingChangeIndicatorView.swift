@@ -23,8 +23,3 @@ struct RankingChangeIndicatorView: View {
         }
     }
 }
-
-#Preview {
-    RankingChangeIndicatorView(rankDiff: 4)
-    RankingChangeIndicatorView(rankDiff: -4)
-}

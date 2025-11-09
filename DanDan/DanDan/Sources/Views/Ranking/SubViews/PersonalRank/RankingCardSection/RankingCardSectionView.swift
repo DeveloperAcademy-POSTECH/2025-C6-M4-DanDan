@@ -51,38 +51,3 @@ struct RankingCardSectionView: View {
         }
     }
 }
-
-#Preview {
-    RankingCardSectionView(
-        rankingItems: [
-            .init(
-                id: UUID(),
-                ranking: 1,
-                userName: "소연수",
-                userImage: nil,
-                userWeekScore: 12,
-                userTeam: "blue",
-                backgroundColor: .subA20
-            ),
-            .init(
-                id: UUID(),
-                ranking: 2,
-                userName: "김소원",
-                userImage: nil,
-                userWeekScore: 9,
-                userTeam: "blue",
-                backgroundColor: .subA20
-            ),
-            .init(
-                id: UUID(),
-                ranking: 3,
-                userName: "허찬욱",
-                userImage: nil,
-                userWeekScore: 7,
-                userTeam: "yellow",
-                backgroundColor: .subB20
-            ),
-        ],
-        myUserId: UUID()
-    )
-}

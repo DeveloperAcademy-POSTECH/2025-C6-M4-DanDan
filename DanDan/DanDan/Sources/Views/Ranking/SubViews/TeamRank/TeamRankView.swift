@@ -31,7 +31,3 @@ struct TeamRankView: View {
         .padding(.horizontal, 20)
     }
 }
-
-//#Preview {
-//    TeamRankView(fetchTeamRanking: fetchTeamRanking)
-//}

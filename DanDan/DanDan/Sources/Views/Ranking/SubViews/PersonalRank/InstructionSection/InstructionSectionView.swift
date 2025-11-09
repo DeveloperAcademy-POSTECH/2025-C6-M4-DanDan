@@ -24,7 +24,3 @@ struct InstructionSectionView: View {
         }
     }
 }
-
-//#Preview {
-//    InstructionSectionView()
-//}
