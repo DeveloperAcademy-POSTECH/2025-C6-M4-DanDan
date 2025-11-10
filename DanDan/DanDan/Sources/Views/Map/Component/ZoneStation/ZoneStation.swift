@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct ZoneStationButton: View {
+    @ObservedObject var viewModel: MapScreenViewModel
+    @State private var showPopover = false
+
     let zone: Zone
     let statusesForZone: [ZoneConquestStatus]
     
     var iconSize: CGSize = CGSize(width: 68, height: 74)
     var popoverOffsetY: CGFloat = -100
-    
-    @State private var showPopover = false
     
     var body: some View {
         ZStack {
@@ -35,7 +36,7 @@ struct ZoneStationButton: View {
             
             // 정류소 버튼 위에 뜨는 커스텀 팝오버
             if showPopover {
-                ZoneStationSign(zone: zone, statusesForZone: statusesForZone)
+                ZoneStationSign(viewModel: viewModel, zone: zone, statusesForZone: statusesForZone)
                     .fixedSize()
                     .offset(y: popoverOffsetY)
                     .transition(.move(edge: .top).combined(with: .opacity))
@@ -62,5 +63,5 @@ struct ZoneStationButton: View {
     let s1 = ZoneConquestStatus(zoneId: 10, teamId: 1, teamName: "파랑",   teamScore: 12)
     let s2 = ZoneConquestStatus(zoneId: 10, teamId: 2, teamName: "노랑", teamScore: 8)
     
-    return ZoneStationButton(zone: dummyZone, statusesForZone: [s1, s2])
+    return ZoneStationButton(viewModel: MapScreenViewModel(), zone: dummyZone, statusesForZone: [s1, s2])
 }

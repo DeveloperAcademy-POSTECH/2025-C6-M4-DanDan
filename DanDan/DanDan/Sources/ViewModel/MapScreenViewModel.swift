@@ -14,9 +14,12 @@ class MapScreenViewModel: ObservableObject {
     @Published var userDailyScore: Int = 0
     @Published var startDate: String = ""
     @Published var endDate: String = ""
-
+    
+    /// zoneId → 서버에서 받은 팀 점수 배열 캐시
+    @Published var zoneTeamScores: [Int: [ZoneTeamScoreDTO]] = [:]
+        
     private let service = MapService()
-
+    
     func loadMapInfo() async {
         do {
             let response = try await service.fetchMainMapInfo()
@@ -25,7 +28,7 @@ class MapScreenViewModel: ObservableObject {
             self.userDailyScore = response.data.userDailyScore
             self.startDate = response.data.startDate
             self.endDate = response.data.endDate
-
+            
             let zoneStatusesResponse = try await service.fetchZoneStatuses()
             self.zoneStatuses = zoneStatusesResponse
             
@@ -36,6 +39,19 @@ class MapScreenViewModel: ObservableObject {
             
         } catch {
             print("❌ 맵 정보 불러오기 실패: \(error.localizedDescription)")
+        }
+    }
+    
+    /// 특정 구역의 팀 점수를 서버에서 받아와 캐시에 저장
+    func loadZoneTeamScores(for zoneId: Int) async {
+        // 이미 받아온 적 있으면 재요청 생략
+        if zoneTeamScores[zoneId] != nil { return }
+        
+        do {
+            let data = try await service.fetchZoneTeamScores(zoneId: zoneId)
+            zoneTeamScores[zoneId] = data.teamScores
+        } catch {
+            print("❌ (\(zoneId)) 구역 팀 점수 불러오기 실패: \(error)")
         }
     }
 }

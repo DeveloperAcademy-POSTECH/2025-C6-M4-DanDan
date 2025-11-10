@@ -10,6 +10,7 @@ import SwiftUI
 
 // 전체 2D 지도
 struct FullMapView: UIViewRepresentable {
+    @ObservedObject var viewModel: MapScreenViewModel
     let zoneStatuses: [ZoneStatus]
     enum Mode { case overall, personal }
     let conquestStatuses: [ZoneConquestStatus]
@@ -37,6 +38,7 @@ struct FullMapView: UIViewRepresentable {
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
+        var viewModel: MapScreenViewModel?
 
         var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
@@ -114,6 +116,7 @@ struct FullMapView: UIViewRepresentable {
                 
             let swiftUIView = ZStack {
                 ZoneStationButton(
+                    viewModel: viewModel ?? MapScreenViewModel(),
                     zone: ann.zone,
                     statusesForZone: ann.statusesForZone,
                     iconSize: CGSize(width: 28, height: 32),
@@ -168,6 +171,7 @@ struct FullMapView: UIViewRepresentable {
         context.coordinator.conquestStatuses = conquestStatuses
         context.coordinator.teams = teams
         context.coordinator.mode = mode
+        context.coordinator.viewModel = viewModel
 
         MapElementInstaller.installOverlays(for: zones, on: map)
         MapElementInstaller.installStations(
@@ -232,6 +236,7 @@ struct FullMapView: UIViewRepresentable {
                 )
                 let swiftUIView = ZStack {
                     ZoneStationButton(
+                        viewModel: viewModel,
                         zone: ann.zone,
                         statusesForZone: ann.statusesForZone,
                         iconSize: CGSize(width: 28, height: 32),
@@ -272,6 +277,7 @@ struct FullMapScreen: View {
 
     var body: some View {
         FullMapView(
+            viewModel: viewModel, 
             zoneStatuses: viewModel.zoneStatuses,
             conquestStatuses: conquestStatuses,
             teams: teams,

@@ -10,11 +10,11 @@ import SwiftUI
 
 // 트래킹 3D 지도
 struct TrackingMapView: UIViewRepresentable {
+    @ObservedObject var viewModel: MapScreenViewModel
     let zoneStatuses: [ZoneStatus]
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
-    // 외부 상태 변경 시 강제 update 트리거(렌더러만 갱신)
-    var refreshToken: UUID = UUID()
+    var refreshToken: UUID = UUID() // 외부 상태 변경 시 강제 update 트리거(렌더러만 갱신)
     
     // MARK: - Constants
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표, 표시 범위(경계/마진) 정의
@@ -36,13 +36,16 @@ struct TrackingMapView: UIViewRepresentable {
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
+        
+        let viewModel: MapScreenViewModel
                 
         var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
         var strokeProvider = ZoneStrokeProvider(zoneStatuses: []) // 구역별 선 색상 계산기
         
-        override init() {
+        init(viewModel: MapScreenViewModel) {
+            self.viewModel = viewModel
             super.init()
             manager.delegate = self
         }
@@ -59,34 +62,34 @@ struct TrackingMapView: UIViewRepresentable {
         // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
         
         // 사용자의 위치에 따라 카메라 중심 이동
-        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-            guard let mapView = mapView,
-                  let location = locations.last else { return }
-            DispatchQueue.main.async {
-                let camera = MKMapCamera(
-                    lookingAtCenter: location.coordinate,
-                    fromDistance: 500,
-                    pitch: 80,
-                    heading: mapView.camera.heading
-                )
-                mapView.setCamera(camera, animated: true)
-            }
-        }
-        
-        // 유저의 방향(heading) 변경에 따라 지도 회전
-        func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-            guard let mapView = mapView else { return }
-            DispatchQueue.main.async {
-                let currentCenter = mapView.camera.centerCoordinate
-                let camera = MKMapCamera(
-                    lookingAtCenter: currentCenter,
-                    fromDistance: 500,
-                    pitch: 80,
-                    heading: newHeading.trueHeading
-                )
-                mapView.setCamera(camera, animated: true)
-            }
-        }
+//        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//            guard let mapView = mapView,
+//                  let location = locations.last else { return }
+//            DispatchQueue.main.async {
+//                let camera = MKMapCamera(
+//                    lookingAtCenter: location.coordinate,
+//                    fromDistance: 500,
+//                    pitch: 80,
+//                    heading: mapView.camera.heading
+//                )
+//                mapView.setCamera(camera, animated: true)
+//            }
+//        }
+//        
+//        // 유저의 방향(heading) 변경에 따라 지도 회전
+//        func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+//            guard let mapView = mapView else { return }
+//            DispatchQueue.main.async {
+//                let currentCenter = mapView.camera.centerCoordinate
+//                let camera = MKMapCamera(
+//                    lookingAtCenter: currentCenter,
+//                    fromDistance: 500,
+//                    pitch: 80,
+//                    heading: newHeading.trueHeading
+//                )
+//                mapView.setCamera(camera, animated: true)
+//            }
+//        }
         
         // 테스트용 주석 처리 부분 여기까지
         
@@ -122,7 +125,11 @@ struct TrackingMapView: UIViewRepresentable {
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
             
             let swiftUIView = ZStack {
-                ZoneStationButton(zone: ann.zone, statusesForZone: ann.statusesForZone)
+                ZoneStationButton(
+                    viewModel: viewModel,
+                    zone: ann.zone,
+                    statusesForZone: ann.statusesForZone
+                )
                 if isChecked && !isClaimed {
                     ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                     .offset(y: -120)
@@ -136,7 +143,9 @@ struct TrackingMapView: UIViewRepresentable {
         }
     }
     
-    func makeCoordinator() -> Coordinator { Coordinator() }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(viewModel: viewModel)
+    }
     
     func makeUIView(context: Context) -> MKMapView {
         if !Thread.isMainThread {
@@ -153,11 +162,11 @@ struct TrackingMapView: UIViewRepresentable {
         
         // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
 
-        map.isScrollEnabled = false
-        map.isZoomEnabled = false
-        map.isRotateEnabled = false
-        map.isPitchEnabled = false
-        map.showsCompass = false
+//        map.isScrollEnabled = false
+//        map.isZoomEnabled = false
+//        map.isRotateEnabled = false
+//        map.isPitchEnabled = false
+//        map.showsCompass = false
         
         // 테스트용 주석 처리 부분 여기까지
         
@@ -219,6 +228,7 @@ struct TrackingMapScreen: View {
         ZStack(alignment: .topLeading) {
             // 3D 부분 지도
                 TrackingMapView(
+                    viewModel: viewModel,
                     zoneStatuses: viewModel.zoneStatuses,
                     conquestStatuses: conquestStatuses,
                     teams: teams,
