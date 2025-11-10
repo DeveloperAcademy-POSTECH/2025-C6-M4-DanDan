@@ -16,11 +16,7 @@ struct ProfileHeader: View {
     var body: some View {
         HStack(spacing: 40) {
             Button {
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> parent of 96ac562 (Revert "refactor: MyPage")
+                // TODO: 액션 추가해줘 세나~
             } label: {
                 ZStack(alignment: .bottomTrailing) {
                     profileImage
