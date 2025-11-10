@@ -96,7 +96,7 @@ extension RankingViewModel {
         let id: UUID
         let ranking: Int
         let userName: String
-        let userImage: UIImage?
+        var userImage: UIImage?
         let userWeekScore: Int
         let userTeam: String
         let backgroundColor: Color
@@ -152,20 +152,50 @@ extension RankingViewModel {
                     )
                 }
 
-                /// DTO → 내부 UI 모델 변환 + 팀 색상 지정
                 self.rankingItems = dtoList.map { dto in
                     // 팀 색상 설정
                     let color = Color.setBackgroundColor(for: dto.userTeam)
 
-                    return RankingItemData(
+                    /// 초기 이미지 placeholder
+                    let uiImage: UIImage? = nil
+                    let item = RankingItemData(
                         id: dto.id,
                         ranking: dto.ranking,
                         userName: dto.userName,
-                        userImage: nil,  // 나중에 AsyncImage로 교체 가능
+                        userImage: uiImage,
                         userWeekScore: dto.userWeekScore,
                         userTeam: dto.userTeam,
                         backgroundColor: color
                     )
+
+                    /// 비동기로 이미지 로드
+                    if let urlString = dto.userImage,
+                        let url = URL(string: urlString)
+                    {
+                        Task {
+                            // TODO: 중복 로딩을 피하기위해, 캐싱 도입
+                            do {
+                                let (data, _) = try await URLSession.shared
+                                    .data(from: url)
+                                if let image = UIImage(data: data) {
+                                    await MainActor.run {
+                                        // rankingItems 배열에서 해당 ID의 이미지만 교체
+                                        if let index = self.rankingItems
+                                            .firstIndex(where: {
+                                                $0.id == dto.id
+                                            })
+                                        {
+                                            self.rankingItems[index].userImage =
+                                                image
+                                        }
+                                    }
+                                }
+                            } catch {
+                            }
+                        }
+                    }
+
+                    return item
                 }
             }
             .store(in: &cancellables)
