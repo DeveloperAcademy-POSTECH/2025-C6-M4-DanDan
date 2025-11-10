@@ -145,3 +145,99 @@ struct MultipartUploadHelper {
         }
     }
 }
+
+extension MultipartUploadHelper {
+    /// 프로필 업데이트 (이름 필수, 이미지 선택)
+    /// - Endpoint: PUT /api/v1/user/{userId}/profileImage
+    /// - Parameters:
+    ///   - userId: 사용자 ID (UUID string)
+    ///   - name: 사용자 이름(1~7자)
+    ///   - image: 프로필 이미지 (선택)
+    /// - Returns: 빈 응답
+    static func uploadProfileUpdate(
+        userId: String,
+        name: String,
+        image: UIImage?
+    ) async throws -> EmptyResponse {
+        guard let url = URL(string: NetworkConfig.baseURL + "user/\(userId)/profileImage") else {
+            throw NetworkError.invalidRequest
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.timeoutInterval = 30
+        print("➡️ PUT \(url.absoluteString)")
+
+        // Authorization 헤더 추가
+        if let token = try? TokenManager().getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+
+        // name 필드 (필수)
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"name\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(name)\r\n".data(using: .utf8)!)
+
+        // 이미지 파일 (선택)
+        if let image = image {
+            let resized = resizeImage(image: image, maxSize: 1024)
+            var imageData: Data?
+            var quality: CGFloat = 0.8
+            repeat {
+                imageData = resized.jpegData(compressionQuality: quality)
+                if let d = imageData, Double(d.count) / 1_000_000 <= 5 { break }
+                quality -= 0.1
+            } while quality > 0.1
+
+            guard let final = imageData, Double(final.count) / 1_000_000 <= 5 else {
+                throw NetworkError.httpError(statusCode: 413, data: Data())
+            }
+
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"file\"; filename=\"profile.jpg\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(final)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else { throw NetworkError.invalidResponse }
+        guard (200...299).contains(http.statusCode) else {
+            throw NetworkError.httpError(statusCode: http.statusCode, data: data)
+        }
+
+        let decoder = JSONDecoder()
+        return (try? decoder.decode(EmptyResponse.self, from: data)) ?? EmptyResponse()
+    }
+
+    /// 프로필 이미지 삭제
+    /// - Endpoint: DELETE /api/v1/user/{userId}/profileImage
+    static func deleteProfileImage(userId: String) async throws -> EmptyResponse {
+        guard let url = URL(string: NetworkConfig.baseURL + "user/\(userId)/profileImage") else {
+            throw NetworkError.invalidRequest
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.timeoutInterval = 30
+        print("➡️ DELETE \(url.absoluteString)")
+        if let token = try? TokenManager().getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else { throw NetworkError.invalidResponse }
+        guard (200...299).contains(http.statusCode) else {
+            throw NetworkError.httpError(statusCode: http.statusCode, data: data)
+        }
+        let decoder = JSONDecoder()
+        return (try? decoder.decode(EmptyResponse.self, from: data)) ?? EmptyResponse()
+    }
+}
