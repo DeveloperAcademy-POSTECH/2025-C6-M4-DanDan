@@ -10,8 +10,6 @@ import SwiftUI
 struct WeeklyAwardView: View {
     @StateObject private var viewModel = WeeklyAwardViewModel()
     
-    private let navigationManager = NavigationManager.shared
-    
     var body: some View {
         VStack {
             WeeklyAwardTitleSectionView(
@@ -35,7 +33,7 @@ struct WeeklyAwardView: View {
             PrimaryButton(
                 "그래도 스틸워크와 계속 걷기",
                 action: {
-                    navigationManager.replaceRoot(with: .main)
+                    viewModel.tapMainButton()
                     GamePhaseManager.shared.showWeeklyAward = false
                 }
             )
