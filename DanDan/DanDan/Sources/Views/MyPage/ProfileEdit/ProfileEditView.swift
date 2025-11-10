@@ -21,16 +21,35 @@ struct ProfileEditView: View {
                 description: "나만의 닉네임과 프로필을 설정해주세요."
             )
             
-            ProfileEditImage(viewModel: viewModel)
+            ProfileEditImage(
+                image: viewModel.profileImage,
+                onPickImage: { image in
+                    viewModel.setNewImage(image)
+                },
+                onRemoveImage: {
+                    viewModel.removeImage()
+                }
+            )
 
-            ProfileEditName(viewModel: viewModel)
+            ProfileEditName(
+                text: $viewModel.nickname,
+                isNicknameTooLong: viewModel.isNicknameTooLong,
+                onNicknameChanged: { newValue in
+                    viewModel.onNicknameChanged(newValue)
+                }
+            )
             
 
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .safeAreaInset(edge: .bottom) {
-            ProfileEditSaveButton(viewModel: viewModel)
+            ProfileEditSaveButton(
+                isEnabled: viewModel.isSaveEnabled,
+                onSave: {
+                    try await viewModel.save()
+                }
+            )
         }
         .task {
             await viewModel.load()

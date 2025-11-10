@@ -7,9 +7,12 @@
 
 import PhotosUI
 import SwiftUI
+import UIKit
 
 struct ProfileEditImage: View {
-    @ObservedObject var viewModel: ProfileEditViewModel
+    let image: UIImage?
+    let onPickImage: (UIImage) -> Void
+    let onRemoveImage: () -> Void
     @State private var selectedItem: PhotosPickerItem?
     @State private var showPicker: Bool = false
     @State private var isShowingDialog = false
@@ -17,7 +20,7 @@ struct ProfileEditImage: View {
     var body: some View {
         VStack(spacing: 0) {
             AvatarEditButton(
-                image: viewModel.profileImage,
+                image: image,
                 diameter: 120,
                 overlayHeight: 38,
                 overlayColor: .darkGreen.opacity(0.8)
@@ -31,9 +34,9 @@ struct ProfileEditImage: View {
                 Button("앨범에서 선택") {
                     showPicker = true
                 }
-                if viewModel.profileImage != nil {
+                if image != nil {
                     Button("프로필 사진 삭제", role: .destructive) {
-                        viewModel.removeImage()
+                        onRemoveImage()
                     }
                 }
                 Button("Cancel", role: .cancel) {
@@ -47,7 +50,7 @@ struct ProfileEditImage: View {
                     if let data = try? await item.loadTransferable(type: Data.self),
                        let uiImage = UIImage(data: data)
                     {
-                        viewModel.setNewImage(uiImage)
+                        onPickImage(uiImage)
                     }
                 }
             }
@@ -56,6 +59,6 @@ struct ProfileEditImage: View {
     }
 }
 
-// #Preview {
-//    ProfileEditImage(viewModel: ProfileEditViewModel())
-// }
+//#Preview {
+//    ProfileEditImage(image: nil, onPickImage: { _ in }, onRemoveImage: {})
+//}
