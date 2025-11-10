@@ -9,10 +9,7 @@ import SwiftUI
 
 struct AccountSettingSection: View {
     let onTapLogout: () -> Void
-    
-    init(onTapLogout: @escaping () -> Void = {}) {
-        self.onTapLogout = onTapLogout
-    }
+
     
     var body: some View {
         VStack(spacing: 0) {
@@ -24,6 +21,3 @@ struct AccountSettingSection: View {
     }
 }
 
-#Preview {
-    AccountSettingSection()
-}

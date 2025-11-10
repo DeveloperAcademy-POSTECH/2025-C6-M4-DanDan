@@ -11,11 +11,6 @@ struct TermsSettingSection: View {
     let onTapTermsService: () -> Void
     let onTapTermsPrivacy: () -> Void
     
-    init(onTapTermsService: @escaping () -> Void = {}, onTapTermsPrivacy: @escaping () -> Void = {}) {
-        self.onTapTermsService = onTapTermsService
-        self.onTapTermsPrivacy = onTapTermsPrivacy
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             SectionHeader(title: "약관")
@@ -28,6 +23,3 @@ struct TermsSettingSection: View {
     }
 }
 
-#Preview {
-    TermsSettingSection()
-}

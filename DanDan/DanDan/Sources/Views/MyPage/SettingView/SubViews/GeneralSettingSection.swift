@@ -11,10 +11,6 @@ struct GeneralSettingSection: View {
     
     let onTapOpenSystemNotificationSettings: () -> Void
     
-    init(onTapOpenSystemNotificationSettings: @escaping () -> Void = {}) {
-        self.onTapOpenSystemNotificationSettings = onTapOpenSystemNotificationSettings
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             SectionHeader(title: "일반")
@@ -23,8 +19,4 @@ struct GeneralSettingSection: View {
             }
         }
     }
-}
-
-#Preview {
-    GeneralSettingSection()
 }
