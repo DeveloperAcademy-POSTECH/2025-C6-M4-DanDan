@@ -157,16 +157,21 @@ class MyPageViewModel: ObservableObject {
             userStatus.userWeekScore = resp.data.currentWeekActivity.userWeekScore
             userStatus.rank = resp.data.currentWeekActivity.ranking
 
-            // 프로필 이미지 URL이 있으면 다운로드해 로컬 캐시에 반영
+            // 프로필 이미지 처리: URL이 없으면 로컬 캐시 제거, 있으면 다운로드하여 갱신
             if let urlString = resp.data.user.profileUrl, let url = URL(string: urlString) {
                 do {
                     let (data, _) = try await URLSession.shared.data(from: url)
                     if !data.isEmpty {
                         userInfo.userImage = [data]
+                    } else {
+                        userInfo.userImage = []
                     }
                 } catch {
                     print("⚠️ Failed to load profile image:", error)
+                    userInfo.userImage = []
                 }
+            } else {
+                userInfo.userImage = []
             }
 
             let s = resp.data.currentWeekActivity.startDate
