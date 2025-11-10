@@ -26,7 +26,7 @@ struct FullMapView: UIViewRepresentable {
         northEast: .init(latitude: 36.057920, longitude: 129.361197),
         margin: 1.35
     )
-
+    
     /// 중심점 계산 - 정류소 버튼 위치 잡기
     private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
         guard !coords.isEmpty else { return bounds.center }
@@ -34,23 +34,23 @@ struct FullMapView: UIViewRepresentable {
         let lon = coords.map(\.longitude).reduce(0, +) / Double(coords.count)
         return .init(latitude: lat, longitude: lon)
     }
-
+    
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
         var viewModel: MapScreenViewModel?
-
+        
         var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
         var strokeProvider = ZoneStrokeProvider(zoneStatuses: []) // 구역별 선 색상 계산기
         var mode: Mode = .overall
-
+        
         override init() {
             super.init()
             manager.delegate = self
         }
-
+        
         func request() {
             manager.requestWhenInUseAuthorization()
         }
@@ -97,9 +97,9 @@ struct FullMapView: UIViewRepresentable {
         
         /// 어노테이션 뷰 - 정류소 버튼(작은 크기) + 정복 버튼 주입
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) ->
-            MKAnnotationView? {
+        MKAnnotationView? {
             guard let ann = annotation as? StationAnnotation else { return nil }
-
+            
             let id = "station-hosting-full"
             let view: HostingAnnotationView
             if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id)
@@ -109,23 +109,26 @@ struct FullMapView: UIViewRepresentable {
             } else {
                 view = HostingAnnotationView(annotation: ann,reuseIdentifier: id)
             }
-
+            
             let isChecked =
-                StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+            StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
-                
+            
             let swiftUIView = ZStack {
                 ZoneStation(
-                    viewModel: viewModel ?? MapScreenViewModel(),
                     zone: ann.zone,
                     statusesForZone: ann.statusesForZone,
+                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
+                    loadZoneTeamScores: { zoneId in
+                        Task { await self.viewModel?.loadZoneTeamScores(for: zoneId) }
+                    },
                     iconSize: CGSize(width: 28, height: 32),
                     popoverOffsetY: -84
                 )
-
+                
                 if isChecked && !isClaimed {
                     ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                    .offset(y: -100)
+                        .offset(y: -100)
                 }
             }
             view.setSwiftUIView(swiftUIView)
@@ -136,9 +139,9 @@ struct FullMapView: UIViewRepresentable {
             return view
         }
     }
-
+    
     func makeCoordinator() -> Coordinator { Coordinator() }
-
+    
     func makeUIView(context: Context) -> MKMapView {
         if !Thread.isMainThread {
             var created: MKMapView!
@@ -147,32 +150,32 @@ struct FullMapView: UIViewRepresentable {
         }
         return _createMap(context: context)
     }
-
+    
     // MKMapView 구성(지도 옵션/오버레이/어노테이션)
     private func _createMap(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
-
+        
         map.isScrollEnabled = false
         map.isZoomEnabled = false
         map.isRotateEnabled = false
         map.isPitchEnabled = false
         map.showsUserLocation = true
-
+        
         let config = MKStandardMapConfiguration(elevationStyle: .flat)
         config.pointOfInterestFilter = .excludingAll
         config.showsTraffic = false
         map.preferredConfiguration = config
-
+        
         let region = bounds.region
         map.setRegion(region, animated: true)
         map.delegate = context.coordinator
         context.coordinator.request()
-
+        
         context.coordinator.conquestStatuses = conquestStatuses
         context.coordinator.teams = teams
         context.coordinator.mode = mode
         context.coordinator.viewModel = viewModel
-
+        
         MapElementInstaller.installOverlays(for: zones, on: map)
         MapElementInstaller.installStations(
             for: zones,
@@ -182,7 +185,7 @@ struct FullMapView: UIViewRepresentable {
         )
         return map
     }
-
+    
     func updateUIView(_ uiView: MKMapView, context: Context) {
         // 모드/데이터 변경 시 렌더러 색상만 갱신 (오버레이 재생성 금지)
         context.coordinator.conquestStatuses = conquestStatuses
@@ -191,7 +194,7 @@ struct FullMapView: UIViewRepresentable {
         DispatchQueue.main.async {
             for overlay in uiView.overlays {
                 guard let line = overlay as? ColoredPolyline,
-                    let renderer = uiView.renderer(for: overlay)
+                      let renderer = uiView.renderer(for: overlay)
                         as? MKPolylineRenderer
                 else { continue }
                 switch mode {
@@ -204,9 +207,9 @@ struct FullMapView: UIViewRepresentable {
                     renderer.strokeColor = stroke
                 case .personal:
                     let checked =
-                        StatusManager.shared.userStatus.zoneCheckedStatus[
-                            line.zoneId
-                        ] == true
+                    StatusManager.shared.userStatus.zoneCheckedStatus[
+                        line.zoneId
+                    ] == true
                     if checked {
                         let stroke = ZoneColorResolver.leadingColorOrDefault(
                             for: line.zoneId,
@@ -221,30 +224,33 @@ struct FullMapView: UIViewRepresentable {
                 }
                 renderer.setNeedsDisplay()
             }
-
+            
             // 주석(정류소) 콘텐츠도 최신 상태로 갱신
             for annotation in uiView.annotations {
                 guard let ann = annotation as? StationAnnotation,
-                    let view = uiView.view(for: ann) as? HostingAnnotationView
+                      let view = uiView.view(for: ann) as? HostingAnnotationView
                 else { continue }
                 let isChecked =
-                    StatusManager.shared.userStatus.zoneCheckedStatus[
-                        ann.zone.zoneId
-                    ] == true
+                StatusManager.shared.userStatus.zoneCheckedStatus[
+                    ann.zone.zoneId
+                ] == true
                 let isClaimed = StatusManager.shared.isRewardClaimed(
                     zoneId: ann.zone.zoneId
                 )
                 let swiftUIView = ZStack {
                     ZoneStation(
-                        viewModel: viewModel,
                         zone: ann.zone,
                         statusesForZone: ann.statusesForZone,
+                        zoneTeamScores: viewModel.zoneTeamScores,
+                        loadZoneTeamScores: { zoneId in
+                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
+                        },
                         iconSize: CGSize(width: 28, height: 32),
                         popoverOffsetY: -84
                     )
                     if isChecked && !isClaimed {
                         ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .offset(y: -100)
+                            .offset(y: -100)
                     }
                 }
                 view.setSwiftUIView(swiftUIView)
@@ -255,14 +261,14 @@ struct FullMapView: UIViewRepresentable {
 
 struct FullMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
-
+    
     @State private var isRightSelected = false
     @State private var effectiveToken: UUID = .init()
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
     let refreshToken: UUID
     let userStatus: UserStatus
-
+    
     init(
         conquestStatuses: [ZoneConquestStatus],
         teams: [Team],
@@ -274,7 +280,7 @@ struct FullMapScreen: View {
         self.refreshToken = refreshToken
         self.userStatus = userStatus
     }
-
+    
     var body: some View {
         FullMapView(
             viewModel: viewModel,
@@ -335,59 +341,59 @@ struct FullMapScreen: View {
                 await viewModel.loadMapInfo()
             }
         }
-//        .overlay(alignment: .bottomLeading) {
-//            #if DEBUG
-//                ScrollView(.horizontal, showsIndicators: false) {
-//                    HStack(spacing: 8) {
-//                        ForEach(1...15, id: \.self) { id in
-//                            Button(action: {
-//                                // 로컬 먼저 반영 (개인 지도 즉시 표시)
-//                                StatusManager.shared.setZoneChecked(
-//                                    zoneId: id,
-//                                    checked: true
-//                                )
-//                                effectiveToken = UUID()
-//                                // 서버 전송은 후행, 실패해도 로컬 상태 유지
-//                                ZoneCheckedService.shared.postChecked(
-//                                    zoneId: id
-//                                ) { ok in
-//                                    if !ok {
-//                                        print(
-//                                            "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
-//                                        )
-//                                    }
-//                                }
-//                            }) {
-//                                Text("#\(id)")
-//                                    .font(.PR.caption2)
-//                                    .foregroundColor(.white)
-//                                    .padding(.vertical, 6)
-//                                    .padding(.horizontal, 10)
-//                                    .background(Color.black.opacity(0.6))
-//                                    .clipShape(Capsule())
-//                            }
-//                        }
-//                    }
-//                    .padding(.horizontal, 12)
-//                    .padding(.vertical, 10)
-//                }
-//                .background(
-//                    Color.black.opacity(0.15)
-//                        .blur(radius: 2)
-//                )
-//                .clipShape(RoundedRectangle(cornerRadius: 12))
-//                .padding(.leading, 16)
-//                .padding(.bottom, 20)
-//                .onAppear {
-//                    // 최초 진입 시, 부모에서 전달받은 토큰을 채택
-//                    effectiveToken = refreshToken
-//                }
-//                .onChange(of: refreshToken) { newValue in
-//                    // 부모 갱신 토큰 변화도 반영
-//                    effectiveToken = newValue
-//                }
-//            #endif
-//        }
+        //        .overlay(alignment: .bottomLeading) {
+        //            #if DEBUG
+        //                ScrollView(.horizontal, showsIndicators: false) {
+        //                    HStack(spacing: 8) {
+        //                        ForEach(1...15, id: \.self) { id in
+        //                            Button(action: {
+        //                                // 로컬 먼저 반영 (개인 지도 즉시 표시)
+        //                                StatusManager.shared.setZoneChecked(
+        //                                    zoneId: id,
+        //                                    checked: true
+        //                                )
+        //                                effectiveToken = UUID()
+        //                                // 서버 전송은 후행, 실패해도 로컬 상태 유지
+        //                                ZoneCheckedService.shared.postChecked(
+        //                                    zoneId: id
+        //                                ) { ok in
+        //                                    if !ok {
+        //                                        print(
+        //                                            "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
+        //                                        )
+        //                                    }
+        //                                }
+        //                            }) {
+        //                                Text("#\(id)")
+        //                                    .font(.PR.caption2)
+        //                                    .foregroundColor(.white)
+        //                                    .padding(.vertical, 6)
+        //                                    .padding(.horizontal, 10)
+        //                                    .background(Color.black.opacity(0.6))
+        //                                    .clipShape(Capsule())
+        //                            }
+        //                        }
+        //                    }
+        //                    .padding(.horizontal, 12)
+        //                    .padding(.vertical, 10)
+        //                }
+        //                .background(
+        //                    Color.black.opacity(0.15)
+        //                        .blur(radius: 2)
+        //                )
+        //                .clipShape(RoundedRectangle(cornerRadius: 12))
+        //                .padding(.leading, 16)
+        //                .padding(.bottom, 20)
+        //                .onAppear {
+        //                    // 최초 진입 시, 부모에서 전달받은 토큰을 채택
+        //                    effectiveToken = refreshToken
+        //                }
+        //                .onChange(of: refreshToken) { newValue in
+        //                    // 부모 갱신 토큰 변화도 반영
+        //                    effectiveToken = newValue
+        //                }
+        //            #endif
+        //        }
     }
 }
 //

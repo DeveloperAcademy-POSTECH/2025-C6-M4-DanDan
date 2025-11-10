@@ -15,16 +15,22 @@ struct ZoneScorePair {
     let rightScore: Int?
 }
 
+struct ZoneTeamScore {
+    let teamName: String
+    let totalScore: Int
+}
+
 struct ZoneStationSign: View {
-    @ObservedObject var viewModel: MapScreenViewModel
     let zone: Zone
-    let statusesForZone: [ZoneConquestStatus] // 같은 zoneId를 가진 두 팀의 상태들 (순서는 무관)
+    let statusesForZone: [ZoneConquestStatus] // 폴백용(로컬)
     
-    // 캐시에서 읽은 서버 점수 → ZoneScorePair로 변환
+    let zoneTeamScores: [Int: [ZoneTeamScoreDTO]]
+    let loadZoneTeamScores: (Int) async -> Void
+    
+    // 서버 점수 → ZoneScorePair(UI 표시 모델)로 변환
     private var scorePairFromServer: ZoneScorePair? {
-        guard let scores = viewModel.zoneTeamScores[zone.zoneId], scores.count >= 1 else {
-            return nil
-        }
+        guard let scores = zoneTeamScores[zone.zoneId], !scores.isEmpty else { return nil }
+
         // 최대 2팀까지만 UI에 표기
         let left  = scores.indices.contains(0) ? scores[0] : nil
         let right = scores.indices.contains(1) ? scores[1] : nil
@@ -36,7 +42,7 @@ struct ZoneStationSign: View {
         )
     }
     
-    // 기존 폴백(로컬 상태 기반)
+    // 폴백(로컬 기반)
     private var scorePairFromFallback: ZoneScorePair {
         let filtered = statusesForZone.filter { $0.zoneId == zone.zoneId }
         let left  = filtered.indices.contains(0) ? filtered[0] : nil
@@ -68,7 +74,7 @@ struct ZoneStationSign: View {
                 .overlay(Capsule().stroke(.black, lineWidth: 4))
         )
         .task {
-            await viewModel.loadZoneTeamScores(for: zone.zoneId)
+            await loadZoneTeamScores(zone.zoneId)
         }
     }
 }

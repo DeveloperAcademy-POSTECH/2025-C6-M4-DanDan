@@ -124,9 +124,12 @@ struct TrackingMapView: UIViewRepresentable {
             
             let swiftUIView = ZStack {
                 ZoneStation(
-                    viewModel: viewModel ?? MapScreenViewModel(),
                     zone: ann.zone,
-                    statusesForZone: ann.statusesForZone
+                    statusesForZone: ann.statusesForZone,
+                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
+                    loadZoneTeamScores: { zoneId in
+                        Task {await self.viewModel!.loadZoneTeamScores(for: zoneId) }
+                    }
                 )
                 if isChecked && !isClaimed {
                     ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
