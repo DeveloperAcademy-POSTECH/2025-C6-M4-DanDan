@@ -17,71 +17,31 @@ struct FullMapView: UIViewRepresentable {
     var mode: Mode = .overall
     // 외부 상태 변경에 따른 갱신 트리거용 토큰
     var refreshToken: UUID = .init()
-
-    // MARK: - Bounds
-
-    /// 철길숲의 남서쪽과 북동쪽 좌표를 기준으로 지도 표시 범위를 계산하는 내부 구조체
-    struct Bounds {
-        let southWest: CLLocationCoordinate2D
-        let northEast: CLLocationCoordinate2D
-        let margin: Double = 1.35
-
-        var center: CLLocationCoordinate2D {
-            CLLocationCoordinate2D(
-                latitude: (southWest.latitude + northEast.latitude) / 2.0,
-                longitude: (southWest.longitude + northEast.longitude) / 2.0
-            )
-        }
-
-        var region: MKCoordinateRegion {
-            let spanLat = abs(northEast.latitude - southWest.latitude) * margin
-            let spanLon =
-                abs(northEast.longitude - southWest.longitude) * margin
-            return MKCoordinateRegion(
-                center: center,
-                span: MKCoordinateSpan(
-                    latitudeDelta: spanLat,
-                    longitudeDelta: spanLon
-                )
-            )
-        }
-
-        var span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-    }
-
-    /// 구역 중심 좌표 계산
-    private func centroid(of coords: [CLLocationCoordinate2D])
-        -> CLLocationCoordinate2D
-    {
-        guard !coords.isEmpty else { return bounds.center }
-        let lat = coords.map { $0.latitude }.reduce(0, +) / Double(coords.count)
-        let lon =
-            coords.map { $0.longitude }.reduce(0, +) / Double(coords.count)
-        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-    }
-
+    
     // MARK: - Constants
-
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표
-    private let bounds = Bounds(
+    private let bounds = MapBounds(
         southWest: .init(latitude: 35.998605, longitude: 129.316145),
-        northEast: .init(latitude: 36.057920, longitude: 129.361197)
+        northEast: .init(latitude: 36.057920, longitude: 129.361197),
+        margin: 1.35
     )
 
-    final class ColoredPolyline: MKPolyline {
-        var color: UIColor = .white
-        var isOutline: Bool = false
-        var zoneId: Int = 0
+    /// 중심점 계산 - 정류소 버튼 위치 잡기
+    private func centroid(of coords: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
+        guard !coords.isEmpty else { return bounds.center }
+        let lat = coords.map(\.latitude).reduce(0, +) / Double(coords.count)
+        let lon = coords.map(\.longitude).reduce(0, +) / Double(coords.count)
+        return .init(latitude: lat, longitude: lon)
     }
 
-    final class Coordinator: NSObject, MKMapViewDelegate,
-        CLLocationManagerDelegate
-    {
+    final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
+        weak var mapView: MKMapView?
 
         var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
+        var strokeProvider = ZoneStrokeProvider(zoneStatuses: []) // 구역별 선 색상 계산기
         var mode: Mode = .overall
 
         override init() {
@@ -92,15 +52,16 @@ struct FullMapView: UIViewRepresentable {
         func request() {
             manager.requestWhenInUseAuthorization()
         }
-
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay)
-            -> MKOverlayRenderer
-        {
+        
+        // MARK: - MKMapViewDelegate
+        /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
+        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) ->
+        MKOverlayRenderer {
             guard let line = overlay as? ColoredPolyline else {
                 return MKOverlayRenderer()
             }
             let renderer = MKPolylineRenderer(overlay: line)
-
+            
             let stroke: UIColor
             switch mode {
             case .overall:
@@ -111,9 +72,9 @@ struct FullMapView: UIViewRepresentable {
                 )
             case .personal:
                 let checked =
-                    StatusManager.shared.userStatus.zoneCheckedStatus[
-                        line.zoneId
-                    ] == true
+                StatusManager.shared.userStatus.zoneCheckedStatus[
+                    line.zoneId
+                ] == true
                 if checked {
                     stroke = ZoneColorResolver.leadingColorOrDefault(
                         for: line.zoneId,
@@ -131,34 +92,26 @@ struct FullMapView: UIViewRepresentable {
             renderer.lineJoin = .round
             return renderer
         }
-
-        // 정류소 버튼 주입(작은 크기)
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation)
-            -> MKAnnotationView?
-        {
+        
+        /// 어노테이션 뷰 - 정류소 버튼(작은 크기) + 정복 버튼 주입
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) ->
+            MKAnnotationView? {
             guard let ann = annotation as? StationAnnotation else { return nil }
 
             let id = "station-hosting-full"
             let view: HostingAnnotationView
-            if let reused = mapView.dequeueReusableAnnotationView(
-                withIdentifier: id
-            ) as? HostingAnnotationView {
+            if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id)
+                as? HostingAnnotationView {
                 view = reused
                 view.annotation = ann
             } else {
-                view = HostingAnnotationView(
-                    annotation: ann,
-                    reuseIdentifier: id
-                )
+                view = HostingAnnotationView(annotation: ann,reuseIdentifier: id)
             }
 
             let isChecked =
-                StatusManager.shared.userStatus.zoneCheckedStatus[
-                    ann.zone.zoneId
-                ] == true
-            let isClaimed = StatusManager.shared.isRewardClaimed(
-                zoneId: ann.zone.zoneId
-            )
+                StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+            let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
+                
             let swiftUIView = ZStack {
                 ZoneStationButton(
                     zone: ann.zone,
@@ -168,39 +121,15 @@ struct FullMapView: UIViewRepresentable {
                 )
 
                 if isChecked && !isClaimed {
-                    ConqueredButton(zoneId: ann.zone.zoneId) { id in
-                        ZoneCheckedService.shared.postChecked(zoneId: id) {
-                            ok in
-                            if !ok {
-                                print("🚨 postChecked failed for zoneId=\(id)")
-                                return
-                            }
-                            ZoneCheckedService.shared.acquireScore(zoneId: id) {
-                                ok2 in
-                                if ok2 {
-                                    StatusManager.shared.incrementDailyScore()
-                                    StatusManager.shared.setRewardClaimed(
-                                        zoneId: id,
-                                        claimed: true
-                                    )
-                                } else {
-                                    print(
-                                        "🚨 acquireScore failed for zoneId=\(id)"
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                     .offset(y: -100)
                 }
             }
             view.setSwiftUIView(swiftUIView)
-
             view.contentSize = CGSize(width: 120, height: 140)
             view.centerOffset = CGPoint(x: 0, y: -40)
             view.canShowCallout = false
             view.isUserInteractionEnabled = true
-
             return view
         }
     }
@@ -210,14 +139,13 @@ struct FullMapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         if !Thread.isMainThread {
             var created: MKMapView!
-            DispatchQueue.main.sync {
-                created = self._createMap(context: context)
-            }
+            DispatchQueue.main.sync { created = self._createMap(context: context) }
             return created
         }
         return _createMap(context: context)
     }
 
+    // MKMapView 구성(지도 옵션/오버레이/어노테이션)
     private func _createMap(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
 
@@ -241,27 +169,13 @@ struct FullMapView: UIViewRepresentable {
         context.coordinator.teams = teams
         context.coordinator.mode = mode
 
-        for zone in zones {
-            let coords = zone.coordinates
-
-            let c = centroid(of: coords)
-            let statuses = conquestStatuses.filter { $0.zoneId == zone.zoneId }
-            let ann = StationAnnotation(
-                coordinate: c,
-                zone: zone,
-                statusesForZone: statuses
-            )
-            map.addAnnotation(ann)
-
-            let polyline = ColoredPolyline(
-                coordinates: coords,
-                count: coords.count
-            )
-            polyline.zoneId = zone.zoneId
-            polyline.color = zone.zoneColor
-            map.addOverlay(polyline)
-        }
-
+        MapElementInstaller.installOverlays(for: zones, on: map)
+        MapElementInstaller.installStations(
+            for: zones,
+            statuses: conquestStatuses,
+            centroidOf: centroid(of:),
+            on: map
+        )
         return map
     }
 
@@ -324,33 +238,7 @@ struct FullMapView: UIViewRepresentable {
                         popoverOffsetY: -84
                     )
                     if isChecked && !isClaimed {
-                        ConqueredButton(zoneId: ann.zone.zoneId) { id in
-                            ZoneCheckedService.shared.postChecked(zoneId: id) {
-                                ok in
-                                if !ok {
-                                    print(
-                                        "🚨 postChecked failed for zoneId=\(id)"
-                                    )
-                                    return
-                                }
-                                ZoneCheckedService.shared.acquireScore(
-                                    zoneId: id
-                                ) { ok2 in
-                                    if ok2 {
-                                        StatusManager.shared
-                                            .incrementDailyScore()
-                                        StatusManager.shared.setRewardClaimed(
-                                            zoneId: id,
-                                            claimed: true
-                                        )
-                                    } else {
-                                        print(
-                                            "🚨 acquireScore failed for zoneId=\(id)"
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                        ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                         .offset(y: -100)
                     }
                 }
@@ -398,15 +286,15 @@ struct FullMapScreen: View {
             // 부모에서 전달받은 토큰을 항상 채택
             effectiveToken = refreshToken
         }
-        .onChange(of: refreshToken) { newValue in
+        .onChange(of: refreshToken) {
             // 부모 갱신 토큰 변화도 반영
-            effectiveToken = newValue
+            effectiveToken = refreshToken
         }
         .overlay(alignment: .topLeading) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 8) {
                     if viewModel.teams.count >= 2 {
-                        ScoreBoardView(
+                        ScoreBoard(
                             leftTeamName: viewModel.teams[1].teamName,
                             rightTeamName: viewModel.teams[0].teamName,
                             leftTeamScore: viewModel.teams[1]
@@ -416,7 +304,7 @@ struct FullMapScreen: View {
                         )
                     } else {
                         // 로딩 중일 때는 기본값 표시
-                        ScoreBoardView(
+                        ScoreBoard(
                             leftTeamName: "—",
                             rightTeamName: "—",
                             leftTeamScore: 0,

@@ -35,7 +35,7 @@ struct ZoneStationButton: View {
             
             // 정류소 버튼 위에 뜨는 커스텀 팝오버
             if showPopover {
-                ZoneStationSignView(zone: zone, statusesForZone: statusesForZone)
+                ZoneStationSign(zone: zone, statusesForZone: statusesForZone)
                     .fixedSize()
                     .offset(y: popoverOffsetY)
                     .transition(.move(edge: .top).combined(with: .opacity))

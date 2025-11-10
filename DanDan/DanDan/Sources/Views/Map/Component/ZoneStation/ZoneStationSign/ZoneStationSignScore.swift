@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ZoneScoreView: View {
+struct ZoneStationSignScore: View {
     let scorePair: ZoneScorePair
 
     var body: some View {

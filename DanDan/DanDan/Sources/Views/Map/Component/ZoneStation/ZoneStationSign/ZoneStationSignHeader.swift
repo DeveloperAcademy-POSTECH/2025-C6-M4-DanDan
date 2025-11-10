@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ZoneHeaderView: View {
+struct ZoneStationSignHeader: View {
     let zoneId: Int
     let zoneName: String
     

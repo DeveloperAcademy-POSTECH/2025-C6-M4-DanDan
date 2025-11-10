@@ -30,7 +30,7 @@ struct MapToggleView: View {
                         userStatus: StatusManager.shared.userStatus
                     )
                 } else {
-                    MapScreen( // 3D 부분 지도뷰
+                    TrackingMapScreen( // 3D 부분 지도뷰
                         conquestStatuses: conquestStatuses,
                         teams: teams,
                         userStatus: StatusManager.shared.userStatus,
