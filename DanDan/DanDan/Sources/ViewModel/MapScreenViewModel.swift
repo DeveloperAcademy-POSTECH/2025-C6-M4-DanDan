@@ -42,9 +42,8 @@ class MapScreenViewModel: ObservableObject {
         }
     }
     
-    /// 특정 구역의 팀 점수를 서버에서 받아와 캐시에 저장
+    /// 특정 구역의 팀 점수를 서버에서 받아와 저장
     func loadZoneTeamScores(for zoneId: Int) async {
-        // 이미 받아온 적 있으면 재요청 생략
         if zoneTeamScores[zoneId] != nil { return }
         
         do {
