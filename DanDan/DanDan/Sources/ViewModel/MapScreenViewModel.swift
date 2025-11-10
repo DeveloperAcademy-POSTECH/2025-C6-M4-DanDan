@@ -15,7 +15,7 @@ class MapScreenViewModel: ObservableObject {
     @Published var startDate: String = ""
     @Published var endDate: String = ""
 
-    private let service = MainMapInfoService()
+    private let service = MapService()
 
     func loadMapInfo() async {
         do {

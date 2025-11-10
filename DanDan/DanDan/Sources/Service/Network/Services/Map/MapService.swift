@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class MainMapInfoService {
+final class MapService {
 
     private let tokenManager: TokenManagerProtocol
 
@@ -93,4 +93,6 @@ final class MainMapInfoService {
         )
         return decodedResponse.data
     }
+    
+    
 }
