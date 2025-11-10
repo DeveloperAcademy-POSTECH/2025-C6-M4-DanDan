@@ -8,8 +8,47 @@
 import SwiftUI
 
 struct ProfileEditView: View {
+    @StateObject private var viewModel = ProfileEditViewModel()
+
+    private var needsCustomBackButton: Bool {
+        if #available(iOS 26.0, *) { return false } else { return true }
+    }
+
     var body: some View {
-        Text("프로필 수정 뷰")
+        VStack(spacing: 40) {
+            ProfileTitle(
+                title: "프로필 수정하기",
+                description: "나만의 닉네임과 프로필을 설정해주세요."
+            )
+            
+            ProfileEditImage(viewModel: viewModel)
+
+            ProfileEditName(viewModel: viewModel)
+            
+
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .safeAreaInset(edge: .bottom) {
+            ProfileEditSaveButton(viewModel: viewModel)
+        }
+        .task {
+            await viewModel.load()
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                BackButton { viewModel.handleBackTapped() }
+            }
+        }
+        .alert("저장되지 않아요 !", isPresented: $viewModel.showDiscardAlert) {
+            Button("계속 수정하기", role: .cancel) {}
+            Button("뒤로가기", role: .destructive) {
+                viewModel.confirmDiscardAndPop()
+            }
+        } message: {
+            Text("수정하기 버튼을 누르지 않으면 변경사항이 반영되지 않아요")
+        }
     }
 }
 

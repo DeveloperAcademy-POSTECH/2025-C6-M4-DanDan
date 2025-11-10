@@ -22,9 +22,9 @@ struct PrimaryButton: View {
         _ title: String,
         action: @escaping () -> Void,
         isEnabled: Bool = true,
-        textPadding: CGFloat = 20,
+        textPadding: CGFloat = 16,
         horizontalPadding: CGFloat = 20,
-        verticalPadding: CGFloat = 16,
+        verticalPadding: CGFloat = 20,
         background: Color = .primaryGreen,
         foreground: Color = .white,
     ) {
@@ -42,6 +42,7 @@ struct PrimaryButton: View {
         Button(action: action) {
             Text(title)
                 .font(.PR.body2)
+                .frame(height: 22)
                 .padding(.top, textPadding)
                 .padding(.bottom, textPadding)
                 .foregroundColor(foreground)
