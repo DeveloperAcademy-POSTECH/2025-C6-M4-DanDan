@@ -43,8 +43,7 @@ struct PrimaryButton: View {
             Text(title)
                 .font(.PR.body2)
                 .frame(height: 22)
-                .padding(.top, textPadding)
-                .padding(.bottom, textPadding)
+                .padding(.vertical, textPadding)
                 .foregroundColor(foreground)
                 .frame(maxWidth: .infinity)
                 .background(
