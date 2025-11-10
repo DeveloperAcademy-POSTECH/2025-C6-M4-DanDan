@@ -12,7 +12,7 @@ struct RankingChangeIndicatorView: View {
     
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 2) {
-            Image(rankDiff > 0 ? "rank_up" : "rank_down")
+            Image(rankDiff >= 0 ? "rank_up" : "rank_down")
                 .resizable()
                 .frame(width: 6, height: 6)
                 .offset(y: rankDiff > 0 ? -2 : 0)

@@ -16,6 +16,7 @@ struct PersonalRankView: View {
             UUID
     ) -> [RankingViewModel.RankingItemData]
     let fetchRanking: () -> Void
+    let myRankDiff: Int
 
     @State private var selectedFilter: String = "전체"
     
@@ -30,7 +31,8 @@ struct PersonalRankView: View {
 
             RankingListView(
                 rankingItems: filteredItems,
-                myUserId: myUserId
+                myUserId: myUserId,
+                myRankDiff: myRankDiff
             )
         }
         .padding(.horizontal, 20)

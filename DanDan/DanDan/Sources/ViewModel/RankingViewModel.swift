@@ -16,6 +16,7 @@ class RankingViewModel: ObservableObject {
     @Published var userInfo: [UserInfo] = []
     @Published var rankedUsers: [UserStatus] = []
     @Published var teamRankings: [TeamRanking] = []
+    @Published var myRankDiff: Int? = nil
 
     // TODO: 팀명 확정 후 수정
     @Published var teams: [Team] = [
@@ -100,6 +101,7 @@ extension RankingViewModel {
         let userWeekScore: Int
         let userTeam: String
         let backgroundColor: Color
+        var rankDiff: Int?
 
         init(
             id: UUID = UUID(),
@@ -121,57 +123,6 @@ extension RankingViewModel {
     }
 }
 
-// MARK: - 개인 랭킹 서버 연동
-
-extension RankingViewModel {
-
-    /// 서버에서 완성된 랭킹 데이터를 그대로 받아 ViewModel 상태를 업데이트합니다.
-    func fetchRanking() {
-        isLoading = true
-
-        rankingService.fetchOverallRanking()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self else { return }
-                self.isLoading = false
-
-                switch completion {
-                case .finished:
-                    print("성공")
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                }
-            } receiveValue: { [weak self] dtoList in
-                guard let self else { return }
-
-                // ✅ 성공 시 데이터 확인 로그
-                print("✅ [Ranking Fetch Success] DTO Count:", dtoList.count)
-                dtoList.forEach { dto in
-                    print(
-                        " - \(dto.ranking)위 \(dto.userName) (\(dto.userTeam)) / 점수: \(dto.userWeekScore)"
-                    )
-                }
-
-                /// DTO → 내부 UI 모델 변환 + 팀 색상 지정
-                self.rankingItems = dtoList.map { dto in
-                    // 팀 색상 설정
-                    let color = Color.setBackgroundColor(for: dto.userTeam)
-
-                    return RankingItemData(
-                        id: dto.id,
-                        ranking: dto.ranking,
-                        userName: dto.userName,
-                        userImage: nil,  // 나중에 AsyncImage로 교체 가능
-                        userWeekScore: dto.userWeekScore,
-                        userTeam: dto.userTeam,
-                        backgroundColor: color
-                    )
-                }
-            }
-            .store(in: &cancellables)
-    }
-}
-
 // MARK: - 팀 랭킹 서버 연동
 
 extension RankingViewModel {
@@ -188,5 +139,83 @@ extension RankingViewModel {
                 print("❌ fetchTeamRanking 실패: \(error)")
             }
         }
+    }
+}
+
+// MARK: - 개인 랭킹 서버 연동
+
+extension RankingViewModel {
+
+    /// 서버에서 완성된 랭킹 데이터를 그대로 받아 ViewModel 상태를 업데이트합니다.
+    func fetchRanking() {
+        isLoading = true
+
+        rankingService.fetchOverallRanking()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                guard let self else { return }
+                self.isLoading = false
+
+                switch completion {
+                case .finished:
+                    print("랭킹 데이터 요청 완료")
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] dtoList in
+                guard let self else { return }
+
+                // DTO → UI용 모델 변환
+                let newRanking = dtoList.map { dto in
+                    RankingItemData(
+                        id: dto.id,
+                        ranking: dto.ranking,
+                        userName: dto.userName,
+                        userImage: nil,
+                        userWeekScore: dto.userWeekScore,
+                        userTeam: dto.userTeam,
+                        backgroundColor: Color.setBackgroundColor(for: dto.userTeam)
+                    )
+                }
+
+                guard let myNewRank = newRanking.first(where: { $0.id == self.currentUserId })?.ranking else {
+                    return
+                }
+                
+                let prevRank = self.loadMyPreviousRank()
+                
+                if let prevRank {
+                    let diff = prevRank - myNewRank
+                    self.myRankDiff = diff
+                } else {
+                    self.myRankDiff = nil
+                }
+                
+                self.saveMyPreviousRank(myNewRank)
+                
+                self.rankingItems = newRanking
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - UserDefaults 저장 및 불러오기
+
+extension RankingViewModel {
+    /// 이전 내 순위를 UserDefaults에 저장합니다.
+    private func saveMyPreviousRank(_ rank: Int) {
+        UserDefaults.standard.set(rank, forKey: "myPreviousRank")
+        UserDefaults.standard.set(currentUserId.uuidString, forKey: "myUserId")
+    }
+
+    /// 이전 내 순위를 UserDefaults에서 불러옵니다.
+    private func loadMyPreviousRank() -> Int? {
+        guard let savedId = UserDefaults.standard.string(forKey: "myUserId"),
+              savedId == currentUserId.uuidString else {
+            // 저장된 ID가 다르면 다른 계정 → 비교 무효
+            return nil
+        }
+        let rank = UserDefaults.standard.integer(forKey: "myPreviousRank")
+        return rank == 0 ? nil : rank
     }
 }
