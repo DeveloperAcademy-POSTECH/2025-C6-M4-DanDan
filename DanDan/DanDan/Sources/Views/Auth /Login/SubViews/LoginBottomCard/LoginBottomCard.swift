@@ -26,11 +26,11 @@ struct LoginBottomCard: View {
                 .padding(.leading, 10)
             
             // Apple
-            AppleSignInButton()
-                .frame(minWidth: 140, idealWidth: .infinity, maxWidth: .infinity, minHeight: 56, maxHeight: 56)
-                .cornerRadius(30)
-                .onTapGesture { onAppleSignInTapped() }
-                .padding(.bottom, -10)
+//            AppleSignInButton()
+//                .frame(minWidth: 140, idealWidth: .infinity, maxWidth: .infinity, minHeight: 56, maxHeight: 56)
+//                .cornerRadius(30)
+//                .onTapGesture { onAppleSignInTapped() }
+//                .padding(.bottom, -10)
             
             // Guest
             PrimaryButton(
