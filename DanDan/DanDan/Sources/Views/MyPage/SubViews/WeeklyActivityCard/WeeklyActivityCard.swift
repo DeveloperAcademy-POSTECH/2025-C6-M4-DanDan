@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct WeeklyActivityCard: View {
+    
+    // TODO: 현재 뷰에서 직접 생성하지 말고, 상위 뷰에서 주입받은 뷰모델을 사용해주세요-!
     @ObservedObject var viewModel: MyPageViewModel
     
     var body: some View {
         VStack(spacing: 24) {
+            
+            // TODO: 컴포넌트화 필요
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("이번 주 활동")
