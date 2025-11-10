@@ -9,18 +9,14 @@ import SwiftUI
 
 struct GeneralSettingSection: View {
     
-    @StateObject private var viewModel = SettingViewModel()
-
+    let onTapOpenSystemNotificationSettings: () -> Void
+    
     var body: some View {
         VStack(spacing: 0) {
             SectionHeader(title: "일반")
             NavRow(title: "기기 푸시 알림") {
-                viewModel.openSystemNotificationSettings()
+                onTapOpenSystemNotificationSettings()
             }
         }
     }
-}
-
-#Preview {
-    GeneralSettingSection()
 }
