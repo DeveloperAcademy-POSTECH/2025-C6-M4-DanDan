@@ -8,11 +8,9 @@
 import SwiftUI
 
 struct AccountSettingSection: View {
-    @ObservedObject var viewModel: SettingViewModel
-    let onTapLogout: (() -> Void)?
+    let onTapLogout: () -> Void
     
-    init(viewModel: SettingViewModel, onTapLogout: (() -> Void)? = nil) {
-        self.viewModel = viewModel
+    init(onTapLogout: @escaping () -> Void = {}) {
         self.onTapLogout = onTapLogout
     }
     
@@ -20,16 +18,12 @@ struct AccountSettingSection: View {
         VStack(spacing: 0) {
             SectionHeader(title: "계정")
             NavRow(title: "로그아웃") {
-                if let onTapLogout {
-                    onTapLogout()
-                } else {
-                    viewModel.logout()
-                }
+                onTapLogout()
             }
         }
     }
 }
 
 #Preview {
-    AccountSettingSection(viewModel: SettingViewModel())
+    AccountSettingSection()
 }

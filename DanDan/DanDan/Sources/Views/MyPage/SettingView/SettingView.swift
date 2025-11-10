@@ -19,15 +19,20 @@ struct SettingView: View {
     var body: some View {
         VStack(spacing: 0) {
 
-            AccountSettingSection(viewModel: viewModel, onTapLogout: {showLogoutAlert = true})
+            AccountSettingSection(onTapLogout: {showLogoutAlert = true})
             
             CustomDivider()
 
-            GeneralSettingSection()
+            GeneralSettingSection(
+                onTapOpenSystemNotificationSettings: { viewModel.openSystemNotificationSettings() }
+            )
            
             CustomDivider()
 
-            TermsSettingSection()
+            TermsSettingSection(
+                onTapTermsService: { viewModel.goToTermsService() },
+                onTapTermsPrivacy: { viewModel.goToTermsPrivacy() }
+            )
             
             Spacer()
         }
@@ -40,7 +45,7 @@ struct SettingView: View {
             Button("뒤로가기", role: .cancel) {}
             Button("로그아웃", role: .destructive) {viewModel.logout()}
         } message: {
-            Text("다시 로그인해야 서비스를 이용할 수 있어요.")
+            Text("로그아웃 시 다시 정보를 불러올 수 없으며 재가입해야 스틸워크를 사용할 수 있어요.")
         }
         
     }

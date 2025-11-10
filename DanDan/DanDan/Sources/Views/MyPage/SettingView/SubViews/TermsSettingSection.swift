@@ -8,15 +8,21 @@
 import SwiftUI
 
 struct TermsSettingSection: View {
-    @StateObject private var viewModel = SettingViewModel()
+    let onTapTermsService: () -> Void
+    let onTapTermsPrivacy: () -> Void
+    
+    init(onTapTermsService: @escaping () -> Void = {}, onTapTermsPrivacy: @escaping () -> Void = {}) {
+        self.onTapTermsService = onTapTermsService
+        self.onTapTermsPrivacy = onTapTermsPrivacy
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             SectionHeader(title: "약관")
             
-            NavRow(title: "서비스 이용약관") { viewModel.goToTermsService() }
+            NavRow(title: "서비스 이용약관") { onTapTermsService() }
 
-            NavRow(title: "개인정보 처리방침") { viewModel.goToTermsPrivacy() }
+            NavRow(title: "개인정보 처리방침") { onTapTermsPrivacy() }
 
         }
     }
