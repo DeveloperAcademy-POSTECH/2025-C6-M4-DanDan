@@ -105,40 +105,13 @@ final class MapService {
             throw URLError(.badURL)
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.timeoutInterval = 20
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        // 토큰 추가
-        do {
-            let token = try tokenManager.getAccessToken()
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        } catch {
-            print("⚠️ 액세스 토큰 없음 — 로그인 필요")
-            throw error
-        }
-
         // 요청 전송
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
         
-        // 디버그 로그
-        print("📡 [ZoneTeamScores] URL:", url.absoluteString)
-
-        print("📡 [ZoneTeamScores] Status Code:", httpResponse.statusCode)
-        if let json = String(data: data, encoding: .utf8) {
-            print("📥 [ZoneTeamScores] Response Body:\n\(json)")
-        }
-
-        guard 200..<300 ~= httpResponse.statusCode else {
-            print("❌ [ZoneTeamScores] 서버 응답 오류 (\(httpResponse.statusCode))")
-            throw URLError(.badServerResponse)
-        }
-
         // JSON 디코딩
         let decoded = try JSONDecoder().decode(ZoneTeamScoresResponseDTO.self, from: data)
         return decoded.data
