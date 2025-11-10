@@ -38,6 +38,7 @@ struct ZoneStationButton: View {
                 ZoneStationSign(zone: zone, statusesForZone: statusesForZone)
                     .fixedSize()
                     .offset(y: popoverOffsetY)
+                    .contentShape(Rectangle())
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .zIndex(2)
                     .onTapGesture {
@@ -45,6 +46,7 @@ struct ZoneStationButton: View {
                     }
             }
         }
+        .zIndex(showPopover ? 3 : 2)
     }
 }
 
