@@ -115,7 +115,7 @@ struct FullMapView: UIViewRepresentable {
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
                 
             let swiftUIView = ZStack {
-                ZoneStationButton(
+                ZoneStation(
                     viewModel: viewModel ?? MapScreenViewModel(),
                     zone: ann.zone,
                     statusesForZone: ann.statusesForZone,
@@ -235,7 +235,7 @@ struct FullMapView: UIViewRepresentable {
                     zoneId: ann.zone.zoneId
                 )
                 let swiftUIView = ZStack {
-                    ZoneStationButton(
+                    ZoneStation(
                         viewModel: viewModel,
                         zone: ann.zone,
                         statusesForZone: ann.statusesForZone,
@@ -277,7 +277,7 @@ struct FullMapScreen: View {
 
     var body: some View {
         FullMapView(
-            viewModel: viewModel, 
+            viewModel: viewModel,
             zoneStatuses: viewModel.zoneStatuses,
             conquestStatuses: conquestStatuses,
             teams: teams,

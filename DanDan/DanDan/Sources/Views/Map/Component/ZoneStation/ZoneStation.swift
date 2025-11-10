@@ -1,5 +1,5 @@
 //
-//  ZoneStationButton.swift
+//  ZoneStation.swift
 //  DanDan
 //
 //  Created by soyeonsoo on 11/7/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ZoneStationButton: View {
+struct ZoneStation: View {
     @ObservedObject var viewModel: MapScreenViewModel
     @State private var showPopover = false
 
@@ -63,5 +63,5 @@ struct ZoneStationButton: View {
     let s1 = ZoneConquestStatus(zoneId: 10, teamId: 1, teamName: "파랑",   teamScore: 12)
     let s2 = ZoneConquestStatus(zoneId: 10, teamId: 2, teamName: "노랑", teamScore: 8)
     
-    return ZoneStationButton(viewModel: MapScreenViewModel(), zone: dummyZone, statusesForZone: [s1, s2])
+    return ZoneStation(viewModel: MapScreenViewModel(), zone: dummyZone, statusesForZone: [s1, s2])
 }

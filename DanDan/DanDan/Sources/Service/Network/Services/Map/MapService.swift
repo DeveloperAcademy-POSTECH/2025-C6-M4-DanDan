@@ -111,8 +111,11 @@ final class MapService {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
-        
-        // JSON 디코딩
+
+        guard 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+
         let decoded = try JSONDecoder().decode(ZoneTeamScoresResponseDTO.self, from: data)
         return decoded.data
     }
