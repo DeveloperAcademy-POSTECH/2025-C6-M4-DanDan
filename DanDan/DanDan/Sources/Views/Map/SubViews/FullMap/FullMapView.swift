@@ -8,6 +8,12 @@
 import MapKit
 import SwiftUI
 
+// Canvas host annotation for overlaying station/conquer buttons in view space
+final class CanvasAnnotation: NSObject, MKAnnotation {
+    dynamic var coordinate: CLLocationCoordinate2D
+    init(coordinate: CLLocationCoordinate2D) { self.coordinate = coordinate }
+}
+
 // 전체 2D 지도
 struct FullMapView: UIViewRepresentable {
     let zoneStatuses: [ZoneStatus]
@@ -43,14 +49,43 @@ struct FullMapView: UIViewRepresentable {
         var teams: [Team] = []
         var strokeProvider = ZoneStrokeProvider(zoneStatuses: []) // 구역별 선 색상 계산기
         var mode: Mode = .overall
+        var parent: FullMapView
 
-        override init() {
+        // Holds all stations with their view-space positions
+        struct PositionedStation: Identifiable {
+            let id: Int // zoneId
+            let zone: Zone
+            let statusesForZone: [ZoneConquestStatus]
+            let point: CGPoint
+            let needsClaim: Bool
+        }
+        var positioned: [PositionedStation] = []
+
+        init(parent: FullMapView) {
+            self.parent = parent
             super.init()
             manager.delegate = self
         }
 
         func request() {
             manager.requestWhenInUseAuthorization()
+        }
+        
+        func updatePositions(for mapView: MKMapView) {
+            // Convert each zone centroid to view-space point
+            positioned = zones.map { z in
+                let coord = parent.centroid(of: z.coordinates)
+                let pt = mapView.convert(coord, toPointTo: mapView)
+                let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[z.zoneId] == true
+                let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: z.zoneId)
+                return PositionedStation(
+                    id: z.zoneId,
+                    zone: z,
+                    statusesForZone: conquestStatuses.filter { $0.zoneId == z.zoneId },
+                    point: pt,
+                    needsClaim: isChecked && !isClaimed
+                )
+            }
         }
         
         // MARK: - MKMapViewDelegate
@@ -76,14 +111,19 @@ struct FullMapView: UIViewRepresentable {
                     line.zoneId
                 ] == true
                 if checked {
-                    stroke = ZoneColorResolver.leadingColorOrDefault(
-                        for: line.zoneId,
-                        in: conquestStatuses,
-                        teams: teams,
-                        defaultColor: .subA
-                    )
+                    let teamName = StatusManager.shared.userStatus.userTeam
+                    let personalColor: UIColor
+                    switch teamName {
+                    case "Blue":
+                        personalColor = .subA
+                    case "Yellow":
+                        personalColor = .subB
+                    default:
+                        personalColor = .primaryGreen
+                    }
+                    stroke = personalColor
                 } else {
-                    stroke = UIColor.clear
+                    stroke = UIColor.primaryGreen
                 }
             }
             renderer.strokeColor = stroke
@@ -93,48 +133,52 @@ struct FullMapView: UIViewRepresentable {
             return renderer
         }
         
-        /// 어노테이션 뷰 - 정류소 버튼(작은 크기) + 정복 버튼 주입
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) ->
-            MKAnnotationView? {
-            guard let ann = annotation as? StationAnnotation else { return nil }
-
-            let id = "station-hosting-full"
+        /// 어노테이션 뷰 - single canvas host for all stations/conquer buttons
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard annotation is CanvasAnnotation else { return nil }
+            let id = "canvas-hosting-full"
             let view: HostingAnnotationView
-            if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id)
-                as? HostingAnnotationView {
+            if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id) as? HostingAnnotationView {
                 view = reused
-                view.annotation = ann
+                view.annotation = annotation
             } else {
-                view = HostingAnnotationView(annotation: ann,reuseIdentifier: id)
+                view = HostingAnnotationView(annotation: annotation, reuseIdentifier: id)
             }
 
-            let isChecked =
-                StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
-            let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
-                
-            let swiftUIView = ZStack {
-                ZoneStationButton(
-                    zone: ann.zone,
-                    statusesForZone: ann.statusesForZone,
-                    iconSize: CGSize(width: 28, height: 32),
-                    popoverOffsetY: -84
-                )
+            // Ensure positions are up-to-date for current map bounds
+            updatePositions(for: mapView)
+            let canvasSize = mapView.bounds.size
 
-                if isChecked && !isClaimed {
-                    ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                    .offset(y: -100)
+            let swiftUIView = ZStack {
+                // Station buttons (위에 보이도록)
+                ForEach(positioned) { item in
+                    ZoneStationButton(
+                        zone: item.zone,
+                        statusesForZone: item.statusesForZone,
+                        iconSize: CGSize(width: 28, height: 32),
+                        popoverOffsetY: -84
+                    )
+                    .position(x: item.point.x, y: item.point.y)
+                }
+                // Conquer buttons (기존 offset(y:-100)과 동일)
+                ForEach(positioned.filter { $0.needsClaim }) { item in
+                    ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
+                        .position(x: item.point.x, y: item.point.y - 100)
+                        .zIndex(1)
                 }
             }
+            .frame(width: canvasSize.width, height: canvasSize.height)
+
             view.setSwiftUIView(swiftUIView)
-            view.contentSize = CGSize(width: 120, height: 140)
-            view.centerOffset = CGPoint(x: 0, y: -40)
+            view.contentSize = canvasSize
+            view.centerOffset = .zero
             view.canShowCallout = false
             view.isUserInteractionEnabled = true
             return view
         }
     }
 
-    func makeCoordinator() -> Coordinator { Coordinator() }
+    func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
 
     func makeUIView(context: Context) -> MKMapView {
         if !Thread.isMainThread {
@@ -170,12 +214,9 @@ struct FullMapView: UIViewRepresentable {
         context.coordinator.mode = mode
 
         MapElementInstaller.installOverlays(for: zones, on: map)
-        MapElementInstaller.installStations(
-            for: zones,
-            statuses: conquestStatuses,
-            centroidOf: centroid(of:),
-            on: map
-        )
+        // Add a single canvas annotation at the map center
+        let center = bounds.center
+        map.addAnnotation(CanvasAnnotation(coordinate: center))
         return map
     }
 
@@ -204,13 +245,17 @@ struct FullMapView: UIViewRepresentable {
                             line.zoneId
                         ] == true
                     if checked {
-                        let stroke = ZoneColorResolver.leadingColorOrDefault(
-                            for: line.zoneId,
-                            in: conquestStatuses,
-                            teams: teams,
-                            defaultColor: .subA
-                        )
-                        renderer.strokeColor = stroke
+                        let teamName = StatusManager.shared.userStatus.userTeam
+                        let personalColor: UIColor
+                        switch teamName {
+                        case "Blue":
+                            personalColor = .subA
+                        case "Yellow":
+                            personalColor = .subB
+                        default:
+                            personalColor = .primaryGreen
+                        }
+                        renderer.strokeColor = personalColor
                     } else {
                         renderer.strokeColor = .primaryGreen
                     }
@@ -218,32 +263,31 @@ struct FullMapView: UIViewRepresentable {
                 renderer.setNeedsDisplay()
             }
 
-            // 주석(정류소) 콘텐츠도 최신 상태로 갱신
-            for annotation in uiView.annotations {
-                guard let ann = annotation as? StationAnnotation,
-                    let view = uiView.view(for: ann) as? HostingAnnotationView
-                else { continue }
-                let isChecked =
-                    StatusManager.shared.userStatus.zoneCheckedStatus[
-                        ann.zone.zoneId
-                    ] == true
-                let isClaimed = StatusManager.shared.isRewardClaimed(
-                    zoneId: ann.zone.zoneId
-                )
-                let swiftUIView = ZStack {
+            // Refresh the single canvas annotation's view for all stations/conquer buttons
+            guard let canvas = uiView.annotations.first(where: { $0 is CanvasAnnotation }),
+                  let view = uiView.view(for: canvas) as? HostingAnnotationView else { return }
+            context.coordinator.updatePositions(for: uiView)
+            let canvasSize = uiView.bounds.size
+            let swiftUIView = ZStack {
+                ForEach(context.coordinator.positioned) { item in
                     ZoneStationButton(
-                        zone: ann.zone,
-                        statusesForZone: ann.statusesForZone,
+                        zone: item.zone,
+                        statusesForZone: item.statusesForZone,
                         iconSize: CGSize(width: 28, height: 32),
                         popoverOffsetY: -84
                     )
-                    if isChecked && !isClaimed {
-                        ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .offset(y: -100)
-                    }
+                    .position(x: item.point.x, y: item.point.y)
                 }
-                view.setSwiftUIView(swiftUIView)
+                ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
+                    ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
+                        .position(x: item.point.x, y: item.point.y - 100)
+                        .zIndex(1)
+                }
             }
+            .frame(width: canvasSize.width, height: canvasSize.height)
+            view.setSwiftUIView(swiftUIView)
+            view.contentSize = canvasSize
+            view.centerOffset = .zero
         }
     }
 }
