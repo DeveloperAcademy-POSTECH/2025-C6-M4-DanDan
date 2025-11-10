@@ -23,9 +23,7 @@ struct SchoolSelectView: View {
     @State private var selected: School? = nil
     @State private var showConfirm = false
     
-    // TODO: 뷰모델에서 정의하고 불러와서 사용-!
     private let navigationManager = NavigationManager.shared
-    
     private var needsCustomBackButton: Bool {
         if #available(iOS 26.0, *) { return false } else { return true }
     }
@@ -115,8 +113,6 @@ struct SchoolSelectView: View {
         }
     }
 }
-
-// TODO: 서브뷰로 분리 필요
 
 // MARK: - 선택 리스트 전체 컨테이너
 private struct SchoolListSection: View {
