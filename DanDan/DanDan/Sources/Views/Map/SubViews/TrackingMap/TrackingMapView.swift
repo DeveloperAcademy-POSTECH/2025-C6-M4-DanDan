@@ -10,11 +10,11 @@ import SwiftUI
 
 // 트래킹 3D 지도
 struct TrackingMapView: UIViewRepresentable {
+    @ObservedObject var viewModel: MapScreenViewModel
     let zoneStatuses: [ZoneStatus]
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
-    // 외부 상태 변경 시 강제 update 트리거(렌더러만 갱신)
-    var refreshToken: UUID = UUID()
+    var refreshToken: UUID = UUID() // 외부 상태 변경 시 강제 update 트리거(렌더러만 갱신)
     
     // MARK: - Constants
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표, 표시 범위(경계/마진) 정의
@@ -36,6 +36,7 @@ struct TrackingMapView: UIViewRepresentable {
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
+        var viewModel: MapScreenViewModel?
                 
         var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
@@ -122,7 +123,14 @@ struct TrackingMapView: UIViewRepresentable {
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
             
             let swiftUIView = ZStack {
-                ZoneStationButton(zone: ann.zone, statusesForZone: ann.statusesForZone)
+                ZoneStation(
+                    zone: ann.zone,
+                    statusesForZone: ann.statusesForZone,
+                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
+                    loadZoneTeamScores: { zoneId in
+                        Task {await self.viewModel!.loadZoneTeamScores(for: zoneId) }
+                    }
+                )
                 if isChecked && !isClaimed {
                     ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                     .offset(y: -120)
@@ -172,6 +180,8 @@ struct TrackingMapView: UIViewRepresentable {
         context.coordinator.teams = teams
         context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.strokeProvider = .init(zoneStatuses: zoneStatuses)
+        context.coordinator.viewModel = viewModel
+
         
         // 선과 정류소 버튼 표시
         MapElementInstaller.installOverlays(for: zones, on: map)
@@ -219,6 +229,7 @@ struct TrackingMapScreen: View {
         ZStack(alignment: .topLeading) {
             // 3D 부분 지도
                 TrackingMapView(
+                    viewModel: viewModel,
                     zoneStatuses: viewModel.zoneStatuses,
                     conquestStatuses: conquestStatuses,
                     teams: teams,

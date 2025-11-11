@@ -94,5 +94,29 @@ final class MapService {
         return decodedResponse.data
     }
     
-    
+    /// 특정 구역(zoneId)의 팀별 점수 조회 API
+    func fetchZoneTeamScores(zoneId: Int) async throws -> ZoneTeamScoresData {
+        guard
+            let url = URL(
+                string:
+                    "https://www.singyupark.cloud:8443/api/v1/conquest/zones/\(zoneId)/status"
+            )
+        else {
+            throw URLError(.badURL)
+        }
+
+        // 요청 전송
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        guard 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+
+        let decoded = try JSONDecoder().decode(ZoneTeamScoresResponseDTO.self, from: data)
+        return decoded.data
+    }
 }
