@@ -5,6 +5,7 @@
 //  Created by soyeonsoo on 11/7/25.
 //
 
+import Lottie
 import SwiftUI
 
 struct WeeklyAwardView: View {
@@ -18,16 +19,19 @@ struct WeeklyAwardView: View {
             )
             .padding(.vertical, 20)
             .frame(maxWidth: .infinity, alignment: .top)
-            
-            Image("trophy")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 230)
-                .padding(.top, 20)
+            ZStack {
+                LottieView(animation: .named("lottie_blue_confetti"))
+                    .playing()
+                    .ignoresSafeArea()
+                
+                Image("trophy")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 230)
+            }
             
             MVPsView(mvps: viewModel.mvpList)
 
-            
             Spacer()
             
             PrimaryButton(
