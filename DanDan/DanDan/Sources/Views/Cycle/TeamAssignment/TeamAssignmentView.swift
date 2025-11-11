@@ -5,6 +5,7 @@
 //  Created by soyeonsoo on 11/7/25.
 //
 
+import Lottie
 import SwiftUI
 
 struct TeamAssignmentView: View {
@@ -18,25 +19,17 @@ struct TeamAssignmentView: View {
         let team = status.userStatus.userTeam.lowercased()
 
         ZStack {
-            Image("bg_team_assignment")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea(edges: .all)
-                .offset(y: 100)
-            
-            // 기차
             switch team {
             case "blue":
-                Image("train_blue")
-                    .resizable()
-                    .scaledToFit()
-                    .offset(x: 20, y: 86)
+                LottieOnceView(name: "lottie_blue_team")
+                    .offset(y: 5)
+                    .ignoresSafeArea()
+
                 
             case "yellow":
-                Image("train_yellow")
-                    .resizable()
-                    .scaledToFit()
-                    .offset(x: 20, y: 86)
+                LottieOnceView(name: "lottie_yellow_team")
+                    .offset(y: 5)
+                    .ignoresSafeArea()
                 
             default:
                 // 디버그 폴백
@@ -73,11 +66,35 @@ struct TeamAssignmentView: View {
     }
 }
 
-//#Preview("Team Assignment") {
-//    TeamAssignmentView(userStatus: {
-//        var status = UserStatus()
-//        status.userTeam = "yellow"
-//        return status
-//    }())
-//    .frame(height: 350)
-//}
+
+struct LottieOnceView: UIViewRepresentable {
+    let name: String
+    var contentMode: UIView.ContentMode = .scaleAspectFit
+    var holdProgress: CGFloat = 0.95
+
+    func makeUIView(context: Context) -> LottieAnimationView {
+        let view = LottieAnimationView(name: name)
+        view.loopMode = .playOnce
+        view.contentMode = contentMode
+        view.backgroundBehavior = .pauseAndRestore
+        view.isUserInteractionEnabled = false
+        view.clipsToBounds = true
+        view.layer.allowsEdgeAntialiasing = true
+
+        // 0 -> 0.95까지만 재생하고 해당 지점에서 정지 (마지막 프레임이 투명이라서)
+        view.play(fromProgress: 0, toProgress: holdProgress, loopMode: .playOnce) { _ in
+            view.pause()
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: LottieAnimationView, context: Context) {}
+}
+
+
+#Preview("Team Assignment") {
+    TeamAssignmentView()
+        .onAppear {
+            StatusManager.shared.userStatus.userTeam = "yellow"
+        }
+}
