@@ -18,12 +18,12 @@ class NavigationManager: ObservableObject {
     private init() {
         
         // TODO: 배포시 제거 - 테스트를 위한 키체인 제거
-        do {
-            try TokenManager().clearTokens()
-            print("🧹 DEBUG: Keychain cleared for clean testing")
-        } catch {
-            print("⚠️ Failed to clear Keychain: \(error)")
-        }
+//        do {
+//            try TokenManager().clearTokens()
+//            print("🧹 DEBUG: Keychain cleared for clean testing")
+//        } catch {
+//            print("⚠️ Failed to clear Keychain: \(error)")
+//        }
 
         setRootView()
     }
