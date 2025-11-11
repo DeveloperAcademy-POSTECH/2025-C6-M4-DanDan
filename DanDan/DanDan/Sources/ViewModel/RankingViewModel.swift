@@ -97,7 +97,7 @@ extension RankingViewModel {
         let id: UUID
         let ranking: Int
         let userName: String
-        let userImage: UIImage?
+        var userImage: UIImage?
         let userWeekScore: Int
         let userTeam: String
         let backgroundColor: Color
@@ -176,6 +176,35 @@ extension RankingViewModel {
                         userTeam: dto.userTeam,
                         backgroundColor: Color.setBackgroundColor(for: dto.userTeam)
                     )
+
+                    /// 비동기로 이미지 로드
+                    if let urlString = dto.userImage,
+                        let url = URL(string: urlString)
+                    {
+                        Task {
+                            // TODO: 중복 로딩을 피하기위해, 캐싱 도입
+                            do {
+                                let (data, _) = try await URLSession.shared
+                                    .data(from: url)
+                                if let image = UIImage(data: data) {
+                                    await MainActor.run {
+                                        // rankingItems 배열에서 해당 ID의 이미지만 교체
+                                        if let index = self.rankingItems
+                                            .firstIndex(where: {
+                                                $0.id == dto.id
+                                            })
+                                        {
+                                            self.rankingItems[index].userImage =
+                                                image
+                                        }
+                                    }
+                                }
+                            } catch {
+                            }
+                        }
+                    }
+
+                    return item
                 }
 
                 guard let myNewRank = newRanking.first(where: { $0.id == self.currentUserId })?.ranking else {
