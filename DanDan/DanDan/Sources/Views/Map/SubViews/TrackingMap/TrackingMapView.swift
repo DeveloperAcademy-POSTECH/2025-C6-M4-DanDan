@@ -52,6 +52,8 @@ struct TrackingMapView: UIViewRepresentable {
         func request() {
             DispatchQueue.main.async {
                 self.manager.requestWhenInUseAuthorization() // 위치 정보 접근 권한 요청
+                self.manager.allowsBackgroundLocationUpdates = true
+                self.manager.showsBackgroundLocationIndicator = true
                 self.manager.startUpdatingLocation() // 위치 업데이트 시작
                 self.manager.startUpdatingHeading() // 나침반(방향) 업데이트 시작
             }
