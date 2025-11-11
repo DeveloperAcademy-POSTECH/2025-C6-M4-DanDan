@@ -26,7 +26,8 @@ struct RankingView: View {
                     rankingItems: viewModel.rankingItems,
                     myUserId: viewModel.currentUserId,
                     rankingFilter: viewModel.filteredRankingItems,
-                    fetchRanking: viewModel.fetchRanking
+                    fetchRanking: viewModel.fetchRanking,
+                    myRankDiff: viewModel.myRankDiff ?? 0
                 )
             } else {
                 TeamRankView(

@@ -10,6 +10,7 @@ import SwiftUI
 struct RankingListView: View {
     let rankingItems: [RankingViewModel.RankingItemData]
     let myUserId: UUID
+    let myRankDiff: Int
 
     private var sortedItems: [RankingViewModel.RankingItemData] {
         rankingItems.sorted { $0.ranking < $1.ranking }
@@ -40,7 +41,8 @@ struct RankingListView: View {
                     RankingItemView(
                         rank: item,
                         isMyRank: item.id == myUserId,
-                        displayRank: index + 4  // 상위 3개 이후라 +4 (index는 0부터 시작)
+                        displayRank: index + 4,  // 상위 3개 이후라 +4 (index는 0부터 시작)
+                        myRankDiff: myRankDiff
                     )
                 }
             }
