@@ -2,7 +2,7 @@
 //  RegionMonitoringManager.swift
 //  DanDan
 //
-//  Created by Assistant on 11/11/25.
+//  Created by Hwnag Seyeon on 11/11/25.
 //
 
 import Foundation
@@ -22,6 +22,10 @@ final class RegionMonitoringManager: NSObject {
         manager.requestAlwaysAuthorization()
     }
     
+    /// 지정된 구역 리스트를 기반으로 지오펜싱을 시작합니다.
+    /// 기존에 등록된 모든 모니터링 영역을 제거하고 최대 20개의 구역만 새로 등록합니다.
+    /// - Parameter zones: 지오펜싱할 Zone 객체 배열
+    /// - Parameter radius: 각 구역의 감지 반경(기본값 100m)
     func startMonitoringZones(zones: [Zone], radius: CLLocationDistance = 100.0) {
         // 정리
         for region in manager.monitoredRegions {
@@ -67,5 +71,3 @@ extension RegionMonitoringManager: CLLocationManagerDelegate {
         print("⚠️ Region monitoring failed:", region?.identifier ?? "-", error.localizedDescription)
     }
 }
-
-
