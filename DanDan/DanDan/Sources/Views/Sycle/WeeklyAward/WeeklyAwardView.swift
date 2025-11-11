@@ -7,38 +7,14 @@
 
 import SwiftUI
 
-struct MVP: Identifiable, Hashable {
-    let id = UUID()
-    let rank: Int
-    let imageName: String
-}
-
 struct WeeklyAwardView: View {
-    private let navigationManager = NavigationManager.shared
-    
-    // TODO: 외부에서 주입 필요
-    var winnerTeamName: String?
-    
-    var conqueredZones: Int?
-    
-    // TODO: rank, imageName 주입 필요
-    private let demoMVPs: [MVP] = (1...15).map {
-        MVP(rank: $0, imageName: "default_avatar") // 더미 데이터
-    }
-    
-    private var winnerTitle: String {
-        switch winnerTeamName?.lowercased() {
-        case "blue":   return "파랑팀 우승!"
-        case "yellow": return "노랑팀 우승!"
-        default:       return "두구두구"
-        }
-    }
+    @StateObject private var viewModel = WeeklyAwardViewModel()
     
     var body: some View {
         VStack {
             WeeklyAwardTitleSectionView(
-                title: winnerTitle,
-                description: "총 \(conqueredZones!)구역을 점령했어요\n테스트 참여 감사해요 더 좋은 앱으로 돌아올게요"
+                title: viewModel.winnerTitle,
+                description: "총 \(viewModel.winningTeam?.conqueredZones ?? 0)구역을 점령했어요\n테스트 참여 감사해요 더 좋은 앱으로 돌아올게요"
             )
             .padding(.vertical, 20)
             .frame(maxWidth: .infinity, alignment: .top)
@@ -49,21 +25,25 @@ struct WeeklyAwardView: View {
                 .frame(width: 230)
                 .padding(.top, 20)
             
-            MVPsView(mvps: demoMVPs)
+            MVPsView(mvps: viewModel.mvpList)
+
             
             Spacer()
             
             PrimaryButton(
                 "그래도 스틸워크와 계속 걷기",
                 action: {
-                    navigationManager.replaceRoot(with: .main)
+                    viewModel.tapMainButton()
                     GamePhaseManager.shared.showWeeklyAward = false
                 }
             )
         }
+        .task {
+            await viewModel.fetchConquestResults()
+        }
     }
 }
 
-#Preview("Yellow") {
-    WeeklyAwardView(winnerTeamName: "yellow", conqueredZones: 9)
+#Preview() {
+    WeeklyAwardView()
 }
