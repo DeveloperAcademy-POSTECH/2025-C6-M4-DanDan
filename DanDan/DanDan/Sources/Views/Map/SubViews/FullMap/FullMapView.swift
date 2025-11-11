@@ -160,7 +160,7 @@ struct FullMapView: UIViewRepresentable {
                     ZoneStation(
                         zone: item.zone,
                         statusesForZone: item.statusesForZone,
-                        zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
+                        zoneTeamScores: self.viewModel?.zoneTeamScores ?? [:],
                         loadZoneTeamScores: { zoneId in
                         Task { await self.viewModel?.loadZoneTeamScores(for: zoneId) }
                         },

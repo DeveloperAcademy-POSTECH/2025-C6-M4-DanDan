@@ -158,16 +158,17 @@ extension RankingViewModel {
 
                 switch completion {
                 case .finished:
-                    print("랭킹 데이터 요청 완료")
+                    print("✅ 랭킹 데이터 요청 완료")
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
+                    print("❌ 랭킹 요청 실패: \(error)")
                 }
             } receiveValue: { [weak self] dtoList in
                 guard let self else { return }
 
                 // DTO → UI용 모델 변환
-                let newRanking = dtoList.map { dto in
-                    RankingItemData(
+                let newRanking = dtoList.map { dto -> RankingItemData in
+                    let item = RankingItemData(
                         id: dto.id,
                         ranking: dto.ranking,
                         userName: dto.userName,
@@ -177,29 +178,21 @@ extension RankingViewModel {
                         backgroundColor: Color.setBackgroundColor(for: dto.userTeam)
                     )
 
-                    /// 비동기로 이미지 로드
+                    // ✅ 비동기 이미지 로드
                     if let urlString = dto.userImage,
-                        let url = URL(string: urlString)
-                    {
+                       let url = URL(string: urlString) {
                         Task {
-                            // TODO: 중복 로딩을 피하기위해, 캐싱 도입
                             do {
-                                let (data, _) = try await URLSession.shared
-                                    .data(from: url)
+                                let (data, _) = try await URLSession.shared.data(from: url)
                                 if let image = UIImage(data: data) {
                                     await MainActor.run {
-                                        // rankingItems 배열에서 해당 ID의 이미지만 교체
-                                        if let index = self.rankingItems
-                                            .firstIndex(where: {
-                                                $0.id == dto.id
-                                            })
-                                        {
-                                            self.rankingItems[index].userImage =
-                                                image
+                                        if let index = self.rankingItems.firstIndex(where: { $0.id == dto.id }) {
+                                            self.rankingItems[index].userImage = image
                                         }
                                     }
                                 }
                             } catch {
+                                print("⚠️ 이미지 로드 실패: \(error)")
                             }
                         }
                     }
@@ -207,21 +200,20 @@ extension RankingViewModel {
                     return item
                 }
 
-                guard let myNewRank = newRanking.first(where: { $0.id == self.currentUserId })?.ranking else {
-                    return
+                // ✅ 내 순위 비교 로직 (map 이후에!)
+                if let myNewRank = newRanking.first(where: { $0.id == self.currentUserId })?.ranking {
+                    let prevRank = self.loadMyPreviousRank()
+
+                    if let prevRank {
+                        let diff = prevRank - myNewRank
+                        self.myRankDiff = diff
+                    } else {
+                        self.myRankDiff = nil
+                    }
+
+                    self.saveMyPreviousRank(myNewRank)
                 }
-                
-                let prevRank = self.loadMyPreviousRank()
-                
-                if let prevRank {
-                    let diff = prevRank - myNewRank
-                    self.myRankDiff = diff
-                } else {
-                    self.myRankDiff = nil
-                }
-                
-                self.saveMyPreviousRank(myNewRank)
-                
+
                 self.rankingItems = newRanking
             }
             .store(in: &cancellables)
