@@ -20,8 +20,8 @@ class RankingViewModel: ObservableObject {
 
     // TODO: 팀명 확정 후 수정
     @Published var teams: [Team] = [
-        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
-        Team(id: UUID(), teamName: "Yellow", teamColor: "B"),
+        Team(id: UUID(), teamName: "파랑팀", teamColor: "A"),
+        Team(id: UUID(), teamName: "노랑팀", teamColor: "B"),
     ]
 
     @Published var rankingItems: [RankingItemData] = []

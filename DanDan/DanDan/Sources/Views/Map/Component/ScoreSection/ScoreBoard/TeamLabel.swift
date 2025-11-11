@@ -16,11 +16,20 @@ struct TeamLabel: View {
     let score: Int
     let side: TeamSide
     
+    // TODO: UT 후 제거 - 팀 이름 맵핑
+    private var mappedTeamName: String {
+        switch name {
+        case "Blue": return "파랑팀"
+        case "Yellow": return "노랑팀"
+        default: return name
+        }
+    }
+    
     var body: some View {
         switch side {
         case .left:
             HStack(spacing: 8) {
-                Text(name)
+                Text(mappedTeamName)
                     .font(.PR.caption5)
                     .foregroundStyle(.steelBlack)
                 Text("\(score)")
@@ -32,7 +41,7 @@ struct TeamLabel: View {
                 Text("\(score)")
                     .font(.PR.caption5)
                     .foregroundStyle(.gray1)
-                Text(name)
+                Text(mappedTeamName)
                     .font(.PR.caption5)
                     .foregroundStyle(.steelBlack)
             }
