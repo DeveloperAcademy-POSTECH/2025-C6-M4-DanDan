@@ -45,6 +45,7 @@ struct ZoneStation: View {
                 )
                 .fixedSize()
                 .offset(y: popoverOffsetY)
+                .contentShape(Rectangle())
                 .transition(.move(edge: .top).combined(with: .opacity))
                 .zIndex(2)
                 .onTapGesture {
@@ -52,5 +53,6 @@ struct ZoneStation: View {
                 }
             }
         }
+        .zIndex(showPopover ? 3 : 2)
     }
 }
