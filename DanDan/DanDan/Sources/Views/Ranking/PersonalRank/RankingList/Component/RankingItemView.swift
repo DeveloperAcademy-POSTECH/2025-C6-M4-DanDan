@@ -11,6 +11,7 @@ struct RankingItemView: View {
     let rank: RankingViewModel.RankingItemData
     let isMyRank: Bool
     let displayRank: Int
+    let myRankDiff: Int
     
     var body: some View {
         HStack {
@@ -19,8 +20,7 @@ struct RankingItemView: View {
                 .padding(.horizontal, 24)
                 .overlay() {
                     if isMyRank {
-                        // TODO: 변동 순위 rankDiff에 연동
-                        RankingChangeIndicatorView(rankDiff: 4)
+                        RankingChangeIndicatorView(rankDiff: myRankDiff)
                             .offset(y: 21)
                     }
                 }

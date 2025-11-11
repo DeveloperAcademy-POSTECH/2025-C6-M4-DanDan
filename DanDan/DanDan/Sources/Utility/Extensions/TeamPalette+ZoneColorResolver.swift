@@ -31,7 +31,6 @@ enum ZoneColorResolver {
     ) -> UIColor {
         // zoneStatuses에서 해당 zoneId 찾기
         guard let status = zoneStatuses.first(where: { $0.zoneId == zoneId }) else {
-            print("⚠️ Zone \(zoneId) → 데이터 없음")
             return defaultColor
         }
 
@@ -39,18 +38,10 @@ enum ZoneColorResolver {
         guard let teamName = status.leadingTeamName else {
             return defaultColor
         }
-
-//        // 👇 zoneStatuses 전체 데이터 확인용 디버그 로그
-        print("📦 현재 zoneStatuses 데이터 (\(zoneStatuses.count)개):")
-        for status in zoneStatuses {
-            print("   - Zone \(status.zoneId): \(status.leadingTeamName)")
-        }
         
         // 팀 이름에 따라 색 지정 (여기서는 asset catalog 기준)
         switch teamName {
         case "Blue":
-            print("🎯 Zone \(zoneId) → TeamName(raw): \(teamName)")
-            print("🎯 TeamName(lowercased): \(teamName.lowercased())")
             return .A
         case "Yellow":
             return .B
