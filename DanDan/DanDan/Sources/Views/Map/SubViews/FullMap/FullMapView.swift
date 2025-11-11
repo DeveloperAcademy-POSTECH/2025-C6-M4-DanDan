@@ -76,14 +76,19 @@ struct FullMapView: UIViewRepresentable {
                     line.zoneId
                 ] == true
                 if checked {
-                    stroke = ZoneColorResolver.leadingColorOrDefault(
-                        for: line.zoneId,
-                        in: conquestStatuses,
-                        teams: teams,
-                        defaultColor: .subA
-                    )
+                    let teamName = StatusManager.shared.userStatus.userTeam
+                    let personalColor: UIColor
+                    switch teamName {
+                    case "Blue":
+                        personalColor = .subA
+                    case "Yellow":
+                        personalColor = .subB
+                    default:
+                        personalColor = .primaryGreen
+                    }
+                    stroke = personalColor
                 } else {
-                    stroke = UIColor.clear
+                    stroke = UIColor.primaryGreen
                 }
             }
             renderer.strokeColor = stroke
@@ -204,13 +209,17 @@ struct FullMapView: UIViewRepresentable {
                             line.zoneId
                         ] == true
                     if checked {
-                        let stroke = ZoneColorResolver.leadingColorOrDefault(
-                            for: line.zoneId,
-                            in: conquestStatuses,
-                            teams: teams,
-                            defaultColor: .subA
-                        )
-                        renderer.strokeColor = stroke
+                        let teamName = StatusManager.shared.userStatus.userTeam
+                        let personalColor: UIColor
+                        switch teamName {
+                        case "Blue":
+                            personalColor = .subA
+                        case "Yellow":
+                            personalColor = .subB
+                        default:
+                            personalColor = .primaryGreen
+                        }
+                        renderer.strokeColor = personalColor
                     } else {
                         renderer.strokeColor = .primaryGreen
                     }
