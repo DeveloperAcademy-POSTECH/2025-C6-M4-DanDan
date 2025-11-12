@@ -33,5 +33,6 @@ struct ProfileImageView: View {
                 }
         }
         .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
+        .padding(.leading, -12)
     }
 }

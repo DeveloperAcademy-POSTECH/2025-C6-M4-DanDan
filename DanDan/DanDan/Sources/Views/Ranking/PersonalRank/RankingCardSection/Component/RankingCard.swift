@@ -42,7 +42,7 @@ struct RankingCard: View {
         default: return nil
         }
     }
-
+    
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -63,6 +63,7 @@ struct RankingCard: View {
                     .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
             }
 
+            // TODO: UT 후 수정
             VStack {
                 Text(name)
                     .font(.PR.body2)
@@ -73,6 +74,24 @@ struct RankingCard: View {
                     .foregroundStyle(.gray2)
             }
             .padding(.vertical, 10)
+            
+            // UT용
+//            VStack{
+//                Text("대동중 X 제철중")
+//                    .font(.PR.body4)
+//                    .foregroundStyle(.gray3)
+//                
+//                HStack {
+//                    Text(name)
+//                        .font(.PR.body2)
+//                        .foregroundStyle(.steelBlack)
+//                    
+//                    Text("\(score)점")
+//                        .font(.PR.body3)
+//                        .foregroundStyle(.gray2)
+//                }
+//                .padding(.vertical, 10)
+//            }
         }
         .frame(width: 110, height: 135)
         .background(Color.white)
