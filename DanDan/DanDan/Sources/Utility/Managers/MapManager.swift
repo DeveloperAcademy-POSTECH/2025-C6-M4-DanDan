@@ -61,6 +61,9 @@ enum MapOverlayRefresher {
 }
 
 final class ZoneConquerActionHandler {
+    // TODO: 임시 Notification 기반 업데이트
+    static let didUpdateScoreNotification = Notification.Name("ZoneConquerActionHandler.didUpdateScore")
+
     static func handleConquer(zoneId: Int) {
         ZoneCheckedService.shared.postChecked(zoneId: zoneId) { ok in
             guard ok else { print("🚨 postChecked failed: \(zoneId)"); return }
@@ -68,6 +71,8 @@ final class ZoneConquerActionHandler {
                 if ok2 {
                     StatusManager.shared.incrementDailyScore()
                     StatusManager.shared.setRewardClaimed(zoneId: zoneId, claimed: true)
+                    
+                    NotificationCenter.default.post(name: didUpdateScoreNotification, object: nil)
                 } else {
                     print("🚨 acquireScore failed: \(zoneId)")
                 }
