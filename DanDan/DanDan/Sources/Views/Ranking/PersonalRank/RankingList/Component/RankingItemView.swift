@@ -44,10 +44,10 @@ struct RankingItemView: View {
             Spacer()
             
 //            // TODO: UT 후 수정
-//            Text(mappedTeamName)
-//                .padding(.trailing, 5)
-//                .font(.PR.body4)
-//                .foregroundStyle(.gray3)
+            Text(mappedTeamName)
+                .padding(.trailing, 5)
+                .font(.PR.body4)
+                .foregroundStyle(.gray3)
 
             Text("\(rank.userWeekScore)")
                 .padding(.trailing, 24)
