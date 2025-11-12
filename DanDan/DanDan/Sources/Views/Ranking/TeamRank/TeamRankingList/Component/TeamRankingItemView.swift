@@ -14,8 +14,8 @@ struct TeamRankingItemView: View {
     // TODO: UT 후 제거 - 팀 이름 맵핑
     private var mappedTeamName: String {
         switch teamRankings.teamName {
-        case "Blue": return "세명고 X 포항이동고"
-        case "Yellow": return "대동중 X 포항제철중"
+        case "Blue": return "포항이동고"
+        case "Yellow": return "대동중 X 세명고"
         default: return teamRankings.teamName
         }
     }
