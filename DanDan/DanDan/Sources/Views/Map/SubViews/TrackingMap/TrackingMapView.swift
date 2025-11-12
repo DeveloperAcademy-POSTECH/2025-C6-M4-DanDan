@@ -217,9 +217,37 @@ struct TrackingMapView: UIViewRepresentable {
         context.coordinator.teams = teams
         context.coordinator.strokeProvider = .init(zoneStatuses: zoneStatuses)
         
-        // 렌더러만 색 갱신
+        // 렌더러 색 갱신 + 정류소 데이터 최신화
         DispatchQueue.main.async {
             MapOverlayRefresher.refreshColors(on: uiView, with: context.coordinator.strokeProvider)
+            
+            for annotation in uiView.annotations {
+                guard let ann = annotation as? StationAnnotation,
+                      let view = uiView.view(for: ann) as? HostingAnnotationView else { continue }
+                
+                let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
+                let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
+                
+                let swiftUIView = ZStack {
+                    ZoneStation(
+                        zone: ann.zone,
+                        statusesForZone: ann.statusesForZone,
+                        zoneTeamScores: self.viewModel.zoneTeamScores,
+                        loadZoneTeamScores: { zoneId in
+                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
+                        }
+                    )
+                    if isChecked && !isClaimed {
+                        ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
+                            .offset(y: -120)
+                    }
+                }
+                
+                view.setSwiftUIView(swiftUIView)
+                view.contentSize = CGSize(width: 160, height: 190)
+                view.centerOffset = CGPoint(x: 10, y: -36)
+                view.canShowCallout = false
+            }
         }
     }
 }

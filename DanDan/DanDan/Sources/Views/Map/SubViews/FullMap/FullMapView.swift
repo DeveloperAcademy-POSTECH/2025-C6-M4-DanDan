@@ -308,6 +308,8 @@ struct FullMapView: UIViewRepresentable {
     }
 }
 
+// MARK: - FullMapScreen
+
 struct FullMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
     

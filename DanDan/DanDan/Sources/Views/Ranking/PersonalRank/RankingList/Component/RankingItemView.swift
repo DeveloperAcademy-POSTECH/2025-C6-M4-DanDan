@@ -13,6 +13,15 @@ struct RankingItemView: View {
     let displayRank: Int
     let myRankDiff: Int
     
+    // TODO: UT 후 수정
+    private var mappedTeamName: String {
+        switch rank.userTeam {
+        case "Blue": return "세명고 X 이동고"
+        case "Yellow": return "대동중 X 제철중"
+        default: return rank.userTeam
+        }
+    }
+
     var body: some View {
         HStack {
             Text("\(displayRank)")
@@ -33,6 +42,12 @@ struct RankingItemView: View {
                 .padding(.leading, 12)
 
             Spacer()
+            
+//            // TODO: UT 후 수정
+//            Text(mappedTeamName)
+//                .padding(.trailing, 5)
+//                .font(.PR.body4)
+//                .foregroundStyle(.gray3)
 
             Text("\(rank.userWeekScore)")
                 .padding(.trailing, 24)

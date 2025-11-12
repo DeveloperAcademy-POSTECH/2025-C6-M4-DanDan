@@ -10,7 +10,16 @@ import SwiftUI
 struct TeamRankingItemView: View {
     let teamRankings: TeamRanking
     let isMyRank: Bool
-
+    
+    // TODO: UT 후 제거 - 팀 이름 맵핑
+    private var mappedTeamName: String {
+        switch teamRankings.teamName {
+        case "Blue": return "세명고 X 포항이동고"
+        case "Yellow": return "대동중 X 포항제철중"
+        default: return teamRankings.teamName
+        }
+    }
+    
     var body: some View {
         HStack {
             Text("\(teamRankings.rank)")
@@ -20,7 +29,7 @@ struct TeamRankingItemView: View {
             // TODO: 팀 이미지 추가
 //            ProfileImageView(image: teamRankings.userImage, isMyRank: isMyRank)
 
-            Text("\(teamRankings.teamName)")
+            Text("\(mappedTeamName)")
                 .font(.PR.body2)
                 .lineLimit(1)
                 .padding(.leading, 12)
