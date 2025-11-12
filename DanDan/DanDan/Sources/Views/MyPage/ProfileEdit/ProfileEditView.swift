@@ -9,40 +9,41 @@ import SwiftUI
 
 struct ProfileEditView: View {
     @StateObject private var viewModel = ProfileEditViewModel()
+    @State private var isKeyboardVisible: Bool = false
 
     private var needsCustomBackButton: Bool {
         if #available(iOS 26.0, *) { return false } else { return true }
     }
 
     var body: some View {
-        VStack(spacing: 40) {
-            ProfileTitle(
-                title: "프로필 수정하기",
-                description: "나만의 닉네임과 프로필을 설정해주세요."
-            )
-            
-            ProfileEditImage(
-                image: viewModel.profileImage,
-                onPickImage: { image in
-                    viewModel.setNewImage(image)
-                },
-                onRemoveImage: {
-                    viewModel.removeImage()
-                }
-            )
+        ScrollView {
+            VStack(spacing: 40) {
+                ProfileTitle(
+                    title: "프로필 수정하기",
+                    description: "나만의 닉네임과 프로필을 설정해주세요."
+                )
+                
+                ProfileEditImage(
+                    image: viewModel.profileImage,
+                    onPickImage: { image in
+                        viewModel.setNewImage(image)
+                    },
+                    onRemoveImage: {
+                        viewModel.removeImage()
+                    }
+                )
 
-            ProfileEditName(
-                text: $viewModel.nickname,
-                isNicknameTooLong: viewModel.isNicknameTooLong,
-                onNicknameChanged: { newValue in
-                    viewModel.onNicknameChanged(newValue)
-                }
-            )
-            
-
+                ProfileEditName(
+                    text: $viewModel.nickname,
+                    isNicknameTooLong: viewModel.isNicknameTooLong,
+                    onNicknameChanged: { newValue in
+                        viewModel.onNicknameChanged(newValue)
+                    }
+                )
+            }
+            .frame(maxWidth: .infinity, alignment: .top)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .ignoresSafeArea(.keyboard, edges: .bottom)
         .safeAreaInset(edge: .bottom) {
             ProfileEditSaveButton(
                 isEnabled: viewModel.isSaveEnabled,
@@ -54,6 +55,13 @@ struct ProfileEditView: View {
         .task {
             await viewModel.load()
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            isKeyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            isKeyboardVisible = false
+        }
+        .scrollDisabled(!isKeyboardVisible)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
