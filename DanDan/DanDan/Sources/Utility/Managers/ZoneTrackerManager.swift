@@ -39,15 +39,15 @@ final class ZoneTrackerManager {
 
     private func didEnterGateTransition(prev: CLLocationCoordinate2D?, current: CLLocationCoordinate2D, gate: Gate) -> Bool {
         guard let prev = prev else { return false }
-        let wasInside = ZoneDetectionManager.shared.isInsideEllipse(point: prev, gate: gate, scale: gate.inScale)
-        let isInsideNow = ZoneDetectionManager.shared.isInsideEllipse(point: current, gate: gate, scale: gate.inScale)
+        let wasInside = ZoneDetectionManager.shared.isInsideCircle(point: prev, gate: gate, scale: gate.inScale)
+        let isInsideNow = ZoneDetectionManager.shared.isInsideCircle(point: current, gate: gate, scale: gate.inScale)
         return (wasInside == false) && (isInsideNow == true)
     }
 
     private func didExitGateTransition(prev: CLLocationCoordinate2D?, current: CLLocationCoordinate2D, gate: Gate) -> Bool {
         guard let prev = prev else { return false }
-        let wasInside = ZoneDetectionManager.shared.isInsideEllipse(point: prev, gate: gate, scale: gate.outScale)
-        let isInsideNow = ZoneDetectionManager.shared.isInsideEllipse(point: current, gate: gate, scale: gate.outScale)
+        let wasInside = ZoneDetectionManager.shared.isInsideCircle(point: prev, gate: gate, scale: gate.outScale)
+        let isInsideNow = ZoneDetectionManager.shared.isInsideCircle(point: current, gate: gate, scale: gate.outScale)
         return (wasInside == true) && (isInsideNow == false)
     }
 
@@ -105,8 +105,8 @@ final class ZoneTrackerManager {
                         let bearing = computeBearingDeg(from: z.zoneStartPoint, to: z.zoneEndPoint)
                         let startGate = Gate(center: z.zoneStartPoint, bearingDeg: bearing, b_along: 50)
                         let endGate   = Gate(center: z.zoneEndPoint,   bearingDeg: bearing, b_along: 50)
-                        let hitS = ZoneDetectionManager.shared.didEnterGate(point: location.coordinate, gate: startGate)
-                        let hitE = ZoneDetectionManager.shared.didEnterGate(point: location.coordinate, gate: endGate)
+                        let hitS = ZoneDetectionManager.shared.didEnterCircle(point: location.coordinate, gate: startGate)
+                        let hitE = ZoneDetectionManager.shared.didEnterCircle(point: location.coordinate, gate: endGate)
                         if hitS || hitE {
                             let dS = CLLocation(latitude: startGate.center.latitude, longitude: startGate.center.longitude).distance(from: location)
                             let dE = CLLocation(latitude: endGate.center.latitude, longitude: endGate.center.longitude).distance(from: location)
@@ -142,8 +142,8 @@ final class ZoneTrackerManager {
             let curBearing = computeBearingDeg(from: zCur.zoneStartPoint, to: zCur.zoneEndPoint)
             let curStart = Gate(center: zCur.zoneStartPoint, bearingDeg: curBearing, b_along: 50)
             let curEnd   = Gate(center: zCur.zoneEndPoint,   bearingDeg: curBearing, b_along: 50)
-            let nearCurStart = ZoneDetectionManager.shared.isInsideEllipse(point: location.coordinate, gate: curStart, scale: curStart.outScale)
-            let nearCurEnd   = ZoneDetectionManager.shared.isInsideEllipse(point: location.coordinate, gate: curEnd,   scale: curEnd.outScale)
+            let nearCurStart = ZoneDetectionManager.shared.isInsideCircle(point: location.coordinate, gate: curStart, scale: curStart.outScale)
+            let nearCurEnd   = ZoneDetectionManager.shared.isInsideCircle(point: location.coordinate, gate: curEnd,   scale: curEnd.outScale)
 
             var switchCandidates: [(idx: Int, entryIsStart: Bool, dCandMin: CLLocationDistance, align: Double)] = []
             let moveBearing: Double? = {

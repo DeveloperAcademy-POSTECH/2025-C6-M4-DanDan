@@ -60,49 +60,68 @@ struct TrackingMapView: UIViewRepresentable {
         // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
         
         // 사용자의 위치에 따라 카메라 중심 이동
-//        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//            guard let mapView = mapView,
-//                  let location = locations.last else { return }
-//            DispatchQueue.main.async {
-//                let camera = MKMapCamera(
-//                    lookingAtCenter: location.coordinate,
-//                    fromDistance: 500,
-//                    pitch: 80,
-//                    heading: mapView.camera.heading
-//                )
-//                mapView.setCamera(camera, animated: true)
-//            }
-//        }
-//        
-//        // 유저의 방향(heading) 변경에 따라 지도 회전
-//        func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-//            guard let mapView = mapView else { return }
-//            DispatchQueue.main.async {
-//                let currentCenter = mapView.camera.centerCoordinate
-//                let camera = MKMapCamera(
-//                    lookingAtCenter: currentCenter,
-//                    fromDistance: 500,
-//                    pitch: 80,
-//                    heading: newHeading.trueHeading
-//                )
-//                mapView.setCamera(camera, animated: true)
-//            }
-//        }
+        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+            guard let mapView = mapView,
+                  let location = locations.last else { return }
+            DispatchQueue.main.async {
+                let camera = MKMapCamera(
+                    lookingAtCenter: location.coordinate,
+                    fromDistance: 500,
+                    pitch: 80,
+                    heading: mapView.camera.heading
+                )
+                mapView.setCamera(camera, animated: true)
+            }
+        }
+        
+        // 유저의 방향(heading) 변경에 따라 지도 회전
+        func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+            guard let mapView = mapView else { return }
+            DispatchQueue.main.async {
+                let currentCenter = mapView.camera.centerCoordinate
+                let camera = MKMapCamera(
+                    lookingAtCenter: currentCenter,
+                    fromDistance: 500,
+                    pitch: 80,
+                    heading: newHeading.trueHeading
+                )
+                mapView.setCamera(camera, animated: true)
+            }
+        }
         
         // 테스트용 주석 처리 부분 여기까지
         
         // MARK: - MKMapViewDelegate
         /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            guard let line = overlay as? ColoredPolyline else {
-                return MKOverlayRenderer()
+            if let circle = overlay as? MKCircle {
+                let r = MKCircleRenderer(overlay: circle)
+                #if DEBUG
+                let title = circle.title ?? ""
+                // start: 빨강, end: 파랑. in은 실선, out은 점선
+                if title.contains("debug-circle-start") {
+                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.08)
+                } else {
+                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.08)
+                }
+                r.lineWidth = 2
+                if title.hasSuffix("-out") {
+                    r.lineDashPattern = [6, 6]
+                }
+                #endif
+                return r
             }
-            let renderer = MKPolylineRenderer(overlay: line)
-            renderer.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
-            renderer.lineWidth = line.isOutline ? 9 : 36
-            renderer.lineCap = .round
-            renderer.lineJoin = .round
-            return renderer
+            if let line = overlay as? ColoredPolyline {
+                let renderer = MKPolylineRenderer(overlay: line)
+                renderer.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
+                renderer.lineWidth = line.isOutline ? 9 : 36
+                renderer.lineCap = .round
+                renderer.lineJoin = .round
+                return renderer
+            }
+            return MKOverlayRenderer()
         }
         
         /// 어노테이션 뷰 - 정류소 버튼 + 정복 버튼 주입
@@ -160,12 +179,12 @@ struct TrackingMapView: UIViewRepresentable {
         let map = MKMapView(frame: .zero)
         
         // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
-
-        map.isScrollEnabled = false
-        map.isZoomEnabled = false
-        map.isRotateEnabled = false
-        map.isPitchEnabled = false
-        map.showsCompass = false
+//
+//        map.isScrollEnabled = false
+//        map.isZoomEnabled = false
+//        map.isRotateEnabled = false
+//        map.isPitchEnabled = false
+//        map.showsCompass = false
         
         // 테스트용 주석 처리 부분 여기까지
         
@@ -185,6 +204,9 @@ struct TrackingMapView: UIViewRepresentable {
         
         // 선과 정류소 버튼 표시
         MapElementInstaller.installOverlays(for: zones, on: map)
+        #if DEBUG
+        MapElementInstaller.installDebugGateCircles(for: zones, on: map)
+        #endif
         MapElementInstaller.installStations(
             for: zones,
             statuses: conquestStatuses,

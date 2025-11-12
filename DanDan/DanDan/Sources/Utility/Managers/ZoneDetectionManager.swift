@@ -26,6 +26,14 @@ final class ZoneDetectionManager {
         return (xAlong, yCross)
     }
 
+    // Circle-based zone check (use gate.b_along as radius)
+    func isInsideCircle(point: CLLocationCoordinate2D, gate: Gate, scale: Double = 1.0) -> Bool {
+        let (dx, dy) = meterOffset(from: gate.center, to: point)
+        let r = gate.b_along * scale
+        let dist2 = dx * dx + dy * dy
+        return dist2 <= r * r
+    }
+
     func isInsideEllipse(point: CLLocationCoordinate2D, gate: Gate, scale: Double = 1.0) -> Bool {
         let (dx, dy) = meterOffset(from: gate.center, to: point)
         let (xAlong, yCross) = rotateToLocal(dx: dx, dy: dy, bearingDeg: gate.bearingDeg)
@@ -33,6 +41,11 @@ final class ZoneDetectionManager {
         let b = gate.b_along * scale
         let val = (xAlong * xAlong) / (b * b) + (yCross * yCross) / (a * a)
         return val <= 1.0
+    }
+
+    // Convenience for circle in-scale check (hysteresis via inScale / outScale handled by caller)
+    func didEnterCircle(point: CLLocationCoordinate2D, gate: Gate) -> Bool {
+        return isInsideCircle(point: point, gate: gate, scale: gate.inScale)
     }
 
     func didEnterGate(point: CLLocationCoordinate2D, gate: Gate) -> Bool {

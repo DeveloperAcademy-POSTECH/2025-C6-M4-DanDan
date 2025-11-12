@@ -47,6 +47,16 @@ struct MapElementInstaller {
             map.addAnnotation(ann)
         }
     }
+    
+    #if DEBUG
+    /// 디버그: 게이트 원(입장/이탈 반경) 오버레이 설치
+    static func installDebugGateCircles(for zones: [Zone], on map: MKMapView) {
+        let circles = DebugGateOverlay.makeCircles(for: zones)
+        for c in circles {
+            map.addOverlay(c, level: .aboveLabels)
+        }
+    }
+    #endif
 }
 
 enum MapOverlayRefresher {
