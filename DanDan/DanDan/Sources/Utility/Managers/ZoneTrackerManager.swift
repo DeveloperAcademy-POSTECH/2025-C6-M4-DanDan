@@ -50,7 +50,13 @@ final class ZoneTrackerManager: ObservableObject {
             /// 내가 어느 구역이든 20m 반경 안에 있는지 확인
             let dist = distance(from: coord, to: z.zoneStartPoint)
             
-            if dist < radius {
+            // (마지막 Zone일 때만) endPoint 거리도 포함
+            var distEnd: Double = .greatestFiniteMagnitude
+            if i == zones.count - 1 {
+                distEnd = distance(from: coord, to: z.zoneEndPoint)
+            }
+            
+            if dist < radius || distEnd < radius{
                 
                 /// 현재 구간 → 그냥 진행
                 if i == idx {
@@ -70,10 +76,14 @@ final class ZoneTrackerManager: ObservableObject {
                 return
             }
         }
-        // 3) 마지막 Zone(= idx == zones.count - 1) → 끝점 기준 체크
+        // 3) 마지막 Zone(= idx == zones.count - 1) → start/end 이동도 점령 처리
         if idx == zones.count - 1 {
-            let endPoint = currentZone.zoneEndPoint
-            if distance(from: coord, to: endPoint) < radius {
+            
+            let startDist = distance(from: coord, to: currentZone.zoneStartPoint)
+            let endDist   = distance(from: coord, to: currentZone.zoneEndPoint)
+            
+            // start ↔ end 이동 가능
+            if startDist < radius || endDist < radius {
                 completeFinalZoneIfNeeded(idx: idx)
                 return
             }
