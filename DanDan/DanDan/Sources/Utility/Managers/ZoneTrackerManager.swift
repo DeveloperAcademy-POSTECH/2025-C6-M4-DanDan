@@ -36,6 +36,7 @@ final class ZoneTrackerManager: ObservableObject {
         
         // 현재 접근한 구간이 있다면
         guard let idx = currentZoneIndex else { return }
+        let currentZone = zones[idx]
         
         /// 연결리스트 - 앞/뒤 구역의 Index만 이동 가능
         let validTargets = [
@@ -69,7 +70,14 @@ final class ZoneTrackerManager: ObservableObject {
                 return
             }
         }
-        
+        // 3) 마지막 Zone(= idx == zones.count - 1) → 끝점 기준 체크
+        if idx == zones.count - 1 {
+            let endPoint = currentZone.zoneEndPoint
+            if distance(from: coord, to: endPoint) < radius {
+                completeFinalZoneIfNeeded(idx: idx)
+                return
+            }
+        }
     }
     
     private func distance(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
@@ -89,11 +97,29 @@ final class ZoneTrackerManager: ObservableObject {
         currentZoneIndex = nextIdx
     }
     
+    private func completeFinalZoneIfNeeded(idx: Int) {
+        let zoneId = zones[idx].zoneId
+        if userStatus.zoneCheckedStatus[zoneId] != true {
+            debugMessage = "🏁 마지막 Zone \(zoneId) 완료!"
+            userStatus.zoneCheckedStatus[zoneId] = true
+        }
+    }
+    
     private func pickZoneAtCurrentLocation(_ coord: CLLocationCoordinate2D) {
         for (i, z) in zones.enumerated() {
-            if distance(from: coord, to: z.zoneStartPoint) < radius {
+            // 1) startPoint 반경 체크
+            let distStart = distance(from: coord, to: z.zoneStartPoint)
+            if distStart < radius {
                 currentZoneIndex = i
-                debugMessage = "📍 (재설정) Zone \(z.zoneId) 진입"
+                debugMessage = "📍 (재설정) Zone \(z.zoneId) — startPoint 진입"
+                return
+            }
+            
+            // 2) endPoint 반경 체크
+            let distEnd = distance(from: coord, to: z.zoneEndPoint)
+            if distEnd < radius {
+                currentZoneIndex = i
+                debugMessage = "📍 (재설정) Zone \(z.zoneId) — endPoint 진입"
                 return
             }
         }
