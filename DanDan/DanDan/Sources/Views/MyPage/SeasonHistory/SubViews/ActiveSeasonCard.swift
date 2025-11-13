@@ -64,15 +64,21 @@ struct ActiveSeasonCard: View {
                 }
             }
             .padding(.bottom, 28)
-            
+
             Text("내가 얻은 구역")
                 .font(.pretendard(.semiBold, size: 14))
                 .foregroundStyle(.gray3)
                 .padding(.bottom, 8)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray)
-                .frame(height: 157)
-            
+
+            AcquiredZonesMapView(
+                highlightedZoneIds: {
+                    let dict = StatusManager.shared.userStatus.zoneCheckedStatus
+                    let ids = dict.compactMap { $0.value ? $0.key : nil }
+                    return Set(ids)
+                }()
+            )
+            .frame(height: 160)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .padding()
         .overlay(
@@ -86,6 +92,6 @@ struct ActiveSeasonCard: View {
 
 // RemainingProgressBar는 별도 파일로 분리됨
 //
-//#Preview {
+// #Preview {
 //    ActiveSeasonCard(viewModel: SeasonHistoryViewModel(autoRefresh: false))
-//}
+// }

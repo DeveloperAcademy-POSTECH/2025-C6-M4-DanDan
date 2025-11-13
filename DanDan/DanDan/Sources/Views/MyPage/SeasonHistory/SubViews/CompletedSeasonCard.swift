@@ -12,6 +12,7 @@ struct CompletedSeasonCard: View {
     let record: RankRecord
     let label: String
     let range: String
+    var highlightedZoneIds: Set<Int> = []
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -70,9 +71,10 @@ struct CompletedSeasonCard: View {
                 .font(.PR.body4)
                 .foregroundColor(.gray3)
                 .padding(.bottom, 8)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray)
+
+            AcquiredZonesMapView(highlightedZoneIds: highlightedZoneIds)
                 .frame(height: 160)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 24)
@@ -84,7 +86,7 @@ struct CompletedSeasonCard: View {
     }
 }
 
-//#Preview {
+// #Preview {
 //    let rr = RankRecord(
 //        periodID: UUID(),
 //        startDate: Date(),
@@ -98,4 +100,4 @@ struct CompletedSeasonCard: View {
 //        label: "2025년 10월 4주차",
 //        range: "2025.10.20 ~ 2025.10.26"
 //    )
-//}
+// }
