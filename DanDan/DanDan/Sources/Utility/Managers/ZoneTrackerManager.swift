@@ -115,12 +115,14 @@ final class ZoneTrackerManager: ObservableObject {
                 return
             }
             
-            // 2) endPoint 반경 체크
-            let distEnd = distance(from: coord, to: z.zoneEndPoint)
-            if distEnd < radius {
-                currentZoneIndex = i
-                debugMessage = "📍 (재설정) Zone \(z.zoneId) — endPoint 진입"
-                return
+            // 2) 마지막 Zone(= index == zones.count - 1)일 때만 endPoint 체크
+            if i == zones.count - 1 {
+                let distEnd = distance(from: coord, to: z.zoneEndPoint)
+                if distEnd < radius {
+                    currentZoneIndex = i
+                    debugMessage = "📍 (재설정) Zone \(z.zoneId) — endPoint 진입"
+                    return
+                }
             }
         }
         debugMessage = "📍 (재설정 실패) 근처 Zone 없음"
