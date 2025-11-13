@@ -20,7 +20,7 @@ struct ProfileTitle: View {
                 .padding(.bottom, 8)
 
             Text(description)
-                .font(.PR.body4)
+                .font(.pretendard(.regular, size: 15))
                 .foregroundColor(.gray2)
                 .frame(height: 22)
         }

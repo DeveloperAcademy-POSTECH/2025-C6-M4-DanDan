@@ -11,7 +11,7 @@ struct AvatarEditButton: View {
     let image: UIImage?
     var diameter: CGFloat = 120
     var overlayHeight: CGFloat = 38
-    var overlayColor: Color = .black.opacity(0.35)
+    var overlayColor: Color = .darkGreen.opacity(0.8)
     var onTap: () -> Void
 
     var body: some View {
