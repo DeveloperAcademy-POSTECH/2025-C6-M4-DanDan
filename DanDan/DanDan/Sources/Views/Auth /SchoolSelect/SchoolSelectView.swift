@@ -92,10 +92,10 @@ struct SchoolSelectView: View {
                         viewModel.profileImage = profileImage
                         
                         switch school {
-                        case .daedongMiddle, .semyeongHigh:
-                            viewModel.teamName = "Yellow"
-                        case .pohangIdongHigh:
+                        case .semyeongHigh:
                             viewModel.teamName = "Blue"
+                        case .daedongMiddle, .pohangIdongHigh:
+                            viewModel.teamName = "Yellow"
                         }
                         
                         
