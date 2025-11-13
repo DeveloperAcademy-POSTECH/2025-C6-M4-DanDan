@@ -11,7 +11,12 @@ class StatusManager: ObservableObject {
     static let shared = StatusManager()
     static let didResetNotification = Notification.Name("UserStatusDidReset")
 
-    @Published var userStatus: UserStatus
+    @Published var userStatus: UserStatus {
+        didSet {
+            save()
+            print("[StatusManager] userStatus changed — team='\(userStatus.userTeam)' daily=\(userStatus.userDailyScore) week=\(userStatus.userWeekScore)")
+        }
+    }
     @Published var zoneStatuese: [ZoneConquestStatus] = []
     @Published var currentPeriod: ConquestPeriod = .init(startDate: Date())
 
@@ -26,13 +31,42 @@ class StatusManager: ObservableObject {
             self.userStatus = UserStatus()
             save()
         }
+        print("[StatusManager] initialized — loaded team='\(userStatus.userTeam)'")
+    }
+
+    // MARK: - Team Helpers
+    private func normalizeTeamName(_ raw: String) -> String {
+        let lower = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        switch lower {
+        case "blue":   return "Blue"
+        case "yellow": return "Yellow"
+        default:       return raw
+        }
+    }
+    
+    /// userTeam이 비어 있을 경우 서버의 마이페이지 API에서 팀을 로드하여 보정합니다.
+    func ensureUserTeamLoaded() async {
+        guard userStatus.userTeam.isEmpty else { return }
+        print("[StatusManager] userTeam empty — fetching from MyPage API")
+        do {
+            let service = MyPageService()
+            let resp = try await service.fetchMyPage()
+            let team = normalizeTeamName(resp.data.user.userTeam)
+            if !team.isEmpty {
+                userStatus.userTeam = team
+                print("[StatusManager] userTeam loaded from API — team='\(team)'")
+            } else {
+                print("[StatusManager] API returned empty team — keeping empty")
+            }
+        } catch {
+            print("[StatusManager] failed to load team from API: \(error)")
+        }
     }
 
     /// 사용자의 일일 및 주간 점수를 획득한 점수만큼 증가시킵니다.
     func incrementDailyScore() {
         userStatus.userDailyScore += 1
         userStatus.userWeekScore += 1
-        save()
     }
 
     /// 사용자가 오늘 해당 구간을 지나갔다면, 체크 상태로 저장합니다.
@@ -41,7 +75,6 @@ class StatusManager: ObservableObject {
     ///     - checked: 구간을 지났는지 여부 (true: 지나감)
     func setZoneChecked(zoneId: Int, checked: Bool) {
         userStatus.zoneCheckedStatus[zoneId] = checked
-        save()
     }
 
     /// 하루가 지나면 전체 구간의 체크 상태를 초기화합니다.
@@ -49,7 +82,6 @@ class StatusManager: ObservableObject {
         userStatus.userDailyScore = 0
         userStatus.zoneCheckedStatus = [:]
         userStatus.rewardClaimedStatus = [:]
-        save()
     }
 
     // TODO: 팀 균형 배정을 위한 로직으로 개선 예정 (현재는 단순 무작위 배정)
@@ -58,7 +90,6 @@ class StatusManager: ObservableObject {
         guard userStatus.userTeam.isEmpty else { return }
         let random = TeamType.allCases.randomElement()!
         userStatus.userTeam = random.rawValue
-        save()
     }
 
     /// 주간/일일 점령전 상태 (UserStatus)를 저장합니다.
@@ -80,13 +111,11 @@ class StatusManager: ObservableObject {
             userStatus.rewardClaimedStatus = [:]
         }
         userStatus.rewardClaimedStatus?[zoneId] = claimed
-        save()
     }
 
     /// 기존 유저의 ID를 유지한 채 UserStatus 상태를 초기화합니다.
     func resetUserStatus() {
         userStatus = UserStatus(from: userStatus)
-        save()
         NotificationCenter.default.post(name: Self.didResetNotification, object: nil)
     }
 

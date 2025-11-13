@@ -343,6 +343,8 @@ struct FullMapScreen: View {
         )
         .ignoresSafeArea()
         .task {
+            // 팀 정보 보정 후 맵 데이터 로드
+            await StatusManager.shared.ensureUserTeamLoaded()
             await viewModel.loadMapInfo()
         }
         .onAppear {
