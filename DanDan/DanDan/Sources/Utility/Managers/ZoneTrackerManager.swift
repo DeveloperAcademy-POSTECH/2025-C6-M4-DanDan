@@ -8,6 +8,99 @@
 import CoreLocation
 import SwiftUI
 
+final class ZoneTrackerManager: ObservableObject {
+    
+    @Published var debugMessage: String = ""
+    @Published var lastLocation: CLLocationCoordinate2D?
+    
+    private(set) var currentZoneIndex: Int? = nil
+    private let radius: Double = 30
+    
+    var zones: [Zone]
+    var userStatus: UserStatus
+    
+    init(zones: [Zone], userStatus: UserStatus) {
+        self.zones = zones
+        self.userStatus = userStatus
+    }
+    
+    func process(location: CLLocation) {
+        let coord = location.coordinate
+        lastLocation = coord
+        
+        // 현재 접근한 구간이 없다면 → 가까운 구간의 시작점 찾기
+        if currentZoneIndex == nil {
+            pickZoneAtCurrentLocation(coord)
+            return
+        }
+        
+        // 현재 접근한 구간이 있다면
+        guard let idx = currentZoneIndex else { return }
+        
+        /// 연결리스트 - 앞/뒤 구역의 Index만 이동 가능
+        let validTargets = [
+            idx - 1,
+            idx + 1
+        ].filter { $0 >= 0 && $0 < zones.count }
+        
+        /// 모든 시작점의 반경 20m 구역 찾기
+        for (i, z) in zones.enumerated() {
+            
+            /// 내가 어느 구역이든 20m 반경 안에 있는지 확인
+            let dist = distance(from: coord, to: z.zoneStartPoint)
+            
+            if dist < radius {
+                
+                /// 현재 구간 → 그냥 진행
+                if i == idx {
+                    debugMessage = "🔵 Zone \(z.zoneId) 진행 중"
+                    return
+                }
+                
+                /// 정상적인 앞/뒤 이동 → 구간 완료 처리
+                if validTargets.contains(i) {
+                    completeZone(currentIdx: idx, nextIdx: i)
+                    return
+                }
+                
+                /// 그 외 구간은 "점프 이동" → 현재 Zone 재설정
+                debugMessage = "⚠️ 비정상 이동 → Zone \(z.zoneId)로 재설정"
+                currentZoneIndex = i
+                return
+            }
+        }
+        
+    }
+    
+    private func distance(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
+        CLLocation(latitude: from.latitude, longitude: from.longitude)
+            .distance(from: CLLocation(latitude: to.latitude, longitude: to.longitude))
+    }
+    
+    private func completeZone(currentIdx: Int, nextIdx: Int) {
+        let zoneToComplete = min(currentIdx, nextIdx)
+        let zoneId = zones[zoneToComplete].zoneId
+        
+        if userStatus.zoneCheckedStatus[zoneId] != true {
+            debugMessage = "✅ Zone \(zoneId) 완료!"
+            userStatus.zoneCheckedStatus[zoneId] = true
+        }
+        
+        currentZoneIndex = nextIdx
+    }
+    
+    private func pickZoneAtCurrentLocation(_ coord: CLLocationCoordinate2D) {
+        for (i, z) in zones.enumerated() {
+            if distance(from: coord, to: z.zoneStartPoint) < radius {
+                currentZoneIndex = i
+                debugMessage = "📍 (재설정) Zone \(z.zoneId) 진입"
+                return
+            }
+        }
+        debugMessage = "📍 (재설정 실패) 근처 Zone 없음"
+    }
+}
+
 struct ZoneDebugOverlayHappy: View {
     let currentZoneIndex: Int?
     let userStatus: UserStatus
@@ -44,108 +137,6 @@ struct ZoneDebugOverlayHappy: View {
         .padding()
     }
 }
-
-final class ZoneTrackerManager: ObservableObject {
-
-    @Published var debugMessage: String = ""
-    @Published var lastLocation: CLLocationCoordinate2D?
-
-    private(set) var currentZoneIndex: Int? = nil
-    private let radius: Double = 20
-
-    var zones: [Zone]
-    var userStatus: UserStatus
-
-    init(zones: [Zone], userStatus: UserStatus) {
-        self.zones = zones
-        self.userStatus = userStatus
-    }
-
-    func process(location: CLLocation) {
-        let coord = location.coordinate
-        lastLocation = coord
-
-        // 1) 현재 Zone이 없다면 → 가까운 Zone 시작점 찾기
-        if currentZoneIndex == nil {
-            pickZoneAtCurrentLocation(coord)
-            return
-        }
-
-        // 2) 현재 Zone이 있다면
-        guard let idx = currentZoneIndex else { return }
-        
-        // 현재 Zone
-        let currentZone = zones[idx]
-
-        /// 인덱스 6
-        /// 구간 7
-        
-        // 3) 현재 Zone의 시작점 반경 안이면 → 진행 중
-        if distance(from: coord, to: currentZone.zoneStartPoint) < radius {
-            debugMessage = "🔵 Zone \(currentZone.zoneId) 진행 중"
-        }
-
-        /// 연결리스트 - 앞/뒤 구역의 Index만 이동 가능
-        let validTargets = [
-            idx - 1,
-            idx + 1
-        ].filter { $0 >= 0 && $0 < zones.count }
-        
-        /// 모든 시작점의 반경 20m 구역 찾기
-        for (i, z) in zones.enumerated() {
-            let dist = distance(from: coord, to: z.zoneStartPoint)
-            
-            if dist < radius {
-                
-                // (1) 현재 Zone 내부 → 그냥 진행
-                if i == idx {
-                    debugMessage = "🔵 Zone \(z.zoneId) 진행 중"
-                    return
-                }
-                
-                // (2) 정상적인 앞/뒤 이동 → Zone 완료 처리
-                if validTargets.contains(i) {
-                    completeZone(currentIdx: idx, nextIdx: i)
-                    return
-                }
-                
-                // (3) 그 외 Zone은 "점프 이동" → 현재 Zone 재설정
-                debugMessage = "⚠️ 비정상 이동 → Zone \(z.zoneId)로 재설정"
-                currentZoneIndex = i
-                return
-            }
-        }
-    }
-
-    private func distance(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
-        CLLocation(latitude: from.latitude, longitude: from.longitude)
-            .distance(from: CLLocation(latitude: to.latitude, longitude: to.longitude))
-    }
-    
-    private func completeZone(currentIdx: Int, nextIdx: Int) {
-        let zoneToComplete = min(currentIdx, nextIdx)
-        let zoneId = zones[zoneToComplete].zoneId
-
-        if userStatus.zoneCheckedStatus[zoneId] != true {
-            debugMessage = "✅ Zone \(zoneId) 완료!"
-            userStatus.zoneCheckedStatus[zoneId] = true
-        }
-
-        currentZoneIndex = nextIdx
-    }
-    
-    private func pickZoneAtCurrentLocation(_ coord: CLLocationCoordinate2D) {
-        for (i, z) in zones.enumerated() {
-            if distance(from: coord, to: z.zoneStartPoint) < radius {
-                currentZoneIndex = i
-                debugMessage = "📍 (재설정) Zone \(z.zoneId) 진입"
-                return
-            }
-        }
-        debugMessage = "📍 (재설정 실패) 근처 Zone 없음"
-    }
-}
-
 
 //final class ZoneTrackerManager {
 //    private func post(_ name: Notification.Name, _ info: [String: Any]) {
