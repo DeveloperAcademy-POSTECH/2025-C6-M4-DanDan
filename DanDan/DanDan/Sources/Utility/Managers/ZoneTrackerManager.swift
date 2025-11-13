@@ -9,6 +9,12 @@ import CoreLocation
 import Foundation
 
 final class ZoneTrackerManager {
+    private func post(_ name: Notification.Name, _ info: [String: Any]) {
+        var payload = info
+        payload[ZoneDebugEvents.Key.timestamp] = Date()
+        NotificationCenter.default.post(name: name, object: nil, userInfo: payload)
+    }
+    
     struct Runtime {
         var entryIsStart: Bool? = nil
         var startedAlongRef: Double? = nil
@@ -98,6 +104,11 @@ final class ZoneTrackerManager {
                 let (dx, dy) = ZoneDetectionManager.shared.meterOffset(from: entryGate.center, to: location.coordinate)
                 let (xAlong, _) = ZoneDetectionManager.shared.rotateToLocal(dx: dx, dy: dy, bearingDeg: entryGate.bearingDeg)
                 rt.startedAlongRef = xAlong
+                
+                post(ZoneDebugEvents.currentIndexChanged, [
+                    ZoneDebugEvents.Key.zoneIndex: best.idx,
+                    ZoneDebugEvents.Key.entryIsStart: best.entryIsStart
+                ])
             } else {
                 if prevLocation != nil {
                     var inside: [(idx: Int, entryIsStart: Bool, distance: CLLocationDistance, align: Double)] = []
@@ -128,6 +139,11 @@ final class ZoneTrackerManager {
                         let (dx, dy) = ZoneDetectionManager.shared.meterOffset(from: entryGate.center, to: location.coordinate)
                         let (xAlong, _) = ZoneDetectionManager.shared.rotateToLocal(dx: dx, dy: dy, bearingDeg: entryGate.bearingDeg)
                         rt.startedAlongRef = xAlong
+                        
+                        post(ZoneDebugEvents.currentIndexChanged, [
+                            ZoneDebugEvents.Key.zoneIndex: best.idx,
+                            ZoneDebugEvents.Key.entryIsStart: best.entryIsStart
+                        ])
                     } else {
                         prevLocation = location.coordinate
                         return
@@ -201,6 +217,12 @@ final class ZoneTrackerManager {
                     let (dx, dy) = ZoneDetectionManager.shared.meterOffset(from: entryGate.center, to: location.coordinate)
                     let (xAlong, _) = ZoneDetectionManager.shared.rotateToLocal(dx: dx, dy: dy, bearingDeg: entryGate.bearingDeg)
                     rt.startedAlongRef = xAlong
+                    
+                    post(ZoneDebugEvents.currentIndexChanged, [
+                        ZoneDebugEvents.Key.zoneIndex: best.idx,
+                        ZoneDebugEvents.Key.entryIsStart: best.entryIsStart,
+                        ZoneDebugEvents.Key.switchedFromIndex: idx
+                    ])
                 }
             }
 
@@ -229,8 +251,22 @@ final class ZoneTrackerManager {
         let (xAlong, _) = ZoneDetectionManager.shared.rotateToLocal(dx: dx, dy: dy, bearingDeg: entryGate.bearingDeg)
         let forward = abs(xAlong - started)
 
-        if didEnterGateTransition(prev: prevLocation, current: loc.coordinate, gate: exitGate), forward >= minForwardMeters {
+        let exitHit = didEnterGateTransition(prev: prevLocation, current: loc.coordinate, gate: exitGate)
+        
+        post(ZoneDebugEvents.progressUpdated, [
+            ZoneDebugEvents.Key.zoneIndex: idx,
+            ZoneDebugEvents.Key.entryIsStart: entryIsStart,
+            ZoneDebugEvents.Key.forwardMeters: forward,
+            ZoneDebugEvents.Key.minForwardMeters: minForwardMeters,
+            ZoneDebugEvents.Key.exitEntered: exitHit,
+            ZoneDebugEvents.Key.location: loc
+        ])
+        
+        if exitHit, forward >= minForwardMeters {
             userStatus.zoneCheckedStatus[z.zoneId] = true
+            post(ZoneDebugEvents.zoneCompleted, [
+                ZoneDebugEvents.Key.zoneId: z.zoneId
+            ])
             currentIndex = nil
             rt = Runtime()
         }

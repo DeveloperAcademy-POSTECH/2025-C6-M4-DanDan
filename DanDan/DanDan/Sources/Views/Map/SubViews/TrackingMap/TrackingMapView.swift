@@ -179,7 +179,7 @@ struct TrackingMapView: UIViewRepresentable {
         let map = MKMapView(frame: .zero)
         
         // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
-//
+
 //        map.isScrollEnabled = false
 //        map.isZoomEnabled = false
 //        map.isRotateEnabled = false
@@ -333,6 +333,11 @@ struct TrackingMapScreen: View {
         }
         .task {
             await viewModel.loadMapInfo()
+        }
+        .overlay(alignment: .topTrailing) {
+#if DEBUG
+            ZoneDebugOverlay()
+#endif
         }
     }
 }

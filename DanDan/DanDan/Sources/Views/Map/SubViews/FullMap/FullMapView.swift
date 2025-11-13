@@ -472,6 +472,11 @@ struct FullMapScreen: View {
             }
 #endif
         }
+        .overlay(alignment: .topTrailing) {
+#if DEBUG
+            ZoneDebugOverlay()
+#endif
+        }
     }
 }
 //
