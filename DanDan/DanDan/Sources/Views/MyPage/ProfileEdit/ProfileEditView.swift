@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ProfileEditView: View {
     @StateObject private var viewModel = ProfileEditViewModel()
@@ -55,11 +56,15 @@ struct ProfileEditView: View {
         .task {
             await viewModel.load()
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-            isKeyboardVisible = true
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-            isKeyboardVisible = false
+        .onReceive(
+            NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+                .map { _ in true }
+                .merge(with:
+                    NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+                        .map { _ in false }
+                )
+        ) { isVisible in
+            isKeyboardVisible = isVisible
         }
         .scrollDisabled(!isKeyboardVisible)
         .navigationBarBackButtonHidden(true)
