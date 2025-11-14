@@ -19,7 +19,7 @@ struct AcquiredZonesMapView: UIViewRepresentable {
     private let bounds = MapBounds(
         southWest: .init(latitude: 35.998605, longitude: 129.316145),
         northEast: .init(latitude: 36.057920, longitude: 129.361197),
-        margin: 1.35
+        margin: 1.0
     )
     
     final class Coordinator: NSObject, MKMapViewDelegate {
@@ -31,14 +31,12 @@ struct AcquiredZonesMapView: UIViewRepresentable {
             }
             let renderer = MKPolylineRenderer(overlay: line)
             
-            // 외곽선은 사용하지 않음
             if line.isOutline {
                 renderer.strokeColor = .darkGreen
                 renderer.lineWidth = 0
                 return renderer
             }
             
-            // 주차 내 방문 이력 존재 시 SubA, 아니면 연한 기본색
             if highlightedZoneIds.contains(line.zoneId) {
                 renderer.strokeColor = .subA
             } else {
@@ -74,7 +72,19 @@ struct AcquiredZonesMapView: UIViewRepresentable {
         map.setRegion(bounds.region, animated: false)
         map.delegate = context.coordinator
         
-        // 구역 선 설치 (기존 공용 설치 유틸 재사용)
+         let center = CLLocationCoordinate2D(
+             latitude: (bounds.southWest.latitude + bounds.northEast.latitude) / 2,
+             longitude: (bounds.southWest.longitude + bounds.northEast.longitude) / 2
+         )
+
+        let camera = MKMapCamera(
+            lookingAtCenter: center,
+            fromDistance: 9300,
+            pitch: 0,
+            heading:280
+        )
+        map.setCamera(camera, animated: false)
+
         MapElementInstaller.installOverlays(for: zones, on: map)
         return map
     }
@@ -82,7 +92,6 @@ struct AcquiredZonesMapView: UIViewRepresentable {
     func updateUIView(_ uiView: MKMapView, context: Context) {
         context.coordinator.highlightedZoneIds = highlightedZoneIds
         
-        // 렌더러 갱신
         DispatchQueue.main.async {
             for overlay in uiView.overlays {
                 guard let line = overlay as? ColoredPolyline,
@@ -105,5 +114,32 @@ struct AcquiredZonesMapView: UIViewRepresentable {
     }
 }
 
+#Preview("하이라이트 여러 개") {
+    AcquiredZonesMapView(
+        highlightedZoneIds: [1, 3, 5, 7]
+    )
+    .frame(height: 160)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .padding()
+}
 
+#Preview("하이라이트 없음") {
+    AcquiredZonesMapView(
+        highlightedZoneIds: []
+    )
+    .frame(height: 160)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .padding()
+}
 
+#Preview("전체 하이라이트") {
+    // zones가 [Zone] 타입이라면, 실제 zoneId들을 모두 Set으로 만든다
+    let allIds = Set(zones.map { $0.id })
+
+    return AcquiredZonesMapView(
+        highlightedZoneIds: allIds
+    )
+    .frame(height: 160)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .padding()
+}
