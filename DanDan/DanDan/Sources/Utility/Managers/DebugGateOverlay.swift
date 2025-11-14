@@ -17,8 +17,8 @@ enum DebugGateOverlay {
         var overlays: [MKCircle] = []
         for z in zones {
             let bearing = computeBearingDeg(from: z.zoneStartPoint, to: z.zoneEndPoint)
-            let startGate = Gate(center: z.zoneStartPoint, bearingDeg: bearing, b_along: 50)
-            let endGate   = Gate(center: z.zoneEndPoint,   bearingDeg: bearing, b_along: 50)
+            let startGate = Gate(center: z.zoneStartPoint, bearingDeg: bearing, b_along: 20)
+            let endGate   = Gate(center: z.zoneEndPoint,   bearingDeg: bearing, b_along: 20)
             
             // Start gate - inner/outer
             overlays.append(makeCircle(center: startGate.center,

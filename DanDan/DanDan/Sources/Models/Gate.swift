@@ -13,8 +13,8 @@ struct Gate {
     let bearingDeg: Double
     let a_perp: Double = 80
     let b_along: Double
-    let inScale: Double = 0.9
-    let outScale: Double = 1.1
+    let inScale: Double = 1.0
+    let outScale: Double = 1.25
 }
 
 
