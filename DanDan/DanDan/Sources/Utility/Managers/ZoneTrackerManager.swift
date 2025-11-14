@@ -53,7 +53,7 @@ final class ZoneTrackerManager: ObservableObject {
                 
                 /// 현재 구간 → 그냥 진행
                 if i == idx {
-                    debugMessage = "🔵 Zone \(z.zoneId) 진행 중"
+//                    debugMessage = "🔵 Zone \(z.zoneId) 진행 중"
                     return
                 }
                 
@@ -64,7 +64,7 @@ final class ZoneTrackerManager: ObservableObject {
                 }
                 
                 /// 그 외 구간은 "점프 이동" → 현재 Zone 재설정
-                debugMessage = "⚠️ 비정상 이동 → Zone \(z.zoneId)로 재설정"
+//                debugMessage = "⚠️ 비정상 이동 → Zone \(z.zoneId)로 재설정"
                 currentZoneIndex = i
                 return
             }
@@ -82,7 +82,7 @@ final class ZoneTrackerManager: ObservableObject {
         let zoneId = zones[zoneToComplete].zoneId
         
         if userStatus.zoneCheckedStatus[zoneId] != true {
-            debugMessage = "✅ Zone \(zoneId) 완료!"
+//            debugMessage = "✅ Zone \(zoneId) 완료!"
             userStatus.zoneCheckedStatus[zoneId] = true
         }
         
@@ -93,50 +93,50 @@ final class ZoneTrackerManager: ObservableObject {
         for (i, z) in zones.enumerated() {
             if distance(from: coord, to: z.zoneStartPoint) < radius {
                 currentZoneIndex = i
-                debugMessage = "📍 (재설정) Zone \(z.zoneId) 진입"
+//                debugMessage = "📍 (재설정) Zone \(z.zoneId) 진입"
                 return
             }
         }
-        debugMessage = "📍 (재설정 실패) 근처 Zone 없음"
+//        debugMessage = "📍 (재설정 실패) 근처 Zone 없음"
     }
 }
 
-struct ZoneDebugOverlayHappy: View {
-    let currentZoneIndex: Int?
-    let userStatus: UserStatus
-    let lastLocation: CLLocationCoordinate2D?
-    let message: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("📍 Debug Overlay")
-                .font(.headline)
-            
-            Text("\(String(describing: userStatus))")
-            
-
-            if let idx = currentZoneIndex {
-                Text("Current Zone Index: \(idx)")
-            }
-
-            if let loc = lastLocation {
-                Text("Location: \(loc.latitude), \(loc.longitude)")
-                    .font(.caption)
-            }
-
-            if let msg = message {
-                Text("Event: \(msg)")
-                    .font(.caption)
-                    .foregroundColor(.yellow)
-            }
-        }
-        .padding(12)
-        .background(.black.opacity(0.6))
-        .foregroundColor(.white)
-        .cornerRadius(8)
-        .padding()
-    }
-}
+//struct ZoneDebugOverlayHappy: View {
+//    let currentZoneIndex: Int?
+//    let userStatus: UserStatus
+//    let lastLocation: CLLocationCoordinate2D?
+//    let message: String?
+//
+//    var body: some View {
+//        VStack(alignment: .leading, spacing: 6) {
+//            Text("📍 Debug Overlay")
+//                .font(.headline)
+//            
+//            Text("\(String(describing: userStatus))")
+//            
+//
+//            if let idx = currentZoneIndex {
+//                Text("Current Zone Index: \(idx)")
+//            }
+//
+//            if let loc = lastLocation {
+//                Text("Location: \(loc.latitude), \(loc.longitude)")
+//                    .font(.caption)
+//            }
+//
+//            if let msg = message {
+//                Text("Event: \(msg)")
+//                    .font(.caption)
+//                    .foregroundColor(.yellow)
+//            }
+//        }
+//        .padding(12)
+//        .background(.black.opacity(0.6))
+//        .foregroundColor(.white)
+//        .cornerRadius(8)
+//        .padding()
+//    }
+//}
 
 //final class ZoneTrackerManager {
 //    private func post(_ name: Notification.Name, _ info: [String: Any]) {

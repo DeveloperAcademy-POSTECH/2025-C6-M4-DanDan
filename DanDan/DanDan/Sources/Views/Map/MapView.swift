@@ -77,17 +77,17 @@ struct MapToggleView: View {
             }
             
             // 🔥 해피의 디버그 오버레이 추가!
-                if let tracker = tracker {
-                    ZoneDebugOverlayHappy(
-                        currentZoneIndex: tracker.currentZoneIndex,
-                        userStatus: tracker.userStatus,
-                        lastLocation: tracker.lastLocation,
-                        message: tracker.debugMessage
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.top, 20)
-                    .padding(.leading, 12)
-                }
+//                if let tracker = tracker {
+//                    ZoneDebugOverlayHappy(
+//                        currentZoneIndex: tracker.currentZoneIndex,
+//                        userStatus: tracker.userStatus,
+//                        lastLocation: tracker.lastLocation,
+//                        message: tracker.debugMessage
+//                    )
+//                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+//                    .padding(.top, 20)
+//                    .padding(.leading, 12)
+//                }
             
             Button {
                 withAnimation(.snappy(duration: 0.25)) {

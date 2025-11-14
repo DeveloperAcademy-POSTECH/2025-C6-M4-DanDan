@@ -334,10 +334,10 @@ struct TrackingMapScreen: View {
         .task {
             await viewModel.loadMapInfo()
         }
-        .overlay(alignment: .topTrailing) {
-#if DEBUG
-            ZoneDebugOverlay()
-#endif
-        }
+//        .overlay(alignment: .topTrailing) {
+//#if DEBUG
+//            ZoneDebugOverlay()
+//#endif
+//        }
     }
 }
