@@ -111,7 +111,7 @@ struct SchoolSelectView: View {
             }
             
         } message: {
-            Text("가입 이후에는 닉네임과 프로필, 학교를 \n바꿀 수 없어요!")
+            Text("가입 이후에는 학교를 바꿀 수 없어요!")
         }
     }
 }

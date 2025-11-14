@@ -22,14 +22,17 @@ struct MyPageView: View {
                 profileImage: viewModel.profileImage,
                 displayName: viewModel.displayName,
                 winCount: viewModel.winCount,
-                totalScore: viewModel.totalScore
+                totalScore: viewModel.totalScore,
+                onTap: { viewModel.tapProfileEditButton() }
             )
             
-//            ProfileHeader(viewModel: viewModel) {
-//                viewModel.tapProfileEditButton()
-//            }
-            
-            WeeklyActivityCard(viewModel: viewModel)
+            WeeklyActivityCard(
+                currentWeekText: viewModel.currentWeekText,
+                weekDistanceKmIntText: viewModel.weekDistanceKmIntText,
+                weekScore: viewModel.weekScore,
+                teamRank: viewModel.teamRank
+                
+            )
 
             HistoryCardButton {
                 viewModel.tapSeasonHistoryButton()
@@ -46,6 +49,6 @@ struct MyPageView: View {
     }
 }
 
-#Preview {
-    MyPageView()
-}
+//#Preview {
+//    MyPageView()
+//}

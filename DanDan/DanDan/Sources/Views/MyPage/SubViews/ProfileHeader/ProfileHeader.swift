@@ -13,10 +13,12 @@ struct ProfileHeader: View {
     let winCount: Int
     let totalScore: Int
     
+    let onTap: () -> Void
+    
     var body: some View {
         HStack(spacing: 40) {
             Button {
-                // TODO: 액션 추가해줘 세나~
+                onTap()
             } label: {
                 ZStack(alignment: .bottomTrailing) {
                     profileImage
