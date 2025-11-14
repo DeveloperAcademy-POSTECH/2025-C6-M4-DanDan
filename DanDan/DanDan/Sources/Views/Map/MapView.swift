@@ -67,13 +67,27 @@ struct MapToggleView: View {
                     refreshToken = UUID()
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: StatusManager.didResetNotification)) { _ in
+            .onReceive(
+                NotificationCenter.default.publisher(for: StatusManager.didResetNotification)) { _ in
                 // 로그인/로그아웃 등으로 로컬 상태가 리셋되면, 트래커/캐시/토큰도 동기화
                 let status = StatusManager.shared.userStatus
                 self.tracker = ZoneTrackerManager(zones: zones, userStatus: status)
                 self.lastChecked = [:]
                 self.refreshToken = UUID()
             }
+            
+            // 🔥 해피의 디버그 오버레이 추가!
+//                if let tracker = tracker {
+//                    ZoneDebugOverlayHappy(
+//                        currentZoneIndex: tracker.currentZoneIndex,
+//                        userStatus: tracker.userStatus,
+//                        lastLocation: tracker.lastLocation,
+//                        message: tracker.debugMessage
+//                    )
+//                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+//                    .padding(.top, 20)
+//                    .padding(.leading, 12)
+//                }
             
             Button {
                 withAnimation(.snappy(duration: 0.25)) {

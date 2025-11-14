@@ -92,48 +92,66 @@ struct FullMapView: UIViewRepresentable {
         }
         
         // MARK: - MKMapViewDelegate
-        /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) ->
-        MKOverlayRenderer {
-            guard let line = overlay as? ColoredPolyline else {
-                return MKOverlayRenderer()
-            }
-            let renderer = MKPolylineRenderer(overlay: line)
-            
-            let stroke: UIColor
-            switch mode {
-            case .overall:
-                stroke = ZoneColorResolver.leadingColorOrDefault(
-                    for: line.zoneId,
-                    zoneStatuses: zoneStatuses,
-                    defaultColor: .primaryGreen
-                )
-            case .personal:
-                let checked =
-                StatusManager.shared.userStatus.zoneCheckedStatus[
-                    line.zoneId
-                ] == true
-                if checked {
-                    let teamName = StatusManager.shared.userStatus.userTeam
-                    let personalColor: UIColor
-                    switch teamName {
-                    case "Blue":
-                        personalColor = .subA
-                    case "Yellow":
-                        personalColor = .subB
-                    default:
-                        personalColor = .primaryGreen
-                    }
-                    stroke = personalColor
+        /// 오버레이(폴리라인/디버그 원) 렌더러 - 구역별 색/굵기 등 스타일 지정
+        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let circle = overlay as? MKCircle {
+                let r = MKCircleRenderer(overlay: circle)
+                #if DEBUG
+                let title = circle.title ?? ""
+                if title.contains("debug-circle-start") {
+                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.06)
                 } else {
-                    stroke = UIColor.primaryGreen
+                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.06)
                 }
+                r.lineWidth = 2
+                if title.hasSuffix("-out") {
+                    r.lineDashPattern = [6, 6]
+                }
+                #endif
+                return r
             }
-            renderer.strokeColor = stroke
-            renderer.lineWidth = 16
-            renderer.lineCap = .round
-            renderer.lineJoin = .round
-            return renderer
+            
+            if let line = overlay as? ColoredPolyline {
+                let renderer = MKPolylineRenderer(overlay: line)
+                
+                let stroke: UIColor
+                switch mode {
+                case .overall:
+                    stroke = ZoneColorResolver.leadingColorOrDefault(
+                        for: line.zoneId,
+                        zoneStatuses: zoneStatuses,
+                        defaultColor: .primaryGreen
+                    )
+                case .personal:
+                    let checked =
+                    StatusManager.shared.userStatus.zoneCheckedStatus[
+                        line.zoneId
+                    ] == true
+                    if checked {
+                        let teamName = StatusManager.shared.userStatus.userTeam
+                        let personalColor: UIColor
+                        switch teamName {
+                        case "Blue":
+                            personalColor = .subA
+                        case "Yellow":
+                            personalColor = .subB
+                        default:
+                            personalColor = .primaryGreen
+                        }
+                        stroke = personalColor
+                    } else {
+                        stroke = UIColor.primaryGreen
+                    }
+                }
+                renderer.strokeColor = stroke
+                renderer.lineWidth = 16
+                renderer.lineCap = .round
+                renderer.lineJoin = .round
+                return renderer
+            }
+            return MKOverlayRenderer()
         }
         
 
@@ -224,6 +242,9 @@ struct FullMapView: UIViewRepresentable {
         context.coordinator.viewModel = viewModel
         
         MapElementInstaller.installOverlays(for: zones, on: map)
+        #if DEBUG
+        MapElementInstaller.installDebugGateCircles(for: zones, on: map)
+        #endif
         // Add a single canvas annotation at the map center
         let center = bounds.center
         map.addAnnotation(CanvasAnnotation(coordinate: center))
@@ -451,6 +472,11 @@ struct FullMapScreen: View {
 //                // 부모 갱신 토큰 변화도 반영
 //                effectiveToken = newValue
 //            }
+//#endif
+//        }
+//        .overlay(alignment: .topTrailing) {
+//#if DEBUG
+//            ZoneDebugOverlay()
 //#endif
 //        }
     }

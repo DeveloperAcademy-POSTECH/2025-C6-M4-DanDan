@@ -16,8 +16,8 @@ struct RankingItemView: View {
     // TODO: UT 후 수정
     private var mappedTeamName: String {
         switch rank.userTeam {
-        case "Blue": return "이동고"
-        case "Yellow": return "대동중 X 세명고"
+        case "Blue": return "세명고"
+        case "Yellow": return "대동중 X 이동고"
         default: return rank.userTeam
         }
     }

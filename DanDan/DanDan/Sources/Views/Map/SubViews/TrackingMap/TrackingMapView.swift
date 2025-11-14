@@ -73,8 +73,8 @@ struct TrackingMapView: UIViewRepresentable {
 //                mapView.setCamera(camera, animated: true)
 //            }
 //        }
-//        
-//        // 유저의 방향(heading) 변경에 따라 지도 회전
+        
+        // 유저의 방향(heading) 변경에 따라 지도 회전
 //        func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
 //            guard let mapView = mapView else { return }
 //            DispatchQueue.main.async {
@@ -94,15 +94,34 @@ struct TrackingMapView: UIViewRepresentable {
         // MARK: - MKMapViewDelegate
         /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            guard let line = overlay as? ColoredPolyline else {
-                return MKOverlayRenderer()
+            if let circle = overlay as? MKCircle {
+                let r = MKCircleRenderer(overlay: circle)
+                #if DEBUG
+                let title = circle.title ?? ""
+                // start: 빨강, end: 파랑. in은 실선, out은 점선
+                if title.contains("debug-circle-start") {
+                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.08)
+                } else {
+                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.08)
+                }
+                r.lineWidth = 2
+                if title.hasSuffix("-out") {
+                    r.lineDashPattern = [6, 6]
+                }
+                #endif
+                return r
             }
-            let renderer = MKPolylineRenderer(overlay: line)
-            renderer.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
-            renderer.lineWidth = line.isOutline ? 9 : 36
-            renderer.lineCap = .round
-            renderer.lineJoin = .round
-            return renderer
+            if let line = overlay as? ColoredPolyline {
+                let renderer = MKPolylineRenderer(overlay: line)
+                renderer.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
+                renderer.lineWidth = line.isOutline ? 9 : 36
+                renderer.lineCap = .round
+                renderer.lineJoin = .round
+                return renderer
+            }
+            return MKOverlayRenderer()
         }
         
         /// 어노테이션 뷰 - 정류소 버튼 + 정복 버튼 주입
@@ -185,6 +204,9 @@ struct TrackingMapView: UIViewRepresentable {
         
         // 선과 정류소 버튼 표시
         MapElementInstaller.installOverlays(for: zones, on: map)
+        #if DEBUG
+        MapElementInstaller.installDebugGateCircles(for: zones, on: map)
+        #endif
         MapElementInstaller.installStations(
             for: zones,
             statuses: conquestStatuses,
@@ -312,5 +334,10 @@ struct TrackingMapScreen: View {
         .task {
             await viewModel.loadMapInfo()
         }
+//        .overlay(alignment: .topTrailing) {
+//#if DEBUG
+//            ZoneDebugOverlay()
+//#endif
+//        }
     }
 }
