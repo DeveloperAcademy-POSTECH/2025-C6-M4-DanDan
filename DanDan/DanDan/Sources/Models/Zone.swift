@@ -193,5 +193,14 @@ let zones: [Zone] = [
             .init(latitude: 36.059291, longitude: 129.362501)
         ],
         zoneColor: .A
+    ),
+    
+    Zone(
+        zoneId: 16,
+        zoneName: "구역 체크를 위한 임시 구역",
+        coordinates: [
+            .init(latitude: 36.059291, longitude: 129.362501)
+        ],
+        zoneColor: .A
     )
 ]
