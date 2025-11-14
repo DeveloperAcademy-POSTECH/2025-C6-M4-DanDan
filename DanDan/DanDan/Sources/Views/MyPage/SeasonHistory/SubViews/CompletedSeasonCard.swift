@@ -24,7 +24,7 @@ struct CompletedSeasonCard: View {
                         .foregroundColor(.steelBlack)
                     Text(range)
                         .font(.PR.caption4)
-                        .foregroundColor(.gray3)
+                        .foregroundColor(.gray2)
                 }
                 Spacer()
                 StatusTag(text: "완료")
@@ -33,6 +33,7 @@ struct CompletedSeasonCard: View {
 
             // 간단 통계
             HStack(spacing: 0) {
+                // TODO: 자신의 팀 아이콘으로 변경
                 Image(systemName: "flag.fill")
                     .font(.system(size: 48))
 
@@ -42,7 +43,7 @@ struct CompletedSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("거리")
                             .font(.PR.body4)
-                            .foregroundColor(.gray3)
+                            .foregroundColor(.gray2)
                         Text("\(Int(record.distanceKm ?? 0))km")
                             .font(.PR.title2)
                             .foregroundColor(.steelBlack)
@@ -50,7 +51,7 @@ struct CompletedSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("점수")
                             .font(.PR.body4)
-                            .foregroundColor(.gray3)
+                            .foregroundColor(.gray2)
                         Text("\(record.weekScore)점")
                             .font(.PR.title2)
                             .foregroundColor(.steelBlack)
@@ -58,7 +59,7 @@ struct CompletedSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("팀 내 순위")
                             .font(.PR.body4)
-                            .foregroundColor(.gray3)
+                            .foregroundColor(.gray2)
                         Text("\(record.rank)위")
                             .font(.PR.title2)
                             .foregroundColor(.steelBlack)
@@ -69,10 +70,17 @@ struct CompletedSeasonCard: View {
 
             Text("내가 얻은 구역")
                 .font(.PR.body4)
-                .foregroundColor(.gray3)
+                .foregroundColor(.gray2)
                 .padding(.bottom, 8)
 
-            AcquiredZonesMapView(highlightedZoneIds: highlightedZoneIds)
+            AcquiredZonesMapView(
+                highlightedZoneIds: highlightedZoneIds,
+                highlightColor: {
+                    // 과거 주차의 팀 정보를 별도로 보관하지 않는 경우 현재 팀 색으로 표시
+                    let team = StatusManager.shared.userStatus.userTeam.lowercased()
+                    return team == "blue" ? .subA : .subB
+                }()
+            )
                 .frame(height: 160)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
@@ -85,7 +93,7 @@ struct CompletedSeasonCard: View {
         .padding(.horizontal, 20)
     }
 }
-
+//
 // #Preview {
 //    let rr = RankRecord(
 //        periodID: UUID(),
