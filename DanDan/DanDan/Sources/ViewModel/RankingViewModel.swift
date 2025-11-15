@@ -146,14 +146,15 @@ extension RankingViewModel {
 
 extension RankingViewModel {
     
+    /// 현재 유저의 랭킹 정보를 가져옵니다.
     func fetchMyRanking() {
         Task {
             do {
-                let myRanking = try await rankingService.fetchMyRanking()
+                let myRanking = try await rankingService.requestMyRanking()
                 self.myRanking = myRanking
             } catch {
-                errorMessage = "팀 랭킹을 불러오지 못했습니다: \(error.localizedDescription)"
-                print("❌ fetchTeamRanking 실패: \(error)")
+                errorMessage = "유저 랭킹을 불러오지 못했습니다: \(error.localizedDescription)"
+                print("❌ fetchMyRanking 실패: \(error)")
             }
         }
     }
