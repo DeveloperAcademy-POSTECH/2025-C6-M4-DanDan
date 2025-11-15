@@ -15,7 +15,7 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            LottieLoopView(name: "start")
+            LottieLoopView(name: "loginlottie")
                             .ignoresSafeArea()
             
             LoginBottomCard(
