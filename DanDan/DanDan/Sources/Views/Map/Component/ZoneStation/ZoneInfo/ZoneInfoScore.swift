@@ -14,7 +14,7 @@ struct ZoneInfoScore: View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
                 ForEach(teamScores.indices, id: \.self) { idx in
-                    Text(teamScores[idx].teamName)
+                    Text(teamScores[idx].teamName.teamDisplayName)
                         .font(.PR.title2)
                         .foregroundColor(.gray1)
                 }
