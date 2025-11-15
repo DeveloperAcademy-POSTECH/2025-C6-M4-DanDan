@@ -9,20 +9,18 @@ import SwiftUI
 
 struct ZoneInfoScore: View {
     let teamScores: [ZoneTeamScoreDTO]
-    let maxTeamsToShow: Int?
-    
+
     var body: some View {
-        VStack(spacing: 8){
-            HStack(spacing: 8){
-                
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
                 ForEach(teamScores.indices, id: \.self) { idx in
                     Text(teamScores[idx].teamName)
                         .font(.PR.title2)
                         .foregroundColor(.gray1)
                 }
             }
-            
-            HStack(spacing: 0){
+
+            HStack(spacing: 0) {
                 if teamScores.isEmpty {
                     Text("— : —")
                         .font(.PR.title1)

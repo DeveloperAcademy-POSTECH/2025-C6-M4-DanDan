@@ -14,9 +14,9 @@ struct ZoneInfoTitle: View {
     var body: some View {
         HStack(spacing: 3) {
             Image(systemName: "\(zoneId).circle")
-                .font(.system(size: 17, weight:.semibold))
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(.steelBlack)
-            
+
             Text(zoneName)
                 .font(.PR.title2)
                 .foregroundColor(.steelBlack)

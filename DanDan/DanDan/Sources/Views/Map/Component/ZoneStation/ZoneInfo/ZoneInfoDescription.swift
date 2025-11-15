@@ -9,11 +9,11 @@ import SwiftUI
 
 struct ZoneInfoDescription: View {
     let descriptionText: String
-    
+
     var body: some View {
         Text(descriptionText)
             .font(.PR.caption3)
             .foregroundColor(.gray1)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity)
     }
 }
