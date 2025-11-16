@@ -14,6 +14,8 @@ struct ConqueredButton: View {
     
     @State private var isVisible = true
     @State private var isFloating = false
+    @State private var showScoreLottie = false
+    @State private var buttonOpacity: Double = 1.0
     
     private var railAssetName: String {
         let team = status.userStatus.userTeam.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -27,12 +29,32 @@ struct ConqueredButton: View {
         }
     }
     
+    private var scoreLottieName: String {
+        let team = status.userStatus.userTeam.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        switch team {
+        case "blue":
+            return "lottie_score_blue"
+        case "yellow":
+            return "lottie_score_yellow"
+        default:
+            return "lottie_score_blue"
+        }
+    }
+    
     var body: some View {
-        Group {
+        ZStack {
             if isVisible {
                 Button {
-                    isVisible = false
+                    let fadeDuration: TimeInterval = 0.4
+                    showScoreLottie = true
+                    withAnimation(.easeInOut(duration: fadeDuration)) {
+                        buttonOpacity = 0.0
+                        isFloating = false
+                    }
                     onConsume(zoneId)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + fadeDuration) {
+                        isVisible = false
+                    }
                 } label: {
                     ZStack {
                         Image(railAssetName)
@@ -48,25 +70,32 @@ struct ConqueredButton: View {
                     .shadow(color: .black.opacity(0.5),
                             radius: isFloating ? 10 : 6,
                             x: 0, y: isFloating ? 34 : 26)
+                    .opacity(buttonOpacity)
                   
-                    // TODO: 눌러서 획득 제거 하기
-//                    .overlay(alignment: .top) {
-//                        Capsule()
-//                            .fill(Color.steelBlack.opacity(0.8))
-//                            .frame(width: 100, height: 28)
-//                            .overlay(
-//                                Text("눌러서 구역 획득!")
-//                                    .font(.PR.caption5)
-//                                    .foregroundStyle(.white)
-//                            )
-//                            .padding(.top, 4)
-//                    }
-//                    .offset(y: isFloating ? -6 : 6)
+                    // .overlay(alignment: .top) {
+                    //     Capsule()
+                    //         .fill(Color.steelBlack.opacity(0.8))
+                    //         .frame(width: 100, height: 28)
+                    //         .overlay(
+                    //             Text("눌러서 구역 획득!")
+                    //                 .font(.PR.caption5)
+                    //                 .foregroundStyle(.white)
+                    //         )
+                    //         .padding(.top, 4)
+                    // }
+                    // .offset(y: isFloating ? -6 : 6)
                     .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true),
                                value: isFloating)
                     .onAppear { isFloating = true }
                 }
                 .buttonStyle(.plain)
+                .zIndex(1)
+            }
+            
+            if showScoreLottie {
+                LottieOnceView(name: scoreLottieName)
+                    .frame(width: 150, height: 160)
+                    .zIndex(0)
             }
         }
     }
