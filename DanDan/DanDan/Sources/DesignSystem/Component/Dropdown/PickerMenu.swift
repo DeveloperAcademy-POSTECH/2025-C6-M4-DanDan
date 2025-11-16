@@ -35,10 +35,10 @@ struct PickerMenu: View {
                 HStack(spacing: 4) {
                     Text(selectedOption)
                         .font(.PR.caption4)
-                        .foregroundColor(.primaryGreen)
+                        .foregroundColor(.darkGreen)
                     Image(systemName: "chevron.down")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.primaryGreen)
+                        .foregroundColor(.darkGreen)
                 }
             }
             .contentShape(Rectangle())
