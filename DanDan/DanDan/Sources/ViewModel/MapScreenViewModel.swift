@@ -67,32 +67,31 @@ extension MapScreenViewModel {
     /// today ~ period.endDate까지 남은 일수
     private func computeDaysRemaining(now: Date = Date(), period: ConquestPeriod) -> Int {
         let cal = Calendar.current
-        let todayStart = cal.startOfDay(for: now)
+        let todayStartOfDay = cal.startOfDay(for: now)
         let endOfWeek = cal.startOfDay(for: period.endDate)
-        let diff = cal.dateComponents([.day], from: todayStart, to: endOfWeek).day ?? 0
-        return max(0, diff)
+        return max(
+            0,
+            cal.dateComponents([.day], from: todayStartOfDay, to: endOfWeek).day ?? 0
+        )
     }
 
-    /// 외부에서 사용할 D-Day 텍스트
     var ddayText: String {
         dday == 0 ? "D-Day" : "D-\(dday)"
     }
 
-    /// 타이머를 시작해서 1분마다 남은 일수 갱신 + 종료 시점에 WeeklyAward로 전환
+    /// 타이머를 시작해서 1분마다 남은 일수 체크 + 종료 시점에 WeeklyAward로 전환
     func startDDayTimer(period: ConquestPeriod, now: @escaping () -> Date = { Date() }) {
         ddayCancellable?.cancel()
-
-        // 최초 1회 즉시 계산
-        dday = computeDaysRemaining(now: now(), period: period)
 
         ddayCancellable = Timer
             .publish(every: 60, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self else { return }
-                let remaining = self.computeDaysRemaining(now: now(), period: period)
-                self.dday = remaining
 
+                let remaining = self.computeDaysRemaining(now: now(), period: period)
+
+                // 점령전이 끝나면 WeeklyAwardView로 이동
                 if remaining <= 0 {
                     GamePhaseManager.shared.showWeeklyAward = true
                     self.ddayCancellable?.cancel()
