@@ -392,7 +392,8 @@ struct FullMapScreen: View {
                             leftTeamScore: viewModel.teams[1]
                                 .conqueredZones,
                             rightTeamScore: viewModel.teams[0]
-                                .conqueredZones
+                                .conqueredZones,
+                            ddayText: viewModel.ddayText
                         )
                     } else {
                         // 로딩 중일 때는 기본값 표시
@@ -400,7 +401,8 @@ struct FullMapScreen: View {
                             leftTeamName: "—",
                             rightTeamName: "—",
                             leftTeamScore: 0,
-                            rightTeamScore: 0
+                            rightTeamScore: 0,
+                            ddayText: viewModel.ddayText
                         )
                     }
                     
@@ -419,6 +421,7 @@ struct FullMapScreen: View {
             .padding(.leading, 14)
             .task {
                 await viewModel.loadMapInfo()
+                
             }
         }
 //        .overlay(alignment: .bottomLeading) {

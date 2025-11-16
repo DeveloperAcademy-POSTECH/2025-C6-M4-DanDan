@@ -303,7 +303,8 @@ struct TrackingMapScreen: View {
                             leftTeamName: viewModel.teams[1].teamName,
                             rightTeamName: viewModel.teams[0].teamName,
                             leftTeamScore: viewModel.teams[1].conqueredZones,
-                            rightTeamScore: viewModel.teams[0].conqueredZones
+                            rightTeamScore: viewModel.teams[0].conqueredZones,
+                            ddayText: viewModel.ddayText
                         )
                     } else {
                         // 로딩 중일 때는 기본값 표시
@@ -311,19 +312,12 @@ struct TrackingMapScreen: View {
                             leftTeamName: "—",
                             rightTeamName: "—",
                             leftTeamScore: 0,
-                            rightTeamScore: 0
+                            rightTeamScore: 0,
+                            ddayText: viewModel.ddayText
                         )
                     }
 
                     TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
-                }
-
-                if !viewModel.startDate.isEmpty {
-                    DDayView(
-                        viewModel: viewModel,
-                        period: period
-                    )
-                    .padding(.leading, 4)
                 }
             }
             .padding(.top, 60)
@@ -331,6 +325,7 @@ struct TrackingMapScreen: View {
         }
         .task {
             await viewModel.loadMapInfo()
+            viewModel.startDDayTimer(period: period)
         }
 //        .overlay(alignment: .topTrailing) {
 //#if DEBUG

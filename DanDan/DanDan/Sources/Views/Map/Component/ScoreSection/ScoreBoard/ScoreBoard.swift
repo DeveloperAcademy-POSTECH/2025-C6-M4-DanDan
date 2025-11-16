@@ -12,6 +12,7 @@ struct ScoreBoard: View {
     let rightTeamName: String
     let leftTeamScore: Int
     let rightTeamScore: Int
+    let ddayText: String?
     
     private var total: CGFloat {
         max(1, CGFloat(leftTeamScore + rightTeamScore))
@@ -30,77 +31,88 @@ struct ScoreBoard: View {
                 )
                 .shadow(color: .black.opacity(0.1), radius: 14, x: 0, y: 8)
             
-            // 안쪽 진행 바 & 라벨
-            GeometryReader { geo in
-                let inset: CGFloat = 8
-                let barHeight: CGFloat = 28
-                let barWidth = geo.size.width - inset * 2
+            VStack {
                 
-                // 진행 바
-                if leftTeamScore == 0 && rightTeamScore > 0 {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 8, bottomLeadingRadius: 8,
-                        bottomTrailingRadius: 8, topTrailingRadius: 8,
-                        style: .continuous
-                    )
-                    .fill(Color.B)
-                    .frame(width: barWidth * rightRatio, height: barHeight)
-                    .position(x: geo.size.width/2, y: geo.size.height/2)
-                } else if rightTeamScore == 0 && leftTeamScore > 0 {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 8, bottomLeadingRadius: 8,
-                        bottomTrailingRadius: 8, topTrailingRadius: 8,
-                        style: .continuous
-                    )
-                    .fill(Color.A)
-                    .frame(width: barWidth * leftRatio, height: barHeight)
-                    .position(x: geo.size.width/2, y: geo.size.height/2)
-                } else {
-                    HStack(spacing: 2) {
+                if let ddayText, !ddayText.isEmpty {
+                    Text("경기 종료까지 \(ddayText)")
+                        .font(.PR.caption5)
+                        .foregroundStyle(.gray1)
+                        .padding(.vertical, 8)
+                }
+                
+                // 안쪽 진행 바 & 라벨
+                GeometryReader { geo in
+                    let inset: CGFloat = 8
+                    let barHeight: CGFloat = 28
+                    let barWidth = geo.size.width - inset * 2
+                    
+                    // 진행 바
+                    if leftTeamScore == 0 && rightTeamScore > 0 {
                         UnevenRoundedRectangle(
                             topLeadingRadius: 8, bottomLeadingRadius: 8,
-                            bottomTrailingRadius: 0, topTrailingRadius: 0,
-                            style: .continuous
-                        )
-                        .fill(Color.A)
-                        .frame(width: barWidth * leftRatio, height: barHeight)
-                        
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 0, bottomLeadingRadius: 0,
                             bottomTrailingRadius: 8, topTrailingRadius: 8,
                             style: .continuous
                         )
                         .fill(Color.B)
                         .frame(width: barWidth * rightRatio, height: barHeight)
+                        .position(x: geo.size.width/2, y: geo.size.height/2)
+                    } else if rightTeamScore == 0 && leftTeamScore > 0 {
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 8, bottomLeadingRadius: 8,
+                            bottomTrailingRadius: 8, topTrailingRadius: 8,
+                            style: .continuous
+                        )
+                        .fill(Color.A)
+                        .frame(width: barWidth * leftRatio, height: barHeight)
+                        .position(x: geo.size.width/2, y: geo.size.height/2)
+                    } else {
+                        HStack(spacing: 2) {
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 8, bottomLeadingRadius: 8,
+                                bottomTrailingRadius: 0, topTrailingRadius: 0,
+                                style: .continuous
+                            )
+                            .fill(Color.A)
+                            .frame(width: barWidth * leftRatio, height: barHeight)
+                            
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 0, bottomLeadingRadius: 0,
+                                bottomTrailingRadius: 8, topTrailingRadius: 8,
+                                style: .continuous
+                            )
+                            .fill(Color.B)
+                            .frame(width: barWidth * rightRatio, height: barHeight)
+                        }
+                        .position(x: geo.size.width/2, y: geo.size.height/2)
                     }
+                    
+                    // 라벨
+                    // 0점인 팀은 진행 바, 라벨 모두 사라짐
+                    HStack {
+                        if leftTeamScore > 0 || (leftTeamScore == 0 && rightTeamScore == 0) {
+                            TeamLabel(name: leftTeamName,
+                                      score: leftTeamScore,
+                                      side: .left)
+                            .padding(.leading, inset)
+                        }
+                        
+                        Spacer()
+                        
+                        if rightTeamScore > 0 || (leftTeamScore == 0 && rightTeamScore == 0) {
+                            TeamLabel(name: rightTeamName,
+                                      score: rightTeamScore,
+                                      side: .right)
+                            .padding(.trailing, inset)
+                        }
+                    }
+                    .frame(width: barWidth, height: barHeight)
                     .position(x: geo.size.width/2, y: geo.size.height/2)
                 }
-                
-                // 라벨
-                // 0점인 팀은 진행 바, 라벨 모두 사라짐
-                HStack {
-                    if leftTeamScore > 0 || (leftTeamScore == 0 && rightTeamScore == 0) {
-                        TeamLabel(name: leftTeamName,
-                                  score: leftTeamScore,
-                                  side: .left)
-                        .padding(.leading, inset)
-                    }
-                    
-                    Spacer()
-                    
-                    if rightTeamScore > 0 || (leftTeamScore == 0 && rightTeamScore == 0) {
-                        TeamLabel(name: rightTeamName,
-                                  score: rightTeamScore,
-                                  side: .right)
-                        .padding(.trailing, inset)
-                    }
-                }
-                .frame(width: barWidth, height: barHeight)
-                .position(x: geo.size.width/2, y: geo.size.height/2)
+                .padding(.top, -10)
             }
             .padding(4)
         }
-        .frame(width: 230, height: 44)
+        .frame(width: 263, height: 80)
     }
 }
 
@@ -120,7 +132,7 @@ struct ScoreBoard: View {
     ]
 
     VStack(spacing: 20) {
-        ScoreBoard(leftTeamName: "노랑", rightTeamName: "파랑", leftTeamScore: 4, rightTeamScore: 9)
+        ScoreBoard(leftTeamName: "노랑", rightTeamName: "파랑", leftTeamScore: 4, rightTeamScore: 9, ddayText: "디-5")
     }
     .padding()
     .background(
