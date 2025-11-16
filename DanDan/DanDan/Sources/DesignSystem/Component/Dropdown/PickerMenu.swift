@@ -41,6 +41,8 @@ struct PickerMenu: View {
                         .foregroundColor(.darkGreen)
                 }
             }
+            .padding(.vertical, 6)
+            .padding(.leading, 12)
             .contentShape(Rectangle())
         }
     }
