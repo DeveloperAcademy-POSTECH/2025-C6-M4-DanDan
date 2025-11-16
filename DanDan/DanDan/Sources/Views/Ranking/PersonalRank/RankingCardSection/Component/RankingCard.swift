@@ -96,7 +96,7 @@ struct RankingCard: View {
         .frame(width: 110, height: 135)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.20), radius: 2, x: 0, y: 2)
         .overlay(alignment: .top) {
             if let badge = rankBadgeImage {
                 badge

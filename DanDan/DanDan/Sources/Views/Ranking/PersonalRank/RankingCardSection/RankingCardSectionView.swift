@@ -27,7 +27,6 @@ struct RankingCardSectionView: View {
                 rank: 2
             )
             
-
             RankingCard(
                 userId: topThree[0].id,
                 myUserId: myUserId,
@@ -38,7 +37,7 @@ struct RankingCardSectionView: View {
                 rank: 1
             )
             .padding(.bottom, 20)
-
+            
             RankingCard(
                 userId: topThree[2].id,
                 myUserId: myUserId,

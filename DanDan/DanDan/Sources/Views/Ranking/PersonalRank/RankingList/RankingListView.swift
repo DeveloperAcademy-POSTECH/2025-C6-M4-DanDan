@@ -44,8 +44,27 @@ struct RankingListView: View {
                         displayRank: index + 4,  // 상위 3개 이후라 +4 (index는 0부터 시작)
                         myRankDiff: myRankDiff
                     )
+                    .padding(.horizontal, 20)
                 }
             }
         }
     }
+}
+        ),
+        .init(
+            id: UUID(),
+            ranking: 6,
+            userName: "최지원",
+            userImage: nil,
+            userWeekScore: 90,
+            userTeam: "yellow",
+            backgroundColor: .yellow.opacity(0.2)
+        )
+    ]
+
+    return RankingListView(
+        rankingItems: dummyItems,
+        myUserId: dummyUserId,
+        myRankDiff: -1
+    )
 }
