@@ -18,27 +18,11 @@ struct ConqueredButton: View {
     @State private var buttonOpacity: Double = 1.0
     
     private var railAssetName: String {
-        let team = status.userStatus.userTeam.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        switch team {
-        case "blue":
-            return "rail_blue"
-        case "yellow":
-            return "rail_yellow"
-        default:
-            return "rail_brown"
-        }
+        TeamAssetProvider.railAssetName(for: status.userStatus.userTeam)
     }
     
     private var scoreLottieName: String {
-        let team = status.userStatus.userTeam.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        switch team {
-        case "blue":
-            return "lottie_score_blue"
-        case "yellow":
-            return "lottie_score_yellow"
-        default:
-            return "lottie_score_blue"
-        }
+        TeamAssetProvider.scoreLottieName(for: status.userStatus.userTeam)
     }
     
     var body: some View {
