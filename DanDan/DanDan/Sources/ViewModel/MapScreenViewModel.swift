@@ -5,6 +5,7 @@
 //  Created by Jay on 11/8/25.
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -17,6 +18,11 @@ class MapScreenViewModel: ObservableObject {
     
     /// zoneId → 서버에서 받은 팀 점수 배열 캐시
     @Published var zoneTeamScores: [Int: [ZoneTeamScoreDTO]] = [:]
+    
+    /// D-Day 값 (0이면 D-Day, 양수면 D-n)
+    @Published var dday: Int = 0
+    
+    private var ddayCancellable: AnyCancellable?
         
     private let service = MapService()
     
@@ -52,5 +58,45 @@ class MapScreenViewModel: ObservableObject {
         } catch {
             print("❌ (\(zoneId)) 구역 팀 점수 불러오기 실패: \(error)")
         }
+    }
+}
+
+// MARK: - D-Day logic
+extension MapScreenViewModel {
+
+    /// today ~ period.endDate까지 남은 일수
+    private func computeDaysRemaining(now: Date = Date(), period: ConquestPeriod) -> Int {
+        let cal = Calendar.current
+        let todayStart = cal.startOfDay(for: now)
+        let endOfWeek = cal.startOfDay(for: period.endDate)
+        let diff = cal.dateComponents([.day], from: todayStart, to: endOfWeek).day ?? 0
+        return max(0, diff)
+    }
+
+    /// 외부에서 사용할 D-Day 텍스트
+    var ddayText: String {
+        dday == 0 ? "D-Day" : "D-\(dday)"
+    }
+
+    /// 타이머를 시작해서 1분마다 남은 일수 갱신 + 종료 시점에 WeeklyAward로 전환
+    func startDDayTimer(period: ConquestPeriod, now: @escaping () -> Date = { Date() }) {
+        ddayCancellable?.cancel()
+
+        // 최초 1회 즉시 계산
+        dday = computeDaysRemaining(now: now(), period: period)
+
+        ddayCancellable = Timer
+            .publish(every: 60, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self else { return }
+                let remaining = self.computeDaysRemaining(now: now(), period: period)
+                self.dday = remaining
+
+                if remaining <= 0 {
+                    GamePhaseManager.shared.showWeeklyAward = true
+                    self.ddayCancellable?.cancel()
+                }
+            }
     }
 }

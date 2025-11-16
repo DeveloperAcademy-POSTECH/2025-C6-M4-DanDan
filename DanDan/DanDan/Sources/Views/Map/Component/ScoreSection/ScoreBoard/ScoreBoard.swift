@@ -104,27 +104,27 @@ struct ScoreBoard: View {
     }
 }
 
-//#Preview {
-//    // 더미 팀 데이터
-//    let teams = [
-//        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
-//        Team(id: UUID(), teamName: "Yellow", teamColor: "B")
-//    ]
-//
-//    // 더미 점령 상태 데이터
-//    let dummyStatuses = [
-//        ZoneConquestStatus(zoneId: 1, teamId: 1, teamName: "Blue", teamScore: 12),
-//        ZoneConquestStatus(zoneId: 1, teamId: 2, teamName: "Yellow", teamScore: 19),
-//        ZoneConquestStatus(zoneId: 2, teamId: 1, teamName: "Blue", teamScore: 34),
-//        ZoneConquestStatus(zoneId: 2, teamId: 2, teamName: "Yellow", teamScore: 32)
-//    ]
-//
-//    VStack(spacing: 20) {
-//        ScoreBoardView(statuses: dummyStatuses, teams: teams)
-//    }
-//    .padding()
-//    .background(
-//        LinearGradient(colors: [.subA50, .subB20], startPoint: .top, endPoint: .bottom)
-//            .ignoresSafeArea()
-//    )
-//}
+#Preview {
+    // 더미 팀 데이터
+    let teams = [
+        Team(id: UUID(), teamName: "Blue", teamColor: "A"),
+        Team(id: UUID(), teamName: "Yellow", teamColor: "B")
+    ]
+
+    // 더미 점령 상태 데이터
+    let dummyStatuses = [
+        ZoneConquestStatus(zoneId: 1, teamId: 1, teamName: "Blue", teamScore: 12),
+        ZoneConquestStatus(zoneId: 1, teamId: 2, teamName: "Yellow", teamScore: 19),
+        ZoneConquestStatus(zoneId: 2, teamId: 1, teamName: "Blue", teamScore: 34),
+        ZoneConquestStatus(zoneId: 2, teamId: 2, teamName: "Yellow", teamScore: 32)
+    ]
+
+    VStack(spacing: 20) {
+        ScoreBoard(leftTeamName: "노랑", rightTeamName: "파랑", leftTeamScore: 4, rightTeamScore: 9)
+    }
+    .padding()
+    .background(
+        LinearGradient(colors: [.subA50, .subB20], startPoint: .top, endPoint: .bottom)
+            .ignoresSafeArea()
+    )
+}

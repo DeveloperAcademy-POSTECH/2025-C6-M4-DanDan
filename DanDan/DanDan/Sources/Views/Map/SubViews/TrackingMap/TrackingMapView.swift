@@ -320,9 +320,7 @@ struct TrackingMapScreen: View {
 
                 if !viewModel.startDate.isEmpty {
                     DDayView(
-                        dday: ConquestPeriod.from(
-                            endDateString: viewModel.endDate
-                        ),
+                        viewModel: viewModel,
                         period: period
                     )
                     .padding(.leading, 4)
