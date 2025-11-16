@@ -104,6 +104,17 @@ final class StationAnnotation: NSObject, MKAnnotation {
     }
 }
 
+// 목적지 구역 사인 표출용 어노테이션
+final class SignAnnotation: NSObject, MKAnnotation {
+	let coordinate: CLLocationCoordinate2D
+	let destinationZoneId: Int
+	
+	init(coordinate: CLLocationCoordinate2D, destinationZoneId: Int) {
+		self.coordinate = coordinate
+		self.destinationZoneId = destinationZoneId
+	}
+}
+
 final class HostingAnnotationView: MKAnnotationView {
     private var host: UIHostingController<AnyView>?
     
