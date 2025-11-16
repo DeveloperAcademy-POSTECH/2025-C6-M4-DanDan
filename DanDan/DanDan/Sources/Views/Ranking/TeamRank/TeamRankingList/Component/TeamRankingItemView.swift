@@ -24,6 +24,7 @@ struct TeamRankingItemView: View {
         HStack {
             Text("\(teamRankings.rank)")
                 .font(.PR.title2)
+                .foregroundStyle(.darkGreen)
                 .padding(.horizontal, 24)
 
             // TODO: 팀 이미지 추가
@@ -31,6 +32,7 @@ struct TeamRankingItemView: View {
 
             Text("\(mappedTeamName)")
                 .font(.PR.body2)
+                .foregroundStyle(.steelBlack)
                 .lineLimit(1)
                 .padding(.leading, 12)
 

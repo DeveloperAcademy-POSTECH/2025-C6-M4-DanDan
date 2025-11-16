@@ -12,6 +12,7 @@ struct TeamInstructionSectionView: View {
         HStack {
             Text("팀 랭킹")
                 .font(.PR.title1)
+                .foregroundStyle(.steelBlack)
             
             Spacer()
         }
