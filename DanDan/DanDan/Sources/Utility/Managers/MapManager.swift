@@ -73,6 +73,8 @@ enum MapOverlayRefresher {
 final class ZoneConquerActionHandler {
     // TODO: 임시 Notification 기반 업데이트
     static let didUpdateScoreNotification = Notification.Name("ZoneConquerActionHandler.didUpdateScore")
+    /// 로티 재생이 자연스럽게 끝나도록, 보상 수령 상태 반영을 잠시 지연
+    private static let claimAnimationHoldDuration: TimeInterval = 1.2
 
     static func handleConquer(zoneId: Int) {
         ZoneCheckedService.shared.postChecked(zoneId: zoneId) { ok in
@@ -80,7 +82,10 @@ final class ZoneConquerActionHandler {
             ZoneCheckedService.shared.acquireScore(zoneId: zoneId) { ok2 in
                 if ok2 {
                     StatusManager.shared.incrementDailyScore()
-                    StatusManager.shared.setRewardClaimed(zoneId: zoneId, claimed: true)
+                    // LottieOnceView 재생 시간을 보장하기 위해 약간 딜레이 후 상태 반영
+                    DispatchQueue.main.asyncAfter(deadline: .now() + claimAnimationHoldDuration) {
+                        StatusManager.shared.setRewardClaimed(zoneId: zoneId, claimed: true)
+                    }
                     
                     NotificationCenter.default.post(name: didUpdateScoreNotification, object: nil)
                 } else {

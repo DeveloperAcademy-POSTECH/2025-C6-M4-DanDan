@@ -514,7 +514,7 @@ struct FullMapScreen: View {
 //            )
 //            .clipShape(RoundedRectangle(cornerRadius: 12))
 //            .padding(.leading, 16)
-//            .padding(.bottom, 20)
+//            .padding(.bottom, 120)
 //            .onAppear {
 //                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
 //                effectiveToken = refreshToken
