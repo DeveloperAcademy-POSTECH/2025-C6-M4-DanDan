@@ -22,6 +22,8 @@ class MapScreenViewModel: ObservableObject {
     /// D-Day 값 (0이면 D-Day, 양수면 D-n)
     @Published var dday: Int = 0
     
+    private let weeklyAwardKeyPrefix = "weeklyAwardShown_"
+    
     private var ddayCancellable: AnyCancellable?
         
     private let service = MapService()
@@ -38,10 +40,10 @@ class MapScreenViewModel: ObservableObject {
             let zoneStatusesResponse = try await service.fetchZoneStatuses()
             self.zoneStatuses = zoneStatusesResponse
             
-            print("\n✅ Zone Statuses Loaded (\(zoneStatusesResponse.count))개:")
-            for status in zoneStatusesResponse {
-                print("- Zone ID:", status.zoneId, "Leading Team:", status.leadingTeamName ?? "없음")
-            }
+//            print("\n✅ Zone Statuses Loaded (\(zoneStatusesResponse.count))개:")
+//            for status in zoneStatusesResponse {
+//                print("- Zone ID:", status.zoneId, "Leading Team:", status.leadingTeamName ?? "없음")
+//            }
             
         } catch {
             print("❌ 맵 정보 불러오기 실패: \(error.localizedDescription)")
@@ -63,25 +65,50 @@ class MapScreenViewModel: ObservableObject {
 
 // MARK: - D-Day logic
 extension MapScreenViewModel {
-
+    
     /// today ~ period.endDate까지 남은 일수
     private func computeDaysRemaining(now: Date = Date(), period: ConquestPeriod) -> Int {
         let cal = Calendar.current
         let todayStartOfDay = cal.startOfDay(for: now)
         let endOfWeek = cal.startOfDay(for: period.endDate)
-        return max(
+        let daysRemaining: Int = max(
             0,
             cal.dateComponents([.day], from: todayStartOfDay, to: endOfWeek).day ?? 0
         )
+        return daysRemaining
     }
-
+    
     var ddayText: String {
-        dday == 0 ? "D-Day" : "D-\(dday)"
+        let display = max(dday - 1, 0)
+        return display == 0 ? "D-Day" : "D-\(display)"
     }
-
-    /// 타이머를 시작해서 1분마다 남은 일수 체크 + 종료 시점에 WeeklyAward로 전환
+    
+    /// 이번 주 게임이 끝났고, 아직 이 주차 리워드를 안 보여줬으면 표시
+    private func showWeeklyAwardIfNeeded(period: ConquestPeriod, now: Date = Date()) {
+        let cal = Calendar.current
+        let todayStart = cal.startOfDay(for: now)
+        let endOfWeek = cal.startOfDay(for: period.endDate)
+        
+        // 아직 게임이 안 끝난 상태면 트로피 뷰 X
+        guard todayStart > endOfWeek else { return }
+        
+        // 이번 점령전(한 주)을 구분하기 위한 키 (endOfWeek 기준)
+        let key = weeklyAwardKeyPrefix + "\(endOfWeek.timeIntervalSince1970)"
+        
+        // 이 주차 리워드를 아직 안 봤으면 이번에 한 번만 띄우고, 본 걸 기록
+        if !UserDefaults.standard.bool(forKey: key) {
+            GamePhaseManager.shared.showWeeklyAward = true
+            UserDefaults.standard.set(true, forKey: key)
+        }
+    }
+    
     func startDDayTimer(period: ConquestPeriod, now: @escaping () -> Date = { Date() }) {
         ddayCancellable?.cancel()
+
+        // 최초 한 번: dday 계산 + 리워드 필요 여부 확인
+        let initialNow = now()
+        self.dday = computeDaysRemaining(now: initialNow, period: period)
+        showWeeklyAwardIfNeeded(period: period, now: initialNow)
 
         ddayCancellable = Timer
             .publish(every: 60, on: .main, in: .common)
@@ -89,13 +116,12 @@ extension MapScreenViewModel {
             .sink { [weak self] _ in
                 guard let self else { return }
 
-                let remaining = self.computeDaysRemaining(now: now(), period: period)
+                let currentNow = now()
+                // dday 값 갱신 (D-Day 텍스트용)
+                self.dday = self.computeDaysRemaining(now: currentNow, period: period)
 
-                // 점령전이 끝나면 WeeklyAwardView로 이동
-                if remaining <= 0 {
-                    GamePhaseManager.shared.showWeeklyAward = true
-                    self.ddayCancellable?.cancel()
-                }
+                // 점령전이 끝났고, 아직 이 주차 리워드를 안 봤다면 이 시점에 한 번만 띄움
+                self.showWeeklyAwardIfNeeded(period: period, now: currentNow)
             }
     }
 }
