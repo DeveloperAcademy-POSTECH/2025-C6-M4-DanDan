@@ -28,7 +28,6 @@ struct LottieOnceView: UIViewRepresentable {
             if finished {
                 view.currentProgress = holdProgress
                 view.pause()
-                // SwiftUI 상태 업데이트는 main에서
                 DispatchQueue.main.async {
                     onCompleted?()
                 }
