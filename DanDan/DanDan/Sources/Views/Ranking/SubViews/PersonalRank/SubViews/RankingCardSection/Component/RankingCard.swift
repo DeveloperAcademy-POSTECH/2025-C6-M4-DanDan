@@ -60,7 +60,7 @@ struct RankingCard: View {
 
                 image
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()  
                     .frame(width: 56, height: 56)
                     .clipShape(Circle())
                     .overlay(alignment: .topTrailing) {
