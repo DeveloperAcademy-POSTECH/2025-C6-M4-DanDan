@@ -36,16 +36,16 @@ struct AcquiredZonesMapView: UIViewRepresentable {
             
             if line.isOutline {
                 renderer.strokeColor = .darkGreen
-                renderer.lineWidth = 7
+                renderer.lineWidth = 10
                 return renderer
             }
             
             if highlightedZoneIds.contains(line.zoneId) {
                 renderer.strokeColor = highlightColor
             } else {
-                renderer.strokeColor = UIColor.primaryGreen
+                renderer.strokeColor = .primaryGreen
             }
-            renderer.lineWidth = 5
+            renderer.lineWidth = 8
             renderer.lineCap = .round
             renderer.lineJoin = .round
             return renderer
@@ -113,15 +113,15 @@ struct AcquiredZonesMapView: UIViewRepresentable {
                 
                 if line.isOutline {
                     renderer.strokeColor = .darkGreen
-                    renderer.lineWidth = 7
+                    renderer.lineWidth = 10
                 } else {
                     if highlightedZoneIds.contains(line.zoneId) {
                         renderer.strokeColor = context.coordinator.highlightColor
-                        renderer.lineWidth = 5
+                        renderer.lineWidth = 8
                     } else {
                         renderer.strokeColor = UIColor.primaryGreen
                     }
-                    renderer.lineWidth = 5
+                    renderer.lineWidth = 8
                 }
                 renderer.setNeedsDisplay()
             }
