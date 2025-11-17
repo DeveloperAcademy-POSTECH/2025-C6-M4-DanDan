@@ -13,7 +13,8 @@ struct StatusTag: View {
     var body: some View {
         Text(text)
             .font(.PR.caption4)
-            .foregroundColor(.white)
+            .foregroundColor(.white1)
+            .frame(height: 20)
             .padding(.horizontal, 16)
             .padding(.vertical, 2)
             .background(.primaryGreen)

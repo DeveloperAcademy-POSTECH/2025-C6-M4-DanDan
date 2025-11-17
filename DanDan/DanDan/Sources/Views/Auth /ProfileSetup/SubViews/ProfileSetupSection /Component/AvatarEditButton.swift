@@ -11,7 +11,7 @@ struct AvatarEditButton: View {
     let image: UIImage?
     var diameter: CGFloat = 120
     var overlayHeight: CGFloat = 38
-    var overlayColor: Color = .black.opacity(0.35)
+    var overlayColor: Color = .darkGreen.opacity(0.8)
     var onTap: () -> Void
 
     var body: some View {
@@ -44,8 +44,8 @@ struct AvatarEditButton: View {
                         }
                     )
 
-                Image(systemName: "pencil")
-                    .font(.system(size: 20, weight: .bold))
+                Image(systemName: "camera.on.rectangle.fill")
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
                     .offset(y: overlayHeight)
             }

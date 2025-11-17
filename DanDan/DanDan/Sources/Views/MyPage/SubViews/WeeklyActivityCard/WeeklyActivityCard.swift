@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct WeeklyActivityCard: View {
-    
-    // TODO: 현재 뷰에서 직접 생성하지 말고, 상위 뷰에서 주입받은 뷰모델을 사용해주세요-!
-    @ObservedObject var viewModel: MyPageViewModel
+    let currentWeekText: String
+    let weekDistanceKmIntText: String
+    let weekScore: Int
+    let teamRank: Int
+    let teamName: String
     
     var body: some View {
         VStack(spacing: 24) {
@@ -21,15 +23,17 @@ struct WeeklyActivityCard: View {
                     Text("이번 주 활동")
                         .font(.PR.body2)
                         .foregroundColor(.steelBlack)
-                    Text(viewModel.currentWeekText)
+                    Text(currentWeekText)
                         .font(.PR.caption4)
                         .foregroundColor(.gray3)
                 }
 
                 Spacer()
 
-                Image(systemName: "flag.fill")
-                    .font(.system(size: 48))
+                Image(teamName == "blue" ? "train_L_blue" : "train_L_yellow")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 55, height: 55)
             }
 
             HStack(spacing: 40) {
@@ -37,7 +41,7 @@ struct WeeklyActivityCard: View {
                     Text("거리")
                         .font(.PR.caption4)
                         .foregroundColor(.gray3)
-                    Text("\(viewModel.weekDistanceKmIntText)km")
+                    Text("\(weekDistanceKmIntText)km")
                         .font(.PR.title2)
                         .foregroundColor(.steelBlack)
                 }
@@ -46,7 +50,7 @@ struct WeeklyActivityCard: View {
                     Text("획득점수")
                         .font(.PR.caption4)
                         .foregroundColor(.gray3)
-                    Text("\(viewModel.weekScore)점")
+                    Text("\(weekScore)점")
                         .font(.PR.title2)
                         .foregroundColor(.steelBlack)
                 }
@@ -55,7 +59,7 @@ struct WeeklyActivityCard: View {
                     Text("팀 내 순위")
                         .font(.PR.caption4)
                         .foregroundColor(.gray3)
-                    Text("\(viewModel.teamRank)위")
+                    Text("\(teamRank)위")
                         .font(.PR.title2)
                         .foregroundColor(.steelBlack)
                 }
@@ -74,6 +78,6 @@ struct WeeklyActivityCard: View {
     }
 }
 
-#Preview {
-    WeeklyActivityCard(viewModel: MyPageViewModel())
-}
+//#Preview {
+//    WeeklyActivityCard(viewModel: MyPageViewModel())
+//}

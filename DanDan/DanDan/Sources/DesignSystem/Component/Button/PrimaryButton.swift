@@ -26,7 +26,7 @@ struct PrimaryButton: View {
         horizontalPadding: CGFloat = 20,
         verticalPadding: CGFloat = 20,
         background: Color = .primaryGreen,
-        foreground: Color = .white,
+        foreground: Color = .white1,
     ) {
         self.title = title
         self.action = action

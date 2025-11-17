@@ -41,9 +41,9 @@ class WeeklyAwardViewModel: ObservableObject {
 
             switch winningTeam?.teamName.lowercased() {
             case "blue":
-                winnerTitle = "파랑팀 우승!"
+                winnerTitle = "세명고 우승!"
             case "yellow":
-                winnerTitle = "노랑팀 우승!"
+                winnerTitle = "대동중 X 이동고 우승!"
             default:
                 winnerTitle = "비겼습니다!"
             }

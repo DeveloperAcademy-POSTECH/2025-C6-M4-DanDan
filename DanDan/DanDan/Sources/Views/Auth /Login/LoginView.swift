@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
@@ -14,10 +15,8 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            Image("bg_login")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea(edges: .all)
+            LottieLoopView(name: "loginlottie")
+                            .ignoresSafeArea()
             
             LoginBottomCard(
                 onAppleSignInTapped: { showSocialAlert = true }, onGuestLogin: { viewModel.tapGuestLoginButton() }

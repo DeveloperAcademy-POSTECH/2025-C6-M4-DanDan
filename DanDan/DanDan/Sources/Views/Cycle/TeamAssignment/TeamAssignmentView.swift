@@ -43,11 +43,11 @@ struct TeamAssignmentView: View {
             VStack {
                 switch team {
                 case "blue":
-                    TitleSectionView(title: "당신은 파랑팀입니다!", description: description)
+                    TitleSectionView(title: "당신은 파랑팀입니다!\n세명고등학교", description: description)
                         .padding(.top, 50)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 case "yellow":
-                    TitleSectionView(title: "당신은 노랑팀입니다!", description: description)
+                    TitleSectionView(title: "당신은 노랑팀입니다!\n대동중 X 이동고", description: description)
                         .padding(.top, 50)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 default:
@@ -70,7 +70,7 @@ struct TeamAssignmentView: View {
 struct LottieOnceView: UIViewRepresentable {
     let name: String
     var contentMode: UIView.ContentMode = .scaleAspectFit
-    var holdProgress: CGFloat = 0.95
+    var holdProgress: CGFloat = 0.99
 
     func makeUIView(context: Context) -> LottieAnimationView {
         let view = LottieAnimationView(name: name)
@@ -81,7 +81,7 @@ struct LottieOnceView: UIViewRepresentable {
         view.clipsToBounds = true
         view.layer.allowsEdgeAntialiasing = true
 
-        // 0 -> 0.95까지만 재생하고 해당 지점에서 정지 (마지막 프레임이 투명이라서)
+        // 0 -> 0.99까지만 재생하고 해당 지점에서 정지 (마지막 프레임이 투명이라서)
         view.play(fromProgress: 0, toProgress: holdProgress, loopMode: .playOnce) { _ in
             view.pause()
         }

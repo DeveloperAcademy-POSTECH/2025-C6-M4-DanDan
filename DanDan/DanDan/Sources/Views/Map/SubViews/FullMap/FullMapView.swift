@@ -92,50 +92,93 @@ struct FullMapView: UIViewRepresentable {
         }
         
         // MARK: - MKMapViewDelegate
-        /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) ->
-        MKOverlayRenderer {
-            guard let line = overlay as? ColoredPolyline else {
-                return MKOverlayRenderer()
-            }
-            let renderer = MKPolylineRenderer(overlay: line)
-            
-            let stroke: UIColor
-            switch mode {
-            case .overall:
-                stroke = ZoneColorResolver.leadingColorOrDefault(
-                    for: line.zoneId,
-                    zoneStatuses: zoneStatuses,
-                    defaultColor: .primaryGreen
-                )
-            case .personal:
-                let checked =
-                StatusManager.shared.userStatus.zoneCheckedStatus[
-                    line.zoneId
-                ] == true
-                if checked {
-                    let teamName = StatusManager.shared.userStatus.userTeam
-                    let personalColor: UIColor
-                    switch teamName {
-                    case "Blue":
-                        personalColor = .subA
-                    case "Yellow":
-                        personalColor = .subB
-                    default:
-                        personalColor = .primaryGreen
-                    }
-                    stroke = personalColor
+        /// 오버레이(폴리라인/디버그 원) 렌더러 - 구역별 색/굵기 등 스타일 지정
+        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let circle = overlay as? MKCircle {
+                let r = MKCircleRenderer(overlay: circle)
+                #if DEBUG
+                let title = circle.title ?? ""
+                if title.contains("debug-circle-start") {
+                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.06)
                 } else {
-                    stroke = UIColor.primaryGreen
+                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
+                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.06)
                 }
+                r.lineWidth = 2
+                if title.hasSuffix("-out") {
+                    r.lineDashPattern = [6, 6]
+                }
+                #endif
+                return r
             }
-            renderer.strokeColor = stroke
-            renderer.lineWidth = 16
-            renderer.lineCap = .round
-            renderer.lineJoin = .round
-            return renderer
+            
+            if let line = overlay as? ColoredPolyline {
+                let renderer = MKPolylineRenderer(overlay: line)
+                
+                let stroke: UIColor
+                switch mode {
+                case .overall:
+                    stroke = ZoneColorResolver.leadingColorOrDefault(
+                        for: line.zoneId,
+                        zoneStatuses: zoneStatuses,
+                        defaultColor: .primaryGreen
+                    )
+                case .personal:
+                    let checked =
+                    StatusManager.shared.userStatus.zoneCheckedStatus[
+                        line.zoneId
+                    ] == true
+                    if checked {
+                        let teamName = StatusManager.shared.userStatus.userTeam
+                        let personalColor: UIColor
+                        switch teamName {
+                        case "Blue":
+                            personalColor = .subA
+                        case "Yellow":
+                            personalColor = .subB
+                        default:
+                            personalColor = .primaryGreen
+                        }
+                        stroke = personalColor
+                    } else {
+                        stroke = UIColor.primaryGreen
+                    }
+                }
+                renderer.strokeColor = stroke
+                renderer.lineWidth = 16
+                renderer.lineCap = .round
+                renderer.lineJoin = .round
+                return renderer
+            }
+            return MKOverlayRenderer()
         }
         
+
+        // MARK: - Drag handling
+        /// 드래그 종료 지점 좌표를 뷰모델에 전달하여 최근접 구역 선택
+        @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
+            guard let mapView else { return }
+            let location = gesture.location(in: mapView)
+            switch gesture.state {
+            case .ended:
+                let coord = mapView.convert(location, toCoordinateFrom: mapView)
+                viewModel?.pickNearestZone(to: coord)
+            default:
+                break
+            }
+        }
+        
+        // MARK: - Tap handling
+        /// 탭한 지점 좌표를 뷰모델에 전달하여 최근접 구역 선택
+        @objc func handleTap(_ gesture: UITapGestureRecognizer) {
+            guard let mapView else { return }
+            if gesture.state == .ended {
+                let location = gesture.location(in: mapView)
+                let coord = mapView.convert(location, toCoordinateFrom: mapView)
+                viewModel?.pickNearestZone(to: coord)
+            }
+        }
 
         /// 어노테이션 뷰 - single canvas host for all stations/conquer buttons
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -155,20 +198,21 @@ struct FullMapView: UIViewRepresentable {
             let canvasSize = mapView.bounds.size
 
             let swiftUIView = ZStack {
-                // Station buttons (위에 보이도록)
-                ForEach(positioned) { item in
-                    ZoneStation(
-                        zone: item.zone,
-                        statusesForZone: item.statusesForZone,
-                        zoneTeamScores: self.viewModel?.zoneTeamScores ?? [:],
-                        loadZoneTeamScores: { zoneId in
-                        Task { await self.viewModel?.loadZoneTeamScores(for: zoneId) }
-                        },
-                        iconSize: CGSize(width: 28, height: 32),
-                        popoverOffsetY: -84
-                    )
-                    .position(x: item.point.x, y: item.point.y)
-                }
+                // TODO: 제거 예정
+//                // Station buttons (위에 보이도록)
+//                ForEach(positioned) { item in
+//                    ZoneStation(
+//                        zone: item.zone,
+//                        statusesForZone: item.statusesForZone,
+//                        zoneTeamScores: self.viewModel?.zoneTeamScores ?? [:],
+//                        loadZoneTeamScores: { zoneId in
+//                        Task { await self.viewModel?.loadZoneTeamScores(for: zoneId) }
+//                        },
+//                        iconSize: CGSize(width: 28, height: 32),
+//                        popoverOffsetY: -84
+//                    )
+//                    .position(x: item.point.x, y: item.point.y)
+//                }
                 // Conquer buttons (기존 offset(y:-100)과 동일)
                 ForEach(positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
@@ -216,23 +260,39 @@ struct FullMapView: UIViewRepresentable {
         let region = bounds.region
         map.setRegion(region, animated: true)
         map.delegate = context.coordinator
+        context.coordinator.mapView = map
         context.coordinator.request()
         
         context.coordinator.conquestStatuses = conquestStatuses
+        context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.teams = teams
         context.coordinator.mode = mode
         context.coordinator.viewModel = viewModel
         
         MapElementInstaller.installOverlays(for: zones, on: map)
+        #if DEBUG
+        MapElementInstaller.installDebugGateCircles(for: zones, on: map)
+        #endif
         // Add a single canvas annotation at the map center
         let center = bounds.center
         map.addAnnotation(CanvasAnnotation(coordinate: center))
+        
+        // 제스처: 드래그 종료 지점에서 구역 선택
+        let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
+        pan.cancelsTouchesInView = false
+        map.addGestureRecognizer(pan)
+        
+        // 제스처: 탭 지점에서 구역 선택
+        let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
+        tap.cancelsTouchesInView = false
+        map.addGestureRecognizer(tap)
         return map
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
         // 모드/데이터 변경 시 렌더러 색상만 갱신 (오버레이 재생성 금지)
         context.coordinator.conquestStatuses = conquestStatuses
+        context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.teams = teams
         context.coordinator.mode = mode
         DispatchQueue.main.async {
@@ -281,19 +341,20 @@ struct FullMapView: UIViewRepresentable {
             let canvasSize = uiView.bounds.size
           
             let swiftUIView = ZStack {
-                ForEach(context.coordinator.positioned) { item in
-                    ZoneStation(
-                        zone: item.zone,
-                        statusesForZone: item.statusesForZone,
-                        zoneTeamScores: viewModel.zoneTeamScores,
-                        loadZoneTeamScores: { zoneId in
-                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
-                        },
-                        iconSize: CGSize(width: 28, height: 32),
-                        popoverOffsetY: -84
-                    )
-                    .position(x: item.point.x, y: item.point.y)
-                }
+                // TODO: 제거 예정
+//                ForEach(context.coordinator.positioned) { item in
+//                    ZoneStation(
+//                        zone: item.zone,
+//                        statusesForZone: item.statusesForZone,
+//                        zoneTeamScores: viewModel.zoneTeamScores,
+//                        loadZoneTeamScores: { zoneId in
+//                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
+//                        },
+//                        iconSize: CGSize(width: 28, height: 32),
+//                        popoverOffsetY: -84
+//                    )
+//                    .position(x: item.point.x, y: item.point.y)
+//                }
                 ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                         .position(x: item.point.x, y: item.point.y - 100)
@@ -308,11 +369,14 @@ struct FullMapView: UIViewRepresentable {
     }
 }
 
+// MARK: - FullMapScreen
+
 struct FullMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
     
     @State private var isRightSelected = false
     @State private var effectiveToken: UUID = .init()
+    @State private var selectedZone: Zone?
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
     let refreshToken: UUID
@@ -341,7 +405,19 @@ struct FullMapScreen: View {
         )
         .ignoresSafeArea()
         .task {
+            // 팀 정보 보정 후 맵 데이터 로드
+            await StatusManager.shared.ensureUserTeamLoaded()
             await viewModel.loadMapInfo()
+        }
+        .sheet(item: $viewModel.selectedZone) { z in
+            ZoneInfoView(
+                zone: z,
+                teamScores: viewModel.zoneTeamScores[z.zoneId] ?? [],
+                descriptionText: z.description
+            )
+            .task {
+                await viewModel.loadZoneTeamScores(for: z.zoneId)
+            }
         }
         .onAppear {
             // 부모에서 전달받은 토큰을 항상 채택
@@ -350,6 +426,12 @@ struct FullMapScreen: View {
         .onChange(of: refreshToken) {
             // 부모 갱신 토큰 변화도 반영
             effectiveToken = refreshToken
+        }
+        // TODO: 임시 Notification 기반 업데이트
+        .onReceive(NotificationCenter.default.publisher(for: ZoneConquerActionHandler.didUpdateScoreNotification)) { _ in
+            Task { @MainActor in
+                await viewModel.loadMapInfo()
+            }
         }
         .overlay(alignment: .topLeading) {
             VStack(alignment: .leading, spacing: 10) {
@@ -390,59 +472,64 @@ struct FullMapScreen: View {
                 await viewModel.loadMapInfo()
             }
         }
-        //        .overlay(alignment: .bottomLeading) {
-        //            #if DEBUG
-        //                ScrollView(.horizontal, showsIndicators: false) {
-        //                    HStack(spacing: 8) {
-        //                        ForEach(1...15, id: \.self) { id in
-        //                            Button(action: {
-        //                                // 로컬 먼저 반영 (개인 지도 즉시 표시)
-        //                                StatusManager.shared.setZoneChecked(
-        //                                    zoneId: id,
-        //                                    checked: true
-        //                                )
-        //                                effectiveToken = UUID()
-        //                                // 서버 전송은 후행, 실패해도 로컬 상태 유지
-        //                                ZoneCheckedService.shared.postChecked(
-        //                                    zoneId: id
-        //                                ) { ok in
-        //                                    if !ok {
-        //                                        print(
-        //                                            "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
-        //                                        )
-        //                                    }
-        //                                }
-        //                            }) {
-        //                                Text("#\(id)")
-        //                                    .font(.PR.caption2)
-        //                                    .foregroundColor(.white)
-        //                                    .padding(.vertical, 6)
-        //                                    .padding(.horizontal, 10)
-        //                                    .background(Color.black.opacity(0.6))
-        //                                    .clipShape(Capsule())
-        //                            }
-        //                        }
-        //                    }
-        //                    .padding(.horizontal, 12)
-        //                    .padding(.vertical, 10)
-        //                }
-        //                .background(
-        //                    Color.black.opacity(0.15)
-        //                        .blur(radius: 2)
-        //                )
-        //                .clipShape(RoundedRectangle(cornerRadius: 12))
-        //                .padding(.leading, 16)
-        //                .padding(.bottom, 20)
-        //                .onAppear {
-        //                    // 최초 진입 시, 부모에서 전달받은 토큰을 채택
-        //                    effectiveToken = refreshToken
-        //                }
-        //                .onChange(of: refreshToken) { newValue in
-        //                    // 부모 갱신 토큰 변화도 반영
-        //                    effectiveToken = newValue
-        //                }
-        //            #endif
-        //        }
+        .overlay(alignment: .bottomLeading) {
+#if DEBUG
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(1...15, id: \.self) { id in
+                        Button(action: {
+                            // 로컬 먼저 반영 (개인 지도 즉시 표시)
+                            StatusManager.shared.setZoneChecked(
+                                zoneId: id,
+                                checked: true
+                            )
+                            effectiveToken = UUID()
+                            // 서버 전송은 후행, 실패해도 로컬 상태 유지
+                            ZoneCheckedService.shared.postChecked(
+                                zoneId: id
+                            ) { ok in
+                                if !ok {
+                                    print(
+                                        "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
+                                    )
+                                }
+                            }
+                        }) {
+                            Text("#\(id)")
+                                .font(.PR.caption2)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 10)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+            }
+            .background(
+                Color.black.opacity(0.15)
+                    .blur(radius: 2)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.leading, 16)
+            .padding(.bottom, 120)
+            .onAppear {
+                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
+                effectiveToken = refreshToken
+            }
+            .onChange(of: refreshToken) { newValue in
+                // 부모 갱신 토큰 변화도 반영
+                effectiveToken = newValue
+            }
+#endif
+        }
+//        .overlay(alignment: .topTrailing) {
+//#if DEBUG
+//            ZoneDebugOverlay()
+//#endif
+//        }
     }
 }
 //

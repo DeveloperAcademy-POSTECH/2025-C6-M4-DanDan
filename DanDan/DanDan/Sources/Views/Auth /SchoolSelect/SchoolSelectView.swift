@@ -9,7 +9,7 @@ import SwiftUI
 
 enum School: String, CaseIterable, Identifiable {
     case daedongMiddle = "대동중학교"
-    case pohangSteelMiddle = "포항제철중학교"
+//    case pohangSteelMiddle = "포항제철중학교"
     case semyeongHigh = "세명고등학교"
     case pohangIdongHigh = "포항이동고등학교"
     
@@ -92,10 +92,10 @@ struct SchoolSelectView: View {
                         viewModel.profileImage = profileImage
                         
                         switch school {
-                        case .daedongMiddle, .pohangSteelMiddle:
-                            viewModel.teamName = "Yellow"
-                        case .semyeongHigh, .pohangIdongHigh:
+                        case .semyeongHigh:
                             viewModel.teamName = "Blue"
+                        case .daedongMiddle, .pohangIdongHigh:
+                            viewModel.teamName = "Yellow"
                         }
                         
                         
@@ -111,7 +111,7 @@ struct SchoolSelectView: View {
             }
             
         } message: {
-            Text("가입 이후에는 닉네임과 프로필, 학교를 \n바꿀 수 없어요!")
+            Text("가입 이후에는 학교를 바꿀 수 없어요!")
         }
     }
 }

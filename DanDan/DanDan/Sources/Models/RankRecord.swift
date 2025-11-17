@@ -15,4 +15,6 @@ struct RankRecord: Identifiable, Codable {
     var rank: Int
     var weekScore: Int
     var distanceKm: Double?
+    /// 해당 주차(기간) 당시 사용자가 속했던 팀 이름
+    var teamAtPeriod: String?
 }

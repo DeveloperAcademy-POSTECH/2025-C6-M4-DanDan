@@ -47,6 +47,16 @@ struct MapElementInstaller {
             map.addAnnotation(ann)
         }
     }
+    
+    #if DEBUG
+    /// 디버그: 게이트 원(입장/이탈 반경) 오버레이 설치
+    static func installDebugGateCircles(for zones: [Zone], on map: MKMapView) {
+        let circles = DebugGateOverlay.makeCircles(for: zones)
+        for c in circles {
+            map.addOverlay(c, level: .aboveLabels)
+        }
+    }
+    #endif
 }
 
 enum MapOverlayRefresher {
@@ -61,13 +71,23 @@ enum MapOverlayRefresher {
 }
 
 final class ZoneConquerActionHandler {
+    // TODO: 임시 Notification 기반 업데이트
+    static let didUpdateScoreNotification = Notification.Name("ZoneConquerActionHandler.didUpdateScore")
+    /// 로티 재생이 자연스럽게 끝나도록, 보상 수령 상태 반영을 잠시 지연
+    private static let claimAnimationHoldDuration: TimeInterval = 1.2
+
     static func handleConquer(zoneId: Int) {
         ZoneCheckedService.shared.postChecked(zoneId: zoneId) { ok in
             guard ok else { print("🚨 postChecked failed: \(zoneId)"); return }
             ZoneCheckedService.shared.acquireScore(zoneId: zoneId) { ok2 in
                 if ok2 {
                     StatusManager.shared.incrementDailyScore()
-                    StatusManager.shared.setRewardClaimed(zoneId: zoneId, claimed: true)
+                    // LottieOnceView 재생 시간을 보장하기 위해 약간 딜레이 후 상태 반영
+                    DispatchQueue.main.asyncAfter(deadline: .now() + claimAnimationHoldDuration) {
+                        StatusManager.shared.setRewardClaimed(zoneId: zoneId, claimed: true)
+                    }
+                    
+                    NotificationCenter.default.post(name: didUpdateScoreNotification, object: nil)
                 } else {
                     print("🚨 acquireScore failed: \(zoneId)")
                 }
@@ -87,6 +107,17 @@ final class StationAnnotation: NSObject, MKAnnotation {
         self.zone = zone
         self.statusesForZone = statusesForZone
     }
+}
+
+// 목적지 구역 사인 표출용 어노테이션
+final class SignAnnotation: NSObject, MKAnnotation {
+	let coordinate: CLLocationCoordinate2D
+	let destinationZoneId: Int
+	
+	init(coordinate: CLLocationCoordinate2D, destinationZoneId: Int) {
+		self.coordinate = coordinate
+		self.destinationZoneId = destinationZoneId
+	}
 }
 
 final class HostingAnnotationView: MKAnnotationView {
