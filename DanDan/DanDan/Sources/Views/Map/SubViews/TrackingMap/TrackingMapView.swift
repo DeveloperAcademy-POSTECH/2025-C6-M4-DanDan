@@ -345,7 +345,7 @@ struct TrackingMapScreen: View {
             )
             .ignoresSafeArea()
             
-            HStack(spacing: 4) {
+            HStack(spacing: 2) {
                 if viewModel.teams.count >= 2 {
                     ScoreBoard(
                         leftTeamName: viewModel.teams[1].teamName,
