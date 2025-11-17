@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RankingItemView: View {
-    let rank: RankingViewModel.RankingItemData
+    let rank: RankingItemData
     let isMyRank: Bool
     let displayRank: Int
     let myRankDiff: Int

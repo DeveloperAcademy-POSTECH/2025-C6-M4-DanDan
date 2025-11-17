@@ -18,7 +18,6 @@ class RankingViewModel: ObservableObject {
     @Published var teamRankings: [TeamRanking] = []
     @Published var rankingItems: [RankingItemData] = []
     @Published var myRanking: MyRankingData?
-    
     @Published var myRankDiff: Int? = nil
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -85,41 +84,6 @@ extension RankingViewModel {
             return items
         }
         return items.filter { $0.userTeam == myTeam }
-    }
-}
-
-// MARK: - View 전용 모델 및 데이터 변환
-
-extension RankingViewModel {
-
-    // 뷰 전용 단순 데이터
-    struct RankingItemData: Identifiable {
-        let id: UUID
-        let ranking: Int
-        let userName: String
-        var userImage: UIImage?
-        let userWeekScore: Int
-        let userTeam: String
-        let backgroundColor: Color
-        var rankDiff: Int?
-
-        init(
-            id: UUID = UUID(),
-            ranking: Int,
-            userName: String,
-            userImage: UIImage?,
-            userWeekScore: Int,
-            userTeam: String,
-            backgroundColor: Color
-        ) {
-            self.id = id
-            self.ranking = ranking
-            self.userName = userName
-            self.userImage = userImage
-            self.userWeekScore = userWeekScore
-            self.userTeam = userTeam
-            self.backgroundColor = backgroundColor
-        }
     }
 }
 

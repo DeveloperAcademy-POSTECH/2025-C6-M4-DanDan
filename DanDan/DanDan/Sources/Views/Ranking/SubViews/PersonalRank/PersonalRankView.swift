@@ -8,19 +8,19 @@
 import SwiftUI
 
 struct PersonalRankView: View {
-    let rankingItems: [RankingViewModel.RankingItemData]
+    let rankingItems: [RankingItemData]
     let myUserId: UUID
     let rankingFilter: (
-            [RankingViewModel.RankingItemData],
+            [RankingItemData],
             String,
             UUID
-    ) -> [RankingViewModel.RankingItemData]
+    ) -> [RankingItemData]
     let fetchRanking: () -> Void
     let myRankDiff: Int
 
     @State private var selectedFilter: String = "전체"
     
-    private var filteredItems: [RankingViewModel.RankingItemData] {
+    private var filteredItems: [RankingItemData] {
         rankingFilter(rankingItems, selectedFilter, myUserId)
     }
     
