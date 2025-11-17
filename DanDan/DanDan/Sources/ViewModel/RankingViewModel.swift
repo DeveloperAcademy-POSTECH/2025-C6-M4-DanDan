@@ -16,25 +16,25 @@ class RankingViewModel: ObservableObject {
     @Published var userInfo: [UserInfo] = []
     @Published var rankedUsers: [UserStatus] = []
     @Published var teamRankings: [TeamRanking] = []
+    @Published var rankingItems: [RankingItemData] = []
+    @Published var myRanking: MyRankingData?
+    
     @Published var myRankDiff: Int? = nil
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
 
     // TODO: 팀명 확정 후 수정
     @Published var teams: [Team] = [
         Team(id: UUID(), teamName: "파랑팀", teamColor: "A"),
         Team(id: UUID(), teamName: "노랑팀", teamColor: "B"),
     ]
-
-    @Published var rankingItems: [RankingItemData] = []
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
-
+    
     private var cancellables = Set<AnyCancellable>()
     private let rankingService = RankingService.shared
     private let rankingManager = RankingManager.shared
     private let navigationManager = NavigationManager.shared
     private let tokenManager = TokenManager()
 
-    // TODO: 더미 데이터 - 현재 유저
     var currentUserId: UUID = UUID()
 
     init() {
@@ -145,7 +145,20 @@ extension RankingViewModel {
 // MARK: - 개인 랭킹 서버 연동
 
 extension RankingViewModel {
-
+    
+    /// 현재 유저의 랭킹 정보를 가져옵니다.
+    func fetchMyRanking() {
+        Task {
+            do {
+                let myRanking = try await rankingService.requestMyRanking()
+                self.myRanking = myRanking
+            } catch {
+                errorMessage = "유저 랭킹을 불러오지 못했습니다: \(error.localizedDescription)"
+                print("❌ fetchMyRanking 실패: \(error)")
+            }
+        }
+    }
+    
     /// 서버에서 완성된 랭킹 데이터를 그대로 받아 ViewModel 상태를 업데이트합니다.
     func fetchRanking() {
         isLoading = true

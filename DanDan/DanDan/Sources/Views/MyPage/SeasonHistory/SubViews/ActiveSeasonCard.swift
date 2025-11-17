@@ -19,7 +19,7 @@ struct ActiveSeasonCard: View {
                         .foregroundStyle(.steelBlack)
                     Text(viewModel.weekRange)
                         .font(.PR.caption4)
-                        .foregroundStyle(.gray3)
+                        .foregroundStyle(.gray2)
                 }
                 Spacer()
                 StatusTag(text: viewModel.statusText)
@@ -32,15 +32,18 @@ struct ActiveSeasonCard: View {
             )
             .padding(.bottom, 32)
 
+            // TODO: 자신의 현재 팀 아이콘으로 설정
             HStack(spacing: 0) {
-                Image(systemName: "flag.fill")
-                    .font(.system(size: 48, weight: .bold))
+                Image(viewModel.currentTeamName == "blue" ? "train_R_blue" : "train_R_yellow")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70, height: 70)
                 Spacer()
                 HStack(spacing: 20) {
                     VStack(spacing: 8) {
                         Text("거리")
                             .font(.PR.body4)
-                            .foregroundStyle(.gray3)
+                            .foregroundStyle(.gray2)
                         Text("\(Int(viewModel.currentDistanceKm))km")
                             .font(.PR.title2)
                             .foregroundStyle(.steelBlack)
@@ -48,7 +51,7 @@ struct ActiveSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("점수")
                             .font(.PR.body4)
-                            .foregroundStyle(.gray3)
+                            .foregroundStyle(.gray2)
                         Text("\(viewModel.currentWeekScore)점")
                             .font(.PR.title2)
                             .foregroundStyle(.steelBlack)
@@ -56,7 +59,7 @@ struct ActiveSeasonCard: View {
                     VStack(spacing: 8) {
                         Text("팀 내 순위")
                             .font(.PR.body4)
-                            .foregroundStyle(.gray3)
+                            .foregroundStyle(.gray2)
                         Text("\(viewModel.currentTeamRank)위")
                             .font(.PR.title2)
                             .foregroundStyle(.steelBlack)
@@ -64,15 +67,25 @@ struct ActiveSeasonCard: View {
                 }
             }
             .padding(.bottom, 28)
-            
+
             Text("내가 얻은 구역")
                 .font(.pretendard(.semiBold, size: 14))
-                .foregroundStyle(.gray3)
+                .foregroundStyle(.gray2)
                 .padding(.bottom, 8)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray)
-                .frame(height: 157)
-            
+
+            AcquiredZonesMapView(
+                highlightedZoneIds: {
+                    let dict = StatusManager.shared.userStatus.zoneCheckedStatus
+                    let ids = dict.compactMap { $0.value ? $0.key : nil }
+                    return Set(ids)
+                }(),
+                highlightColor: {
+                    let team = StatusManager.shared.userStatus.userTeam.lowercased()
+                    return team == "blue" ? .subA : .subB
+                }()
+            )
+            .frame(height: 160)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .padding()
         .overlay(
@@ -86,6 +99,6 @@ struct ActiveSeasonCard: View {
 
 // RemainingProgressBar는 별도 파일로 분리됨
 //
-//#Preview {
+// #Preview {
 //    ActiveSeasonCard(viewModel: SeasonHistoryViewModel(autoRefresh: false))
-//}
+// }

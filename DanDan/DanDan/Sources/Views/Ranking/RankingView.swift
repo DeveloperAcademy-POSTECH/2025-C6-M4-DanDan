@@ -32,7 +32,8 @@ struct RankingView: View {
             } else {
                 TeamRankView(
                     fetchTeamRanking: viewModel.fetchTeamRanking,
-                    myUserId: viewModel.currentUserId,
+                    fetchMyRanking: viewModel.fetchMyRanking,
+                    userTeamName: viewModel.myRanking?.teamName ?? "",
                     teamRankings: viewModel.teamRankings
                 )
             }

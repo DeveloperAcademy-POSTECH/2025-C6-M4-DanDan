@@ -44,8 +44,8 @@ struct AvatarEditButton: View {
                         }
                     )
 
-                Image(systemName: "pencil")
-                    .font(.system(size: 20, weight: .bold))
+                Image(systemName: "camera.on.rectangle.fill")
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
                     .offset(y: overlayHeight)
             }

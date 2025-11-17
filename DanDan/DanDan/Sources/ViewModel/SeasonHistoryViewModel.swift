@@ -18,6 +18,7 @@ final class SeasonHistoryViewModel: ObservableObject {
     @Published private(set) var currentDistanceKm: Double
     @Published private(set) var currentWeekScore: Int
     @Published private(set) var currentTeamRank: Int
+    @Published private(set) var currentTeamName: String = ""
     @Published private(set) var completed: [RankRecord] = []
     @Published private(set) var hasCurrentWeek: Bool = false
 
@@ -52,6 +53,7 @@ final class SeasonHistoryViewModel: ObservableObject {
                 self.currentWeekScore = cw.userWeekScore
                 self.currentTeamRank = cw.ranking
                 self.currentDistanceKm = cw.distanceKm ?? 0
+                self.currentTeamName = cw.userTeam
             } else {
                 self.hasCurrentWeek = false
             }
@@ -66,7 +68,8 @@ final class SeasonHistoryViewModel: ObservableObject {
                     endDate: end,
                     rank: item.rank,
                     weekScore: item.weekScore,
-                    distanceKm: item.distanceKm
+                    distanceKm: item.distanceKm,
+                    teamAtPeriod: item.teamAtPeriod
                 )
             }
             self.completed = mapped.sorted { $0.startDate > $1.startDate }

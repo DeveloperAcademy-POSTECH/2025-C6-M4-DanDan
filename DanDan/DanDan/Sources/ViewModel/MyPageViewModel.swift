@@ -32,6 +32,7 @@ class MyPageViewModel: ObservableObject {
     var totalScore: Int { userInfo.userTotalScore }
     var weekScore: Int { userStatus.userWeekScore }
     var teamRank: Int { userStatus.rank }
+    var teamName: String { userStatus.userTeam }
 
     var currentWeekText: String {
         guard let period = currentPeriod else { return "-" }
@@ -154,6 +155,7 @@ class MyPageViewModel: ObservableObject {
             userInfo.userName = resp.data.user.userName
             userInfo.userVictoryCnt = resp.data.user.userVictoryCnt
             userInfo.userTotalScore = resp.data.user.userTotalScore
+            userStatus.userTeam = resp.data.user.userTeam
             userStatus.userWeekScore = resp.data.currentWeekActivity.userWeekScore
             userStatus.rank = resp.data.currentWeekActivity.ranking
 

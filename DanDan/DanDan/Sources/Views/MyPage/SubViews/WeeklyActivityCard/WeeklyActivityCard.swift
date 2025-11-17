@@ -12,6 +12,7 @@ struct WeeklyActivityCard: View {
     let weekDistanceKmIntText: String
     let weekScore: Int
     let teamRank: Int
+    let teamName: String
     
     var body: some View {
         VStack(spacing: 24) {
@@ -29,8 +30,10 @@ struct WeeklyActivityCard: View {
 
                 Spacer()
 
-                Image(systemName: "flag.fill")
-                    .font(.system(size: 48))
+                Image(teamName == "blue" ? "train_L_blue" : "train_L_yellow")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 55, height: 55)
             }
 
             HStack(spacing: 40) {

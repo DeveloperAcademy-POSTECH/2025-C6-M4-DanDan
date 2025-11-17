@@ -155,6 +155,31 @@ struct FullMapView: UIViewRepresentable {
         }
         
 
+        // MARK: - Drag handling
+        /// 드래그 종료 지점 좌표를 뷰모델에 전달하여 최근접 구역 선택
+        @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
+            guard let mapView else { return }
+            let location = gesture.location(in: mapView)
+            switch gesture.state {
+            case .ended:
+                let coord = mapView.convert(location, toCoordinateFrom: mapView)
+                viewModel?.pickNearestZone(to: coord)
+            default:
+                break
+            }
+        }
+        
+        // MARK: - Tap handling
+        /// 탭한 지점 좌표를 뷰모델에 전달하여 최근접 구역 선택
+        @objc func handleTap(_ gesture: UITapGestureRecognizer) {
+            guard let mapView else { return }
+            if gesture.state == .ended {
+                let location = gesture.location(in: mapView)
+                let coord = mapView.convert(location, toCoordinateFrom: mapView)
+                viewModel?.pickNearestZone(to: coord)
+            }
+        }
+
         /// 어노테이션 뷰 - single canvas host for all stations/conquer buttons
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
             guard annotation is CanvasAnnotation else { return nil }
@@ -173,20 +198,21 @@ struct FullMapView: UIViewRepresentable {
             let canvasSize = mapView.bounds.size
 
             let swiftUIView = ZStack {
-                // Station buttons (위에 보이도록)
-                ForEach(positioned) { item in
-                    ZoneStation(
-                        zone: item.zone,
-                        statusesForZone: item.statusesForZone,
-                        zoneTeamScores: self.viewModel?.zoneTeamScores ?? [:],
-                        loadZoneTeamScores: { zoneId in
-                        Task { await self.viewModel?.loadZoneTeamScores(for: zoneId) }
-                        },
-                        iconSize: CGSize(width: 28, height: 32),
-                        popoverOffsetY: -84
-                    )
-                    .position(x: item.point.x, y: item.point.y)
-                }
+                // TODO: 제거 예정
+//                // Station buttons (위에 보이도록)
+//                ForEach(positioned) { item in
+//                    ZoneStation(
+//                        zone: item.zone,
+//                        statusesForZone: item.statusesForZone,
+//                        zoneTeamScores: self.viewModel?.zoneTeamScores ?? [:],
+//                        loadZoneTeamScores: { zoneId in
+//                        Task { await self.viewModel?.loadZoneTeamScores(for: zoneId) }
+//                        },
+//                        iconSize: CGSize(width: 28, height: 32),
+//                        popoverOffsetY: -84
+//                    )
+//                    .position(x: item.point.x, y: item.point.y)
+//                }
                 // Conquer buttons (기존 offset(y:-100)과 동일)
                 ForEach(positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
@@ -234,9 +260,11 @@ struct FullMapView: UIViewRepresentable {
         let region = bounds.region
         map.setRegion(region, animated: true)
         map.delegate = context.coordinator
+        context.coordinator.mapView = map
         context.coordinator.request()
         
         context.coordinator.conquestStatuses = conquestStatuses
+        context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.teams = teams
         context.coordinator.mode = mode
         context.coordinator.viewModel = viewModel
@@ -248,12 +276,23 @@ struct FullMapView: UIViewRepresentable {
         // Add a single canvas annotation at the map center
         let center = bounds.center
         map.addAnnotation(CanvasAnnotation(coordinate: center))
+        
+        // 제스처: 드래그 종료 지점에서 구역 선택
+        let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
+        pan.cancelsTouchesInView = false
+        map.addGestureRecognizer(pan)
+        
+        // 제스처: 탭 지점에서 구역 선택
+        let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
+        tap.cancelsTouchesInView = false
+        map.addGestureRecognizer(tap)
         return map
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
         // 모드/데이터 변경 시 렌더러 색상만 갱신 (오버레이 재생성 금지)
         context.coordinator.conquestStatuses = conquestStatuses
+        context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.teams = teams
         context.coordinator.mode = mode
         DispatchQueue.main.async {
@@ -302,19 +341,20 @@ struct FullMapView: UIViewRepresentable {
             let canvasSize = uiView.bounds.size
           
             let swiftUIView = ZStack {
-                ForEach(context.coordinator.positioned) { item in
-                    ZoneStation(
-                        zone: item.zone,
-                        statusesForZone: item.statusesForZone,
-                        zoneTeamScores: viewModel.zoneTeamScores,
-                        loadZoneTeamScores: { zoneId in
-                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
-                        },
-                        iconSize: CGSize(width: 28, height: 32),
-                        popoverOffsetY: -84
-                    )
-                    .position(x: item.point.x, y: item.point.y)
-                }
+                // TODO: 제거 예정
+//                ForEach(context.coordinator.positioned) { item in
+//                    ZoneStation(
+//                        zone: item.zone,
+//                        statusesForZone: item.statusesForZone,
+//                        zoneTeamScores: viewModel.zoneTeamScores,
+//                        loadZoneTeamScores: { zoneId in
+//                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
+//                        },
+//                        iconSize: CGSize(width: 28, height: 32),
+//                        popoverOffsetY: -84
+//                    )
+//                    .position(x: item.point.x, y: item.point.y)
+//                }
                 ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                         .position(x: item.point.x, y: item.point.y - 100)
@@ -336,6 +376,7 @@ struct FullMapScreen: View {
     
     @State private var isRightSelected = false
     @State private var effectiveToken: UUID = .init()
+    @State private var selectedZone: Zone?
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
     let refreshToken: UUID
@@ -367,6 +408,16 @@ struct FullMapScreen: View {
             // 팀 정보 보정 후 맵 데이터 로드
             await StatusManager.shared.ensureUserTeamLoaded()
             await viewModel.loadMapInfo()
+        }
+        .sheet(item: $viewModel.selectedZone) { z in
+            ZoneInfoView(
+                zone: z,
+                teamScores: viewModel.zoneTeamScores[z.zoneId] ?? [],
+                descriptionText: z.description
+            )
+            .task {
+                await viewModel.loadZoneTeamScores(for: z.zoneId)
+            }
         }
         .onAppear {
             // 부모에서 전달받은 토큰을 항상 채택
@@ -463,7 +514,7 @@ struct FullMapScreen: View {
 //            )
 //            .clipShape(RoundedRectangle(cornerRadius: 12))
 //            .padding(.leading, 16)
-//            .padding(.bottom, 20)
+//            .padding(.bottom, 120)
 //            .onAppear {
 //                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
 //                effectiveToken = refreshToken
