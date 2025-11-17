@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TeamRankingListView: View {
     let teamRankings: [TeamRanking]
-    let myUserId: UUID
+    let userTeamName: String
     
     var body: some View {
         ScrollView {
@@ -17,7 +17,7 @@ struct TeamRankingListView: View {
                 ForEach(teamRankings) { item in
                     TeamRankingItemView(
                         teamRankings: item,
-                        isMyRank: item.id == myUserId
+                        isUserTeam: item.teamName == userTeamName
                     )
                 }
             }
