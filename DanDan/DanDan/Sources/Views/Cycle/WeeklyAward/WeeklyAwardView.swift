@@ -12,11 +12,21 @@ struct WeeklyAwardView: View {
     @StateObject private var viewModel = WeeklyAwardViewModel()
     @State private var isAnimationFinished = false
     
+    private var trophyAnimationName: String {
+        switch viewModel.winningTeam?.teamName.lowercased() {
+        case "blue":
+            return "trophy_blue_win"
+        case "yellow":
+            return "trophy_yellow_win"
+        default:
+            return "trophy_blue_win"
+        }
+    }
+    
     var body: some View {
         ZStack {
             // 애니메이션이 끝난 후 나타나는 UI
             if isAnimationFinished {
-                
                 VStack {
                     WeeklyAwardTitleSectionView(
                         title: viewModel.winnerTitle,
@@ -50,12 +60,12 @@ struct WeeklyAwardView: View {
         }
         .background(
             LottieOnceView(
-                name: "trophy_blue_win",
+                name: trophyAnimationName,
                 onCompleted: {
                     withAnimation(.easeOut(duration: 0.4)) {
                         isAnimationFinished = true
                     }
-                } 
+                }
             )
             .offset(y: -110)
             .ignoresSafeArea()
