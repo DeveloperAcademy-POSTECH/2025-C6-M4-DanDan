@@ -29,6 +29,33 @@ class RankingService {
             .eraseToAnyPublisher()
     }
     
+    /// 현재 유저 랭킹 요청
+    func requestMyRanking() async throws -> MyRankingData {
+        guard let url = URL(string: "https://www.singyupark.cloud:8443/api/v1/conquest/rankings/my-rank") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let token = try? TokenManager().getAccessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw URLError(.userAuthenticationRequired)
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        
+        let decodedResponse = try JSONDecoder().decode(MyRankingResponseDTO.self, from: data)
+        
+        return decodedResponse.data
+    }
+    
     // MARK: - 팀 랭킹
     
     func fetchTeamRankings() async throws -> [TeamRanking] {

@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TeamRankView: View {
     let fetchTeamRanking: () -> Void
-    let myUserId: UUID
+    let fetchMyRanking: () -> Void
+    let userTeamName: String
     let teamRankings: [TeamRanking]
 
     var body: some View {
@@ -19,7 +20,7 @@ struct TeamRankView: View {
 
             TeamRankingListView(
                 teamRankings: teamRankings,
-                myUserId: myUserId
+                userTeamName: userTeamName
             )
             .padding(.top, 36)
 
@@ -27,6 +28,7 @@ struct TeamRankView: View {
         }
         .onAppear {
             fetchTeamRanking()
+            fetchMyRanking()
         }
         .padding(.horizontal, 20)
     }
