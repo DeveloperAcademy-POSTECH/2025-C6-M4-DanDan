@@ -24,8 +24,3 @@ struct InstructionSectionView: View {
         }
     }
 }
-
-#Preview {
-    @State var filter = "전체"
-    InstructionSectionView(selectedFilter: $filter)
-}
