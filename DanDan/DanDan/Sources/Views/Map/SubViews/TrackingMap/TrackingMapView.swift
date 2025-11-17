@@ -142,14 +142,15 @@ struct TrackingMapView: UIViewRepresentable {
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
             
             let swiftUIView = ZStack {
-                ZoneStation(
-                    zone: ann.zone,
-                    statusesForZone: ann.statusesForZone,
-                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
-                    loadZoneTeamScores: { zoneId in
-                        Task {await self.viewModel!.loadZoneTeamScores(for: zoneId) }
-                    }
-                )
+                // TODO: 제거 예정
+//                ZoneStation(
+//                    zone: ann.zone,
+//                    statusesForZone: ann.statusesForZone,
+//                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
+//                    loadZoneTeamScores: { zoneId in
+//                        Task {await self.viewModel!.loadZoneTeamScores(for: zoneId) }
+//                    }
+//                )
                 if isChecked && !isClaimed {
                     ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                     .offset(y: -120)
@@ -251,14 +252,15 @@ struct TrackingMapView: UIViewRepresentable {
                 let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
                 
                 let swiftUIView = ZStack {
-                    ZoneStation(
-                        zone: ann.zone,
-                        statusesForZone: ann.statusesForZone,
-                        zoneTeamScores: self.viewModel.zoneTeamScores,
-                        loadZoneTeamScores: { zoneId in
-                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
-                        }
-                    )
+                    // TODO: 제거 예정
+//                    ZoneStation(
+//                        zone: ann.zone,
+//                        statusesForZone: ann.statusesForZone,
+//                        zoneTeamScores: self.viewModel.zoneTeamScores,
+//                        loadZoneTeamScores: { zoneId in
+//                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
+//                        }
+//                    )
                     if isChecked && !isClaimed {
                         ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                             .offset(y: -120)
