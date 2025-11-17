@@ -13,6 +13,7 @@ struct RankingCard: View {
     private let image: Image
     private let name: String
     private let color: Color
+    private let userTeam: String
     private let score: Int
     private let rank: Int
 
@@ -22,7 +23,7 @@ struct RankingCard: View {
         name: String,
         score: Int,
         image: Image = Image("default_avatar"),
-        color: Color = .gray3,
+        userTeam: String,
         rank: Int
     ) {
         self.userId = userId
@@ -30,8 +31,16 @@ struct RankingCard: View {
         self.name = name
         self.score = score
         self.image = image
-        self.color = color
+        self.userTeam = userTeam
         self.rank = rank
+        
+        if userTeam.lowercased() == "blue" {
+            self.color = Color("SubA50")
+        } else if userTeam.lowercased() == "yellow" {
+            self.color = Color("SubB")
+        } else {
+            self.color = .gray3
+        }
     }
 
     private var rankBadgeImage: Image? {
@@ -45,6 +54,7 @@ struct RankingCard: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            dump(color)
             ZStack {
                 color
 
@@ -59,21 +69,23 @@ struct RankingCard: View {
                                 .offset(x: 3, y: -4)
                         }
                     }
-                    .padding(.vertical, 10)
-                    .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
+                    .padding(.bottom, 10)
+                    .shadow(color: .black.opacity(0.15), radius: 3, x: 0, y: 2)
             }
+            .padding(.bottom, 10)
 
             // TODO: UT 후 수정
-            VStack {
+            VStack(spacing: 4) {
                 Text(name)
                     .font(.PR.body2)
                     .foregroundStyle(.steelBlack)
+                
 
                 Text("\(score)점")
                     .font(.PR.body3)
                     .foregroundStyle(.gray2)
             }
-            .padding(.vertical, 10)
+            .padding(.bottom, 10)
             
             // UT용
 //            VStack{
@@ -93,8 +105,8 @@ struct RankingCard: View {
 //                .padding(.vertical, 10)
 //            }
         }
-        .frame(width: 110, height: 135)
-        .background(Color.white)
+        .frame(width: 110, height: 140)
+        .background(Color.white1)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.20), radius: 2, x: 0, y: 2)
         .overlay(alignment: .top) {
@@ -104,7 +116,21 @@ struct RankingCard: View {
                     .frame(width: 39, height: 36)
                     .offset(y: -30)
             }
-
         }
     }
+}
+
+#Preview {
+    RankingCard(
+        userId: UUID(),
+        myUserId: UUID(),
+        name: "김소원",
+        score: 9,
+        image: Image("default_avatar"),
+        userTeam: "blue",   // 🔵 여기서 색상 매핑 테스트 가능
+        rank: 1
+    )
+    .previewLayout(.sizeThatFits)
+    .padding()
+    .background(Color.gray.opacity(0.1))
 }

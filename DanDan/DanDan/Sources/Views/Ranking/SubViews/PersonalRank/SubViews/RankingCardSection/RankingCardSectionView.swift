@@ -23,7 +23,7 @@ struct RankingCardSectionView: View {
                 name: topThree[1].userName,
                 score: topThree[1].userWeekScore,
                 image: Image(uiImage: topThree[1].userImage ?? (UIImage(named: "default_avatar") ?? UIImage())),
-                color: topThree[1].backgroundColor,
+                userTeam: topThree[1].userTeam,
                 rank: 2
             )
             
@@ -33,7 +33,7 @@ struct RankingCardSectionView: View {
                 name: topThree[0].userName,
                 score: topThree[0].userWeekScore,
                 image: Image(uiImage: topThree[0].userImage ?? (UIImage(named: "default_avatar") ?? UIImage())),
-                color: topThree[0].backgroundColor,
+                userTeam: topThree[0].userTeam,
                 rank: 1
             )
             .padding(.bottom, 20)
@@ -44,7 +44,7 @@ struct RankingCardSectionView: View {
                 name: topThree[2].userName,
                 score: topThree[2].userWeekScore,
                 image: Image(uiImage: topThree[2].userImage ?? (UIImage(named: "default_avatar") ?? UIImage())),
-                color: topThree[2].backgroundColor,
+                userTeam: topThree[2].userTeam,
                 rank: 3
             )
         }

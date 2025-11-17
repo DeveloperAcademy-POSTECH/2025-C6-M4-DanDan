@@ -32,7 +32,7 @@ struct ProfileImageView: View {
                     .offset(x: 3, y: -4)
                 }
         }
-        .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.15), radius: 3, x: 0, y: 2)
         .padding(.leading, -12)
     }
 }
