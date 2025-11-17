@@ -12,7 +12,7 @@ struct ScoreBoard: View {
     let rightTeamName: String
     let leftTeamScore: Int
     let rightTeamScore: Int
-    let ddayText: String?
+    let ddayText: String
     
     private var total: CGFloat {
         max(1, CGFloat(leftTeamScore + rightTeamScore))
@@ -33,12 +33,15 @@ struct ScoreBoard: View {
             
             VStack {
                 
-                if let ddayText, !ddayText.isEmpty {
-                    Text("경기 종료까지 \(ddayText)")
-                        .font(.PR.caption5)
+                HStack(spacing: 0) {
+                    Text("경기 종료까지 ")
                         .foregroundStyle(.gray1)
-                        .padding(.vertical, 8)
+                    Text(ddayText)
+                        .foregroundStyle(.steelBlack)
                 }
+                .font(.PR.caption5)
+                .padding(.vertical, 8)
+                
                 
                 // 안쪽 진행 바 & 라벨
                 GeometryReader { geo in
@@ -122,7 +125,7 @@ struct ScoreBoard: View {
         Team(id: UUID(), teamName: "Blue", teamColor: "A"),
         Team(id: UUID(), teamName: "Yellow", teamColor: "B")
     ]
-
+    
     // 더미 점령 상태 데이터
     let dummyStatuses = [
         ZoneConquestStatus(zoneId: 1, teamId: 1, teamName: "Blue", teamScore: 12),
@@ -130,7 +133,7 @@ struct ScoreBoard: View {
         ZoneConquestStatus(zoneId: 2, teamId: 1, teamName: "Blue", teamScore: 34),
         ZoneConquestStatus(zoneId: 2, teamId: 2, teamName: "Yellow", teamScore: 32)
     ]
-
+    
     VStack(spacing: 20) {
         ScoreBoard(leftTeamName: "노랑", rightTeamName: "파랑", leftTeamScore: 4, rightTeamScore: 9, ddayText: "디-5")
     }
