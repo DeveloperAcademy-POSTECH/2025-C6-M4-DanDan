@@ -12,7 +12,7 @@ struct RankingCardSectionView: View {
     let myUserId: UUID
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .bottom, spacing: 12) {
             let topThree = Array(
                 rankingItems.sorted { $0.ranking < $1.ranking }.prefix(3)
             )
