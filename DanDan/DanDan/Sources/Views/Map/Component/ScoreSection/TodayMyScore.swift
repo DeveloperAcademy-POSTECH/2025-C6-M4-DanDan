@@ -11,18 +11,17 @@ struct TodayMyScore: View {
     var score: Int
     
     var body: some View {
-        HStack(spacing: 8) {
+        VStack(spacing: 10) {
             Text("오늘 내 점수")
                 .font(.PR.caption5)
                 .foregroundStyle(.gray1)
-                .padding(.trailing, 12)
+                .padding(.top, 4)
             
             Text("\(score)")
                 .font(.PR.title2)
                 .foregroundStyle(.steelBlack)
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 22)
+        .frame(width: 86, height: 80)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(.ultraThinMaterial)
@@ -32,6 +31,9 @@ struct TodayMyScore: View {
                 )
                 .shadow(color: .black.opacity(0.1), radius: 14, x: 0, y: 8)
         )
-        .frame(height: 44)
     }
+}
+
+#Preview {
+    TodayMyScore(score: 3)
 }

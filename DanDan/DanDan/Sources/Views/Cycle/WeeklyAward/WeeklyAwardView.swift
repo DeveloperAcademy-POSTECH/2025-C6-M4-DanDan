@@ -7,7 +7,7 @@
 
 import Lottie
 import SwiftUI
-
+/Users/soyeonsoo/Documents/AppleDeveloperAcademy@POSTECH/Challenges/C6/2025-C6-M4-DanDan/DanDan/DanDan/Sources/Views/Cycle/WeeklyAward
 struct WeeklyAwardView: View {
     @StateObject private var viewModel = WeeklyAwardViewModel()
     @State private var isAnimationFinished = false
@@ -30,7 +30,7 @@ struct WeeklyAwardView: View {
                         .padding(.bottom, 20)
                     
                     PrimaryButton(
-                        "그래도 스틸워크와 계속 걷기",
+                        "새로운 게임 시작하기",
                         action: {
                             viewModel.tapMainButton()
                             GamePhaseManager.shared.showWeeklyAward = false

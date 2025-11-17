@@ -77,7 +77,7 @@ final class ZoneCheckedService {
         }
 
         // ✅ 인증 필요 엔드포인트: GET walks/daily-check (오늘 완료 구역 조회)
-        var request = try makeRequest(path: "walks/daily-check", method: "GET", addAuth: true)
+        let request = try makeRequest(path: "walks/daily-check", method: "GET", addAuth: true)
         print("🛰️ GET", request.url?.absoluteString ?? "-", "\nHeaders:", request.allHTTPHeaderFields ?? [:])
 
         let (data, response) = try await URLSession.shared.data(for: request)

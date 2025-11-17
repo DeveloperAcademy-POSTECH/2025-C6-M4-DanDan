@@ -21,6 +21,10 @@ class WeeklyAwardViewModel: ObservableObject {
     func tapMainButton() {
         navigationManager.replaceRoot(with: .main)
     }
+    
+    func tapNewGameButton() {
+        navigationManager.navigate(to: .teamAssignment)
+    }
 
     /// 서버에서 받은 기여자 리스트를 MVP 뷰용으로 변환합니다.
     var mvpList: [MVP] {
