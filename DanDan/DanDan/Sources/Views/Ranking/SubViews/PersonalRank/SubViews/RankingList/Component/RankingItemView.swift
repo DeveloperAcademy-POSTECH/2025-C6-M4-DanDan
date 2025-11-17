@@ -11,7 +11,7 @@ struct RankingItemView: View {
     let rank: RankingItemData
     let isMyRank: Bool
     let displayRank: Int
-    let myRankDiff: Int
+    let rankDiff: Int
     
     // TODO: UT 후 수정
     private var mappedTeamName: String {
@@ -29,7 +29,7 @@ struct RankingItemView: View {
                 .padding(.horizontal, 24)
                 .overlay() {
                     if isMyRank {
-                        RankingChangeIndicatorView(rankDiff: myRankDiff)
+                        RankingChangeIndicatorView(rankDiff: rankDiff)
                             .offset(y: 21)
                     }
                 }
