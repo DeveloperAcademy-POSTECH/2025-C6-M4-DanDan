@@ -22,6 +22,7 @@ class WeeklyAwardViewModel: ObservableObject {
         navigationManager.replaceRoot(with: .main)
     }
     
+    /// 새 게임 시작하기 -> 팀 배정뷰로 이동합니다.
     func tapNewGameButton() {
         navigationManager.navigate(to: .teamAssignment)
     }
