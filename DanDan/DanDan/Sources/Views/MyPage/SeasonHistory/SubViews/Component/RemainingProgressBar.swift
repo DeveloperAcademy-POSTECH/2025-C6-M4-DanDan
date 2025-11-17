@@ -15,6 +15,11 @@ struct RemainingProgressBar: View {
     var trailingText: String
 
     var trackHeight: CGFloat = 10
+    
+    private var teamBarColor: Color {
+        let team = StatusManager.shared.userStatus.userTeam.lowercased()
+        return team == "blue" ? .A : .B
+    }
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 4) {
@@ -30,7 +35,7 @@ struct RemainingProgressBar: View {
                         .frame(height: trackHeight)
 
                     Capsule()
-                        .fill(.A)
+                        .fill(teamBarColor)
                         .frame(
                             width: max(0, min(1, progress)) * geo.size.width,
                             height: trackHeight

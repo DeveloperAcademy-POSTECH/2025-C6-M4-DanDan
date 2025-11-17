@@ -17,13 +17,7 @@ struct TeamLabel: View {
     let side: TeamSide
     
     // TODO: UT 후 제거 - 팀 이름 맵핑
-    private var mappedTeamName: String {
-        switch name {
-        case "Blue": return "파랑팀"
-        case "Yellow": return "노랑팀"
-        default: return name
-        }
-    }
+    private var mappedTeamName: String { name.teamDisplayName }
     
     var body: some View {
         switch side {
