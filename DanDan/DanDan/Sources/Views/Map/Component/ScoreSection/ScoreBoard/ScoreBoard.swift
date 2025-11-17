@@ -32,7 +32,6 @@ struct ScoreBoard: View {
                 .shadow(color: .black.opacity(0.1), radius: 14, x: 0, y: 8)
             
             VStack {
-                
                 HStack(spacing: 0) {
                     Text("경기 종료까지 ")
                         .foregroundStyle(.gray1)
