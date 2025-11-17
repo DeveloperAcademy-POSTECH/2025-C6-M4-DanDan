@@ -22,12 +22,12 @@ struct WeeklyAwardView: View {
                         title: viewModel.winnerTitle,
                         description: "총 \(viewModel.winningTeam?.conqueredZones ?? 0)구역을 점령했어요\n테스트 참여 감사해요 더 좋은 앱으로 돌아올게요"
                     )
-                    .padding(.vertical, 10)
                     .frame(maxWidth: .infinity, alignment: .top)
                     
                     Spacer()
                     
                     MVPsView(mvps: viewModel.mvpList)
+                        .padding(.bottom, 20)
                     
                     PrimaryButton(
                         "그래도 스틸워크와 계속 걷기",
@@ -57,7 +57,7 @@ struct WeeklyAwardView: View {
                     }
                 }
             )
-            .offset(y: -86)
+            .offset(y: -110)
             .ignoresSafeArea()
             .scaleEffect(0.35)
         )
