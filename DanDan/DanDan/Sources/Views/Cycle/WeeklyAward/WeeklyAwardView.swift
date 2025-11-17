@@ -14,7 +14,7 @@ struct WeeklyAwardView: View {
         VStack {
             WeeklyAwardTitleSectionView(
                 title: viewModel.winnerTitle,
-                description: "총 \(viewModel.winningTeam?.conqueredZones ?? 0)구역을 점령했어요\n테스트 참여 감사해요 더 좋은 앱으로 돌아올게요"
+                description: "총 \(viewModel.winningTeam?.conqueredZones ?? 0)구역을 점령했어요"
             )
             .padding(.vertical, 20)
             .frame(maxWidth: .infinity, alignment: .top)
@@ -31,9 +31,9 @@ struct WeeklyAwardView: View {
             Spacer()
             
             PrimaryButton(
-                "그래도 스틸워크와 계속 걷기",
+                "새로운 게임 시작하기",
                 action: {
-                    viewModel.tapMainButton()
+                    viewModel.tapNewGameButton()
                     GamePhaseManager.shared.showWeeklyAward = false
                 }
             )

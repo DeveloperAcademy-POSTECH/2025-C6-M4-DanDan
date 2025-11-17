@@ -32,13 +32,13 @@ struct ProfileSetupSectionView: View {
             CustomTextField(text: $nickname, prompt: "닉네임 입력")
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isNicknameTooLong ? Color.red : Color.clear, lineWidth: 1)
+                        .stroke(isNicknameTooLong ? Color.steelRed : Color.clear, lineWidth: 1)
                         .padding(.horizontal, 20)
                 )
             if isNicknameTooLong {
                 Text("닉네임은 7자 이하로 설정해주세요")
                     .font(.PR.body4)
-                    .foregroundColor(.red)
+                    .foregroundColor(.steelRed)
                     .padding(.leading, 4)
                     .padding(.top, -12)
             }
