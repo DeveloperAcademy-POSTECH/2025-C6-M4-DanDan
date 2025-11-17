@@ -30,7 +30,8 @@ struct MyPageView: View {
                 currentWeekText: viewModel.currentWeekText,
                 weekDistanceKmIntText: viewModel.weekDistanceKmIntText,
                 weekScore: viewModel.weekScore,
-                teamRank: viewModel.teamRank
+                teamRank: viewModel.teamRank,
+                teamName: viewModel.teamName
                 
             )
 

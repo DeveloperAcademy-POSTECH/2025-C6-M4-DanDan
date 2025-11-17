@@ -33,9 +33,10 @@ struct CompletedSeasonCard: View {
 
             // 간단 통계
             HStack(spacing: 0) {
-                // TODO: 자신의 팀 아이콘으로 변경
-                Image(systemName: "flag.fill")
-                    .font(.system(size: 48))
+                Image(record.teamAtPeriod == "blue" ? "train_R_blue" : "train_R_yellow")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70, height: 70)
 
                 Spacer()
 

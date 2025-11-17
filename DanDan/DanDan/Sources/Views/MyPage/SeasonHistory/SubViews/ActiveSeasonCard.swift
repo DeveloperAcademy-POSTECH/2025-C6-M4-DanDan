@@ -34,8 +34,10 @@ struct ActiveSeasonCard: View {
 
             // TODO: 자신의 현재 팀 아이콘으로 설정
             HStack(spacing: 0) {
-                Image(systemName: "flag.fill")
-                    .font(.system(size: 48, weight: .bold))
+                Image(viewModel.currentTeamName == "blue" ? "train_R_blue" : "train_R_yellow")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70, height: 70)
                 Spacer()
                 HStack(spacing: 20) {
                     VStack(spacing: 8) {
