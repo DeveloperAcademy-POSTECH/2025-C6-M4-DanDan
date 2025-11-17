@@ -18,7 +18,7 @@ struct ProfileSetupView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             
-            TitleSectionView(title: "회원가입하기", description: "나만의 닉네임과 프로필을 설정해주세요.")
+            TitleSectionView(title: "회원가입", description: "프로필과 닉네임을 설정해주세요.")
             
             ProfileSetupSectionView(
                 profileImage: $viewModel.profileImage,
@@ -37,9 +37,9 @@ struct ProfileSetupView: View {
                 },
                 isEnabled: !viewModel.nickname.trimmingCharacters(in: .whitespaces).isEmpty && !isNicknameTooLong,
                 horizontalPadding: 20,
-                verticalPadding: 8,
+                verticalPadding: 0,
             )
-            .padding(.bottom, 24)
+            .padding(.bottom, 20)
         }
         .padding(.top, 68)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

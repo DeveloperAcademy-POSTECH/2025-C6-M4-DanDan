@@ -182,6 +182,7 @@ struct TrackingMapView: UIViewRepresentable {
             let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
             
             let swiftUIView = ZStack {
+                // TODO: 제거 예정
 //                ZoneStation(
 //                    zone: ann.zone,
 //                    statusesForZone: ann.statusesForZone,
@@ -297,6 +298,7 @@ struct TrackingMapView: UIViewRepresentable {
                 let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
                 
                 let swiftUIView = ZStack {
+                    // TODO: 제거 예정
 //                    ZoneStation(
 //                        zone: ann.zone,
 //                        statusesForZone: ann.statusesForZone,
