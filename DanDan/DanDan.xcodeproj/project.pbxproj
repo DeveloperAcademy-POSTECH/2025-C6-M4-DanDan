@@ -354,7 +354,7 @@
 				INFOPLIST_FILE = DanDan/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "스틸워크";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We use your location to continue tracking your movement and zone conquest even when the app is in the background.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "앱이 백그라운드일 때도 이동을 기록하고 구역 완료를 판별하기 위해 ‘항상’ 권한이 필요합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 현재 위치를 기반으로 걸은 구역을 표시하고, 오늘의 이동 경로를 기록하기 위해 위치 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -392,7 +392,7 @@
 				INFOPLIST_FILE = DanDan/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "스틸워크";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We use your location to continue tracking your movement and zone conquest even when the app is in the background.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "앱이 백그라운드일 때도 이동을 기록하고 구역 완료를 판별하기 위해 ‘항상’ 권한이 필요합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 현재 위치를 기반으로 걸은 구역을 표시하고, 오늘의 이동 경로를 기록하기 위해 위치 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

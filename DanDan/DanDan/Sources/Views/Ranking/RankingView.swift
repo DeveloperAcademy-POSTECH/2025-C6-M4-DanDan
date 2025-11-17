@@ -39,8 +39,6 @@ struct RankingView: View {
             }
         }
         .padding(.top, 45)
-
-        Spacer()
     }
 }
 

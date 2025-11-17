@@ -27,6 +27,7 @@ struct RankingItemView: View {
             Text("\(displayRank)")
                 .font(.PR.title2)
                 .padding(.horizontal, 24)
+                .foregroundStyle(.darkGreen)
                 .overlay() {
                     if isMyRank {
                         RankingChangeIndicatorView(rankDiff: myRankDiff)
@@ -38,12 +39,13 @@ struct RankingItemView: View {
 
             Text(rank.userName)
                 .font(isMyRank ? .PR.title2 : .PR.body3)
+                .foregroundStyle(.steelBlack)
                 .lineLimit(1)
                 .padding(.leading, 12)
 
             Spacer()
             
-//            // TODO: UT 후 수정
+            // TODO: UT 후 수정
             Text(mappedTeamName)
                 .padding(.trailing, 5)
                 .font(.PR.body4)

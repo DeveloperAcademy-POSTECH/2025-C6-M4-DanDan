@@ -44,6 +44,7 @@ struct RankingListView: View {
                         displayRank: index + 4,  // 상위 3개 이후라 +4 (index는 0부터 시작)
                         myRankDiff: myRankDiff
                     )
+                    .padding(.horizontal, 20)
                 }
             }
         }
