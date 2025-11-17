@@ -28,6 +28,7 @@ struct PersonalRankView: View {
         VStack(spacing: 0) {
             InstructionSectionView(selectedFilter: $selectedFilter)
                 .padding(.top, 45)
+                .padding(.horizontal, 20)
 
             RankingListView(
                 rankingItems: filteredItems,
@@ -35,7 +36,6 @@ struct PersonalRankView: View {
                 myRankDiff: myRankDiff
             )
         }
-        .padding(.horizontal, 20)
         .onAppear() {
             fetchRanking()
         }
