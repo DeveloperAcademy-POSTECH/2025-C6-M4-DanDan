@@ -47,27 +47,12 @@ struct ConqueredButton: View {
                             .frame(width: 80, height: 56)
                             .accessibilityLabel(Text("구역 보상 받기"))
                     }
-                    .frame(width: 150, height: 160)
-                    .contentShape(Rectangle())
-                    .contentShape(Rectangle())
+                    // 불필요하게 큰 외부 프레임을 제거해 히트 영역을 축소
                     .scaleEffect(isFloating ? 1.18 : 1.0)
                     .shadow(color: .black.opacity(0.5),
                             radius: isFloating ? 10 : 6,
                             x: 0, y: isFloating ? 34 : 26)
                     .opacity(buttonOpacity)
-                  
-                    // .overlay(alignment: .top) {
-                    //     Capsule()
-                    //         .fill(Color.steelBlack.opacity(0.8))
-                    //         .frame(width: 100, height: 28)
-                    //         .overlay(
-                    //             Text("눌러서 구역 획득!")
-                    //                 .font(.PR.caption5)
-                    //                 .foregroundStyle(.white)
-                    //         )
-                    //         .padding(.top, 4)
-                    // }
-                    // .offset(y: isFloating ? -6 : 6)
                     .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true),
                                value: isFloating)
                     .onAppear { isFloating = true }
@@ -78,7 +63,7 @@ struct ConqueredButton: View {
             
             if showScoreLottie {
                 LottieOnceView(name: scoreLottieName)
-                    .frame(width: 150, height: 160)
+                    .frame(width: 100, height: 80)
                     .zIndex(0)
             }
         }
