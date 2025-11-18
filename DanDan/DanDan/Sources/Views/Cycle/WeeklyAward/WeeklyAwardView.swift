@@ -52,12 +52,9 @@ struct WeeklyAwardView: View {
                 .task {
                     await viewModel.fetchConquestResults()
                 }
-//                .background(
-//                    LottieLoopView(name: "trophy_light_effect")
-//                        .scaleEffect(0.35)
-//                )
             }
         }
+        // confetti + trophy
         .background(
             LottieOnceView(
                 name: trophyAnimationName,
@@ -71,9 +68,16 @@ struct WeeklyAwardView: View {
             .ignoresSafeArea()
             .scaleEffect(0.35)
         )
+        // light effect
+        .background(
+            LottieLoopView(name: "trophy_light_effect")
+                .offset(y: -90)
+                .ignoresSafeArea()
+                .opacity(isAnimationFinished ? 1 : 0)
+        )
     }
 }
 
-#Preview() {
+#Preview {
     WeeklyAwardView()
 }
