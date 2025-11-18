@@ -22,6 +22,7 @@ struct MyPageData: Decodable {
 
 struct MyPageUser: Decodable {
     let profileUrl: String?
+    let profileImageKey: String?
     let userName: String
     let userVictoryCnt: Int
     let userTotalScore: Int
