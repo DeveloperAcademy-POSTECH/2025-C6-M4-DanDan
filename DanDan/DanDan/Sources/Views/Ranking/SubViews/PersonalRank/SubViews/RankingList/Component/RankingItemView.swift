@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct RankingItemView: View {
-    let rank: RankingViewModel.RankingItemData
+    let rank: RankingItemData
     let isMyRank: Bool
     let displayRank: Int
-    let myRankDiff: Int
+    let rankDiff: Int
     
     // TODO: UT 후 수정
     private var mappedTeamName: String {
@@ -30,7 +30,7 @@ struct RankingItemView: View {
                 .foregroundStyle(.darkGreen)
                 .overlay() {
                     if isMyRank {
-                        RankingChangeIndicatorView(rankDiff: myRankDiff)
+                        RankingChangeIndicatorView(rankDiff: rankDiff)
                             .offset(y: 21)
                     }
                 }

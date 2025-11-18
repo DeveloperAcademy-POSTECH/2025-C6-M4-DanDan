@@ -37,13 +37,6 @@
 			);
 			target = 690DD6F02EACB758005EB019 /* DanDan */;
 		};
-		1532F9E22EC757720076280D /* Exceptions for "DanDan" folder in "DanDanTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Resources/Lottie/loginlottie.json,
-			);
-			target = 690DD8D82EADF478005EB019 /* DanDanTests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -51,7 +44,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				0AC655B32EB6886600F9DAEA /* Exceptions for "DanDan" folder in "DanDan" target */,
-				1532F9E22EC757720076280D /* Exceptions for "DanDan" folder in "DanDanTests" target */,
 			);
 			path = DanDan;
 			sourceTree = "<group>";
@@ -357,6 +349,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NBC28VW8Q2;
+				DEVELOPMENT_TEAM = 5VA2L3436C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DanDan/Info.plist;
@@ -395,6 +388,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NBC28VW8Q2;
+				DEVELOPMENT_TEAM = 5VA2L3436C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DanDan/Info.plist;

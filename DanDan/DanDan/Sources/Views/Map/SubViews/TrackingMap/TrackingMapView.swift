@@ -332,11 +332,11 @@ struct TrackingMapScreen: View {
     let userStatus: UserStatus
     let period: ConquestPeriod
     let refreshToken: UUID
-
+    
     // MARK: - Body
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        ZStack(alignment: .top) {
             // 3D 부분 지도
             TrackingMapView(
                 viewModel: viewModel,
@@ -346,49 +346,42 @@ struct TrackingMapScreen: View {
                 refreshToken: refreshToken
             )
             .ignoresSafeArea()
-
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 8) {
-                    if viewModel.teams.count >= 2 {
-                        ScoreBoard(
-                            leftTeamName: viewModel.teams[1].teamName,
-                            rightTeamName: viewModel.teams[0].teamName,
-                            leftTeamScore: viewModel.teams[1].conqueredZones,
-                            rightTeamScore: viewModel.teams[0].conqueredZones
-                        )
-                    } else {
-                        // 로딩 중일 때는 기본값 표시
-                        ScoreBoard(
-                            leftTeamName: "—",
-                            rightTeamName: "—",
-                            leftTeamScore: 0,
-                            rightTeamScore: 0
-                        )
-                    }
-
-                    TodayMyScore(score: viewModel.userDailyScore) // 오늘 내 점수
-                }
-
-                if !viewModel.startDate.isEmpty {
-                    DDayView(
-                        dday: ConquestPeriod.from(
-                            endDateString: viewModel.endDate
-                        ),
-                        period: period
+            
+            HStack(spacing: 2) {
+                if viewModel.teams.count >= 2 {
+                    ScoreBoard(
+                        leftTeamName: viewModel.teams[1].teamName,
+                        rightTeamName: viewModel.teams[0].teamName,
+                        leftTeamScore: viewModel.teams[1].conqueredZones,
+                        rightTeamScore: viewModel.teams[0].conqueredZones,
+                        ddayText: viewModel.ddayText
                     )
-                    .padding(.leading, 4)
+                } else {
+                    // 로딩 중일 때는 기본값 표시
+                    ScoreBoard(
+                        leftTeamName: "—",
+                        rightTeamName: "—",
+                        leftTeamScore: 0,
+                        rightTeamScore: 0,
+                        ddayText: viewModel.ddayText
+                    )
                 }
+                
+                Spacer()
+                
+                TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
             }
             .padding(.top, 60)
-            .padding(.leading, 14)
+            .padding(.horizontal, 20)
         }
         .task {
             await viewModel.loadMapInfo()
+            viewModel.startDDayTimer(period: period)
         }
-//        .overlay(alignment: .topTrailing) {
-        // #if DEBUG
-//            ZoneDebugOverlay()
-        // #endif
-//        }
+        //        .overlay(alignment: .topTrailing) {
+        //#if DEBUG
+        //            ZoneDebugOverlay()
+        //#endif
+        //        }
     }
 }

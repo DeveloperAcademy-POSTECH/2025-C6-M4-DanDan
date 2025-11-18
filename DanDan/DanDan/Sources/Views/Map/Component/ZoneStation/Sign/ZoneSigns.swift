@@ -14,7 +14,7 @@ struct ZoneSigns: View {
 		Image("sign\(zoneId)")
 			.resizable()
 			.scaledToFit()
-			.frame(width: 80, height: 80)
+			.frame(width: 120, height: 120)
 	}
 }
 

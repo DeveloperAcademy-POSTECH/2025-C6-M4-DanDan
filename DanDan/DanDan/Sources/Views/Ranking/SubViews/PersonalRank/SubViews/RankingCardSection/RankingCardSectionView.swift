@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RankingCardSectionView: View {
-    let rankingItems: [RankingViewModel.RankingItemData]
+    let rankingItems: [RankingItemData]
     let myUserId: UUID
 
     var body: some View {
