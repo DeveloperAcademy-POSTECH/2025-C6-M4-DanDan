@@ -152,7 +152,7 @@ struct FullMapView: UIViewRepresentable {
             if let hl = overlay as? HighlightedPolyline {
                 let r = MKPolylineRenderer(overlay: hl)
                 // 드래그/탭 하이라이트: 외곽선 없이 단일 선
-                r.strokeColor = UIColor.green
+                r.strokeColor = UIColor.darkGreen
                 r.lineWidth = 16
                 r.lineCap = .round
                 r.lineJoin = .round
