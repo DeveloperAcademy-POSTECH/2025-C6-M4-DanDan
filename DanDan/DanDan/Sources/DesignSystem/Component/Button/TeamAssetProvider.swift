@@ -33,5 +33,16 @@ enum TeamAssetProvider {
             return "score_blue"
         }
     }
+
+    static func sparkLottieName(for teamRaw: String) -> String {
+        switch normalizedTeam(teamRaw) {
+        case "blue":
+            return "bluespark"
+        case "yellow":
+            return "yellowspark"
+        default:
+            return "bluespark"
+        }
+    }
 }
 
