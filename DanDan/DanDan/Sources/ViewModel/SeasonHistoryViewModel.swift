@@ -92,7 +92,7 @@ final class SeasonHistoryViewModel: ObservableObject {
     func completedWeekLabel(for record: RankRecord) -> String {
         let y = calendar.component(.year, from: record.startDate)
         let m = calendar.component(.month, from: record.startDate)
-        let w = calendar.component(.weekOfMonth, from: record.startDate)
+        let w = Self.weekIndexInMonth(for: record.startDate, calendar: calendar)
         return "\(y)년 \(m)월 \(w)주차"
     }
     
@@ -103,6 +103,28 @@ final class SeasonHistoryViewModel: ObservableObject {
     }
 
     // MARK: - Helpers
+
+    private static func weekIndexInMonth(for date: Date, calendar: Calendar) -> Int {
+        // 기준: 그 달의 첫 번째 월요일을 1주차 시작으로 간주
+        var comps = calendar.dateComponents([.year, .month], from: date)
+        comps.day = 1
+        guard var firstDayOfMonth = calendar.date(from: comps) else { return 1 }
+
+        // firstWeekday는 2(Monday)로 설정되어 있음
+        let targetWeekday = calendar.firstWeekday
+        while calendar.component(.weekday, from: firstDayOfMonth) != targetWeekday {
+            guard let next = calendar.date(byAdding: .day, value: 1, to: firstDayOfMonth) else { break }
+            firstDayOfMonth = next
+        }
+
+        // 해당 월요일 이전 날짜는 모두 1주차로 간주
+        if date < firstDayOfMonth {
+            return 1
+        }
+
+        let dayOffset = calendar.dateComponents([.day], from: firstDayOfMonth, to: date).day ?? 0
+        return dayOffset / 7 + 1
+    }
 
     /// 서버에서 내려준 주차 인덱스를 그대로 사용하여 라벨을 구성합니다.
     private static func makeWeekLabel(for monday: Date, weekIndex: Int, calendar: Calendar) -> String {

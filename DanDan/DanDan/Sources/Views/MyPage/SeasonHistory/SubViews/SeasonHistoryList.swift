@@ -28,7 +28,3 @@ struct SeasonHistoryList: View {
         }
     }
 }
-
-//#Preview {
-//    SeasonHistoryList(viewModel: SeasonHistoryViewModel())
-//}
