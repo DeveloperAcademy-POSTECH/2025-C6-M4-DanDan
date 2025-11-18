@@ -49,7 +49,7 @@ struct ConqueredButton: View {
                     }
                     // 불필요하게 큰 외부 프레임을 제거해 히트 영역을 축소
                     .scaleEffect(isFloating ? 1.18 : 1.0)
-                    .shadow(color: .black.opacity(0.5),
+                    .shadow(color: .black.opacity(0.3),
                             radius: isFloating ? 10 : 6,
                             x: 0, y: isFloating ? 34 : 26)
                     .opacity(buttonOpacity)

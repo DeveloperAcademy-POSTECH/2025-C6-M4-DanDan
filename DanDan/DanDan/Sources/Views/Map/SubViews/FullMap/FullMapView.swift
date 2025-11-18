@@ -218,7 +218,7 @@ struct FullMapView: UIViewRepresentable {
                 // Conquer buttons
                 ForEach(positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .position(x: item.point.x, y: item.point.y - 60)
+                        .position(x: item.point.x - 20, y: item.point.y - 40)
                         .zIndex(Double(item.point.y))
                     }
             }
@@ -359,7 +359,7 @@ struct FullMapView: UIViewRepresentable {
 //                }
                 ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .position(x: item.point.x, y: item.point.y - 60)
+                        .position(x: item.point.x - 20, y: item.point.y - 40)
                         .zIndex(Double(item.point.y))
                 }
             }
