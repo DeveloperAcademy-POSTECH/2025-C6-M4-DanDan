@@ -18,7 +18,6 @@ struct ZoneInfoView: View {
             VStack(spacing: 8) {
                 ZoneInfoScore(teamScores: teamScores)
                 ZoneInfoDescription(
-                    distance: zone.distance,
                     descriptionText: zone.description
                 )
             }
@@ -26,7 +25,7 @@ struct ZoneInfoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    ZoneInfoTitle(zoneId: zone.zoneId, zoneName: zone.zoneName)
+                    ZoneInfoTitle(zoneId: zone.zoneId, zoneName: zone.zoneName,  distance: zone.distance,)
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button { dismiss() } label: { Image(systemName: "xmark") }

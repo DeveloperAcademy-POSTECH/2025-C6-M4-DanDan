@@ -10,6 +10,7 @@ import SwiftUI
 struct ZoneInfoTitle: View {
     let zoneId: Int
     let zoneName: String
+    let distance: Int
 
     var body: some View {
         HStack(spacing: 3) {
@@ -20,6 +21,10 @@ struct ZoneInfoTitle: View {
             Text(zoneName)
                 .font(.PR.title2)
                 .foregroundColor(.steelBlack)
+            
+            Text("· \(distance)m")
+                .font(.PR.body1)
+                .foregroundColor(.gray1)
         }
     }
 }
