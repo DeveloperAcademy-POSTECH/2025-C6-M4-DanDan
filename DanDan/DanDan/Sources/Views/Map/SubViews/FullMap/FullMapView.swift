@@ -76,7 +76,7 @@ struct FullMapView: UIViewRepresentable {
         
         func updatePositions(for mapView: MKMapView) {
             // Convert each zone centroid to view-space point
-            positioned = zones.map { z in
+            let mapped: [PositionedStation] = zones.map { z in
                 let coord = parent.centroid(of: z.coordinates)
                 let pt = mapView.convert(coord, toPointTo: mapView)
                 let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[z.zoneId] == true
@@ -89,6 +89,8 @@ struct FullMapView: UIViewRepresentable {
                     needsClaim: isChecked && !isClaimed
                 )
             }
+            // y가 클수록(화면 아래쪽) 위에 보이도록 렌더 순서를 정렬
+            positioned = mapped.sorted { $0.point.y < $1.point.y }
         }
         
         // MARK: - MKMapViewDelegate
@@ -213,11 +215,11 @@ struct FullMapView: UIViewRepresentable {
 //                    )
 //                    .position(x: item.point.x, y: item.point.y)
 //                }
-                // Conquer buttons (기존 offset(y:-100)과 동일)
+                // Conquer buttons
                 ForEach(positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .position(x: item.point.x, y: item.point.y - 100)
-                        .zIndex(1)
+                        .position(x: item.point.x - 20, y: item.point.y - 40)
+                        .zIndex(Double(item.point.y))
                     }
             }
             .frame(width: canvasSize.width, height: canvasSize.height)
@@ -357,8 +359,8 @@ struct FullMapView: UIViewRepresentable {
 //                }
                 ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .position(x: item.point.x, y: item.point.y - 100)
-                        .zIndex(1)
+                        .position(x: item.point.x - 20, y: item.point.y - 40)
+                        .zIndex(Double(item.point.y))
                 }
             }
             .frame(width: canvasSize.width, height: canvasSize.height)
@@ -478,59 +480,59 @@ struct FullMapScreen: View {
                 viewModel.startDDayTimer(period: period)
             }
         }
-        .overlay(alignment: .bottomLeading) {
-#if DEBUG
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(1...15, id: \.self) { id in
-                        Button(action: {
-                            // 로컬 먼저 반영 (개인 지도 즉시 표시)
-                            StatusManager.shared.setZoneChecked(
-                                zoneId: id,
-                                checked: true
-                            )
-                            effectiveToken = UUID()
-                            // 서버 전송은 후행, 실패해도 로컬 상태 유지
-                            ZoneCheckedService.shared.postChecked(
-                                zoneId: id
-                            ) { ok in
-                                if !ok {
-                                    print(
-                                        "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
-                                    )
-                                }
-                            }
-                        }) {
-                            Text("#\(id)")
-                                .font(.PR.caption2)
-                                .foregroundColor(.white)
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 10)
-                                .background(Color.black.opacity(0.6))
-                                .clipShape(Capsule())
-                        }
-                    }
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-            }
-            .background(
-                Color.black.opacity(0.15)
-                    .blur(radius: 2)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.leading, 16)
-            .padding(.bottom, 120)
-            .onAppear {
-                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
-                effectiveToken = refreshToken
-            }
-            .onChange(of: refreshToken) { newValue in
-                // 부모 갱신 토큰 변화도 반영
-                effectiveToken = newValue
-            }
-#endif
-        }
+//        .overlay(alignment: .bottomLeading) {
+//#if DEBUG
+//            ScrollView(.horizontal, showsIndicators: false) {
+//                HStack(spacing: 8) {
+//                    ForEach(1...15, id: \.self) { id in
+//                        Button(action: {
+//                            // 로컬 먼저 반영 (개인 지도 즉시 표시)
+//                            StatusManager.shared.setZoneChecked(
+//                                zoneId: id,
+//                                checked: true
+//                            )
+//                            effectiveToken = UUID()
+//                            // 서버 전송은 후행, 실패해도 로컬 상태 유지
+//                            ZoneCheckedService.shared.postChecked(
+//                                zoneId: id
+//                            ) { ok in
+//                                if !ok {
+//                                    print(
+//                                        "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
+//                                    )
+//                                }
+//                            }
+//                        }) {
+//                            Text("#\(id)")
+//                                .font(.PR.caption2)
+//                                .foregroundColor(.white)
+//                                .padding(.vertical, 6)
+//                                .padding(.horizontal, 10)
+//                                .background(Color.black.opacity(0.6))
+//                                .clipShape(Capsule())
+//                        }
+//                    }
+//                }
+//                .padding(.horizontal, 12)
+//                .padding(.vertical, 10)
+//            }
+//            .background(
+//                Color.black.opacity(0.15)
+//                    .blur(radius: 2)
+//            )
+//            .clipShape(RoundedRectangle(cornerRadius: 12))
+//            .padding(.leading, 16)
+//            .padding(.bottom, 120)
+//            .onAppear {
+//                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
+//                effectiveToken = refreshToken
+//            }
+//            .onChange(of: refreshToken) { newValue in
+//                // 부모 갱신 토큰 변화도 반영
+//                effectiveToken = newValue
+//            }
+//#endif
+//        }
 //        .overlay(alignment: .topTrailing) {
 //#if DEBUG
 //            ZoneDebugOverlay()
