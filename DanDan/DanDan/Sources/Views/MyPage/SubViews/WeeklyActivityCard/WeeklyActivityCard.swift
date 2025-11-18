@@ -13,10 +13,9 @@ struct WeeklyActivityCard: View {
     let weekScore: Int
     let teamRank: Int
     let teamName: String
-    
+
     var body: some View {
         VStack(spacing: 24) {
-            
             // TODO: 컴포넌트화 필요
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
@@ -30,7 +29,7 @@ struct WeeklyActivityCard: View {
 
                 Spacer()
 
-                Image(teamName == "blue" ? "train_L_blue" : "train_L_yellow")
+                Image(teamName.lowercased() == "blue" ? "train_L_blue" : "train_L_yellow")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 55, height: 55)
@@ -78,6 +77,6 @@ struct WeeklyActivityCard: View {
     }
 }
 
-//#Preview {
+// #Preview {
 //    WeeklyActivityCard(viewModel: MyPageViewModel())
-//}
+// }
