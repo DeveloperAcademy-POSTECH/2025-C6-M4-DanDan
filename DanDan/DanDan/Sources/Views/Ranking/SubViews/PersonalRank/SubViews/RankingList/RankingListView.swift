@@ -10,7 +10,7 @@ import SwiftUI
 struct RankingListView: View {
     @State private var isMyRankVisible: Bool = true
     
-    let rankingItems: [RankingViewModel.RankingItemData]
+    let rankingItems: [RankingItemData]
     let myUserId: UUID
     let rankDiff: Int
 
@@ -26,7 +26,7 @@ struct RankingListView: View {
         Array(sortedItems.dropFirst(3))
     }
     
-    private var myRankItem: RankingViewModel.RankingItemData? {
+    private var myRankItem: RankingItemData? {
         rankingItems.first(where: { $0.id == myUserId })
     }
 
@@ -48,7 +48,7 @@ struct RankingListView: View {
                                 rank: item,
                                 isMyRank: item.id == myUserId,
                                 displayRank: index + 4,
-                                myRankDiff: myRankDiff
+                                rankDiff: rankDiff
                             )
                             .padding(.horizontal, 20)
                             .background(
@@ -79,7 +79,7 @@ struct RankingListView: View {
             if !isMyRankVisible, let myRankItem {
                 MyRankFloatingCard(
                     rankItem: myRankItem,
-                    myRankDiff: myRankDiff
+                    rankDiff: rankDiff
                 )
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
@@ -90,97 +90,97 @@ struct RankingListView: View {
     }
 }
 
-#Preview {
-    // 더미 유저 ID
-    let myId = UUID()
-    
-    // 더미 데이터 (3명 이상)
-    let sampleItems: [RankingViewModel.RankingItemData] = [
-        .init(
-            id: myId,
-            ranking: 6,
-            userName: "해피제이",
-            userImage: nil,
-            userWeekScore: 20,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        ),
-        .init(
-            id: UUID(),
-            ranking: 1,
-            userName: "노터",
-            userImage: nil,
-            userWeekScore: 40,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        ),
-        .init(
-            id: UUID(),
-            ranking: 2,
-            userName: "세나",
-            userImage: nil,
-            userWeekScore: 35,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        ),
-        .init(
-            id: UUID(),
-            ranking: 3,
-            userName: "쁘",
-            userImage: nil,
-            userWeekScore: 30,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        ),
-        .init(
-            id: UUID(),
-            ranking: 5,
-            userName: "브랜뉴",
-            userImage: nil,
-            userWeekScore: 10,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        ),
-        .init(
-            id: UUID(),
-            ranking: 5,
-            userName: "브랜뉴",
-            userImage: nil,
-            userWeekScore: 10,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        ),
-        .init(
-            id: UUID(),
-            ranking: 5,
-            userName: "브랜뉴",
-            userImage: nil,
-            userWeekScore: 10,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        ),
-        .init(
-            id: UUID(),
-            ranking: 5,
-            userName: "브랜뉴",
-            userImage: nil,
-            userWeekScore: 10,
-            userTeam: "Blue",
-            backgroundColor: .gray,
-            rankDiff: nil
-        )
-    ]
-    
-    RankingListView(
-        rankingItems: sampleItems,
-        myUserId: myId,
-        myRankDiff: -1 // "1계단 하락" 같은 느낌
-    )
-}
+//#Preview {
+//    // 더미 유저 ID
+//    let myId = UUID()
+//    
+//    // 더미 데이터 (3명 이상)
+//    let sampleItems: [RankingViewModel.RankingItemData] = [
+//        .init(
+//            id: myId,
+//            ranking: 6,
+//            userName: "해피제이",
+//            userImage: nil,
+//            userWeekScore: 20,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        ),
+//        .init(
+//            id: UUID(),
+//            ranking: 1,
+//            userName: "노터",
+//            userImage: nil,
+//            userWeekScore: 40,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        ),
+//        .init(
+//            id: UUID(),
+//            ranking: 2,
+//            userName: "세나",
+//            userImage: nil,
+//            userWeekScore: 35,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        ),
+//        .init(
+//            id: UUID(),
+//            ranking: 3,
+//            userName: "쁘",
+//            userImage: nil,
+//            userWeekScore: 30,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        ),
+//        .init(
+//            id: UUID(),
+//            ranking: 5,
+//            userName: "브랜뉴",
+//            userImage: nil,
+//            userWeekScore: 10,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        ),
+//        .init(
+//            id: UUID(),
+//            ranking: 5,
+//            userName: "브랜뉴",
+//            userImage: nil,
+//            userWeekScore: 10,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        ),
+//        .init(
+//            id: UUID(),
+//            ranking: 5,
+//            userName: "브랜뉴",
+//            userImage: nil,
+//            userWeekScore: 10,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        ),
+//        .init(
+//            id: UUID(),
+//            ranking: 5,
+//            userName: "브랜뉴",
+//            userImage: nil,
+//            userWeekScore: 10,
+//            userTeam: "Blue",
+//            backgroundColor: .gray,
+//            rankDiff: nil
+//        )
+//    ]
+//    
+//    RankingListView(
+//        rankingItems: sampleItems,
+//        myUserId: myId,
+//        myRankDiff: -1 // "1계단 하락" 같은 느낌
+//    )
+//}

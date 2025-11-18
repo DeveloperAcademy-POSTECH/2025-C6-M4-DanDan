@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct MyRankFloatingCard: View {
-    let rankItem: RankingViewModel.RankingItemData
-    let myRankDiff: Int
+    let rankItem: RankingItemData
+    let rankDiff: Int
 
     var body: some View {
         HStack {
@@ -18,7 +18,7 @@ struct MyRankFloatingCard: View {
                 .padding(.horizontal, 24)
                 .foregroundStyle(.darkGreen)
                 .overlay() {
-                    RankingChangeIndicatorView(rankDiff: myRankDiff)
+                    RankingChangeIndicatorView(rankDiff: rankDiff)
                         .offset(y: 21)
                 }
 
