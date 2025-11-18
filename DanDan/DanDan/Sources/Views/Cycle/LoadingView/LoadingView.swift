@@ -8,9 +8,18 @@
 import SwiftUI
 
 struct LoadingView: View {
+    @StateObject private var viewModel = LoadingViewModel()
+    
     var body: some View {
-        LoadingLottieView(animationName: "lottie_loading")
-            .frame(maxWidth: .infinity)
-            .frame(maxHeight: .infinity)
+        ZStack {
+            LoadingLottieView(animationName: "loading")
+                .frame(maxWidth: .infinity)
+                .frame(maxHeight: .infinity)
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                viewModel.navigateToWeeklyAward()
+            }
+        }
     }
 }
