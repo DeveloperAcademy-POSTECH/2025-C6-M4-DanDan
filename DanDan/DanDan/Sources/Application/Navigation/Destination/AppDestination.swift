@@ -21,6 +21,8 @@ enum AppDestination: Hashable {
     case settings
     case termsService
     case termsPrivacy
+    case loading
+    case weeklyAward
 }
 
 extension AppDestination {
@@ -54,6 +56,10 @@ extension AppDestination {
             ServiceTermsView()
         case .termsPrivacy:
             PrivacyPolicyView()
+        case .loading:
+            LoadingView()
+        case .weeklyAward:
+            WeeklyAwardView()
         }
     }
 }
