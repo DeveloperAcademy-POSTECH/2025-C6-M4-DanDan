@@ -8,12 +8,20 @@
 import SwiftUI
 
 struct ZoneInfoDescription: View {
+    let distance: Int 
     let descriptionText: String
 
     var body: some View {
-        Text(descriptionText)
-            .font(.PR.caption3)
-            .foregroundColor(.gray1)
-            .frame(maxWidth: .infinity)
+        VStack(spacing: 0) {
+
+                    Text("\(distance)m")
+                        .font(.PR.caption3)
+                        .foregroundColor(.gray1)
+
+                    Text(descriptionText)
+                        .font(.PR.caption3)
+                        .foregroundColor(.gray1)
+                }
+                .frame(maxWidth: .infinity)
     }
 }

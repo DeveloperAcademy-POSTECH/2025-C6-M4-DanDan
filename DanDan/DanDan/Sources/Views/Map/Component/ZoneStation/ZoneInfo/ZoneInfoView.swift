@@ -10,7 +10,6 @@ import SwiftUI
 struct ZoneInfoView: View {
     let zone: Zone
     let teamScores: [ZoneTeamScoreDTO]
-    let descriptionText: String
 
     @Environment(\.dismiss) private var dismiss
     
@@ -18,7 +17,10 @@ struct ZoneInfoView: View {
         NavigationStack {
             VStack(spacing: 8) {
                 ZoneInfoScore(teamScores: teamScores)
-                ZoneInfoDescription(descriptionText: descriptionText)
+                ZoneInfoDescription(
+                    distance: zone.distance,
+                    descriptionText: zone.description
+                )
             }
             .padding(.horizontal, 20)
             .navigationBarTitleDisplayMode(.inline)
@@ -45,8 +47,7 @@ struct ZoneInfoView: View {
         teamScores: [
             .init(teamId: "A", teamName: "블루팀", totalScore: 1200),
             .init(teamId: "B", teamName: "옐로우팀", totalScore: 980)
-        ],
-        descriptionText: zones.first!.description
+        ]
     )
 }
 #endif

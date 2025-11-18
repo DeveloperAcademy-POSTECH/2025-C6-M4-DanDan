@@ -415,8 +415,7 @@ struct FullMapScreen: View {
         .sheet(item: $viewModel.selectedZone) { z in
             ZoneInfoView(
                 zone: z,
-                teamScores: viewModel.zoneTeamScores[z.zoneId] ?? [],
-                descriptionText: z.description
+                teamScores: viewModel.zoneTeamScores[z.zoneId] ?? []
             )
             .task {
                 await viewModel.loadZoneTeamScores(for: z.zoneId)
