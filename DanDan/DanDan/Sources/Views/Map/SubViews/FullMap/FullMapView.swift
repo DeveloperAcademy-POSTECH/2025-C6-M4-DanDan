@@ -303,22 +303,7 @@ struct FullMapView: UIViewRepresentable {
             let canvasSize = mapView.bounds.size
 
             let swiftUIView = ZStack {
-                // TODO: 제거 예정
-//                // Station buttons (위에 보이도록)
-//                ForEach(positioned) { item in
-//                    ZoneStation(
-//                        zone: item.zone,
-//                        statusesForZone: item.statusesForZone,
-//                        zoneTeamScores: self.viewModel?.zoneTeamScores ?? [:],
-//                        loadZoneTeamScores: { zoneId in
-//                        Task { await self.viewModel?.loadZoneTeamScores(for: zoneId) }
-//                        },
-//                        iconSize: CGSize(width: 28, height: 32),
-//                        popoverOffsetY: -84
-//                    )
-//                    .position(x: item.point.x, y: item.point.y)
-//                }
-                // Conquer buttons (기존 offset(y:-100)과 동일)
+                // Conquer buttons
                 ForEach(positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                         .position(x: item.point.x, y: item.point.y - 100)
@@ -508,20 +493,6 @@ struct FullMapView: UIViewRepresentable {
             let canvasSize = uiView.bounds.size
           
             let swiftUIView = ZStack {
-                // TODO: 제거 예정
-//                ForEach(context.coordinator.positioned) { item in
-//                    ZoneStation(
-//                        zone: item.zone,
-//                        statusesForZone: item.statusesForZone,
-//                        zoneTeamScores: viewModel.zoneTeamScores,
-//                        loadZoneTeamScores: { zoneId in
-//                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
-//                        },
-//                        iconSize: CGSize(width: 28, height: 32),
-//                        popoverOffsetY: -84
-//                    )
-//                    .position(x: item.point.x, y: item.point.y)
-//                }
                 ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                         .position(x: item.point.x, y: item.point.y - 100)
