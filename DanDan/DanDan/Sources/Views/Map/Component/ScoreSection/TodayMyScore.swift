@@ -48,7 +48,7 @@ struct TodayMyScore: View {
                     showLottie = false
                 }
                 .allowsHitTesting(false)
-                .offset(y: 50)
+                .offset(y: 70)
                 .scaleEffect(0.2)
             }
         }
