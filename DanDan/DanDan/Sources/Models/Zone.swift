@@ -37,7 +37,7 @@ struct Zone: Identifiable {
 let zones: [Zone] = [
     Zone(
         zoneId: 1,
-        zoneName: "상생숲길 1구역",
+        zoneName: "상생숲길 1",
         coordinates: [
             .init(latitude: 36.002224, longitude: 129.315526),
             .init(latitude: 36.003937, longitude: 129.319718)
@@ -47,7 +47,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 2,
-        zoneName: "상생숲길 2구역",
+        zoneName: "상생숲길 2",
         coordinates: [
             .init(latitude: 36.003937, longitude: 129.319718),
             .init(latitude: 36.004956, longitude: 129.322091),
@@ -58,7 +58,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 3,
-        zoneName: "상생숲길 3구역",
+        zoneName: "상생숲길 3",
         coordinates: [
             .init(latitude: 36.005599, longitude: 129.324275),
             .init(latitude: 36.006592, longitude: 129.327412),
@@ -69,7 +69,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 4,
-        zoneName: "상생숲길 4구역",
+        zoneName: "상생숲길 4",
         coordinates: [
             .init(latitude: 36.007522, longitude: 129.330347),
             .init(latitude: 36.008987, longitude: 129.335615)
@@ -79,7 +79,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 5,
-        zoneName: "어울누리길 구역",
+        zoneName: "어울누리길",
         coordinates: [
             .init(latitude: 36.008987, longitude: 129.335615),
             .init(latitude: 36.009099, longitude: 129.336168),
@@ -95,7 +95,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 6,
-        zoneName: "활력의 길 1구역",
+        zoneName: "활력의 길 1",
         coordinates: [
             .init(latitude: 36.013125, longitude: 129.341579),
             .init(latitude: 36.013783, longitude: 129.342378),
@@ -106,7 +106,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 7,
-        zoneName: "활력의 길 2구역",
+        zoneName: "활력의 길 2",
         coordinates: [
             .init(latitude: 36.015621, longitude: 129.344354),
             .init(latitude: 36.016163, longitude: 129.344850),
@@ -118,7 +118,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 8,
-        zoneName: "여유가 있는 띠앗길 1구역",
+        zoneName: "여유가 있는 띠앗길 1",
         coordinates: [
             .init(latitude: 36.017763, longitude: 129.346655),
             .init(latitude: 36.019417, longitude: 129.347979),
@@ -130,7 +130,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 9,
-        zoneName: "여유가 있는 띠앗길 2구역",
+        zoneName: "여유가 있는 띠앗길 2",
         coordinates: [
             .init(latitude: 36.023372, longitude: 129.350044),
             .init(latitude: 36.025780, longitude: 129.351581),
@@ -142,7 +142,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 10,
-        zoneName: "추억의 길 1구역",
+        zoneName: "추억의 길 1",
         coordinates: [
             .init(latitude: 36.029071, longitude: 129.355408),
             .init(latitude: 36.030591, longitude: 129.356849),
@@ -154,7 +154,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 11,
-        zoneName: "추억의 길 2구역",
+        zoneName: "추억의 길 2",
         coordinates: [
             .init(latitude: 36.036393, longitude: 129.359417),
             .init(latitude: 36.038895, longitude: 129.361164),
@@ -165,7 +165,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 12,
-        zoneName: "숲속 산책길 1구역",
+        zoneName: "숲속 산책길 1",
         coordinates: [
             .init(latitude: 36.041191, longitude: 129.362451),
             .init(latitude: 36.043023, longitude: 129.363199),
@@ -176,7 +176,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 13,
-        zoneName: "숲속 산책길 2구역",
+        zoneName: "숲속 산책길 2",
         coordinates: [
             .init(latitude: 36.045579, longitude: 129.363669),
             .init(latitude: 36.047680, longitude: 129.363945),
@@ -187,7 +187,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 14,
-        zoneName: "숲속 산책길 3구역",
+        zoneName: "숲속 산책길 3",
         coordinates: [
             .init(latitude: 36.049023, longitude: 129.363588),
             .init(latitude: 36.053573, longitude: 129.361674)
@@ -197,7 +197,7 @@ let zones: [Zone] = [
     
     Zone(
         zoneId: 15,
-        zoneName: "숲속 산책길 4구역",
+        zoneName: "숲속 산책길 4",
         coordinates: [
             .init(latitude: 36.053573, longitude: 129.361674),
             .init(latitude: 36.055094, longitude: 129.361043),

@@ -21,9 +21,9 @@ struct ZoneInfoTitle: View {
             Text(zoneName)
                 .font(.PR.title2)
                 .foregroundColor(.steelBlack)
-            
-            Text("· \(distance)m")
-                .font(.PR.body1)
+
+            Text("\(distance)m")
+                .font(.PR.body2)
                 .foregroundColor(.gray1)
         }
     }
