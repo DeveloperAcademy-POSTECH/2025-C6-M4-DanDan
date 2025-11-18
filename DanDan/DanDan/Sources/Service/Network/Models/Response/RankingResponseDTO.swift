@@ -26,7 +26,7 @@ struct RankingAPIResponse: Decodable {
 }
 
 /// 서버 DTO → 내부 뷰 모델 변환용 이니셜라이저
-extension RankingViewModel.RankingItemData {
+extension RankingItemData {
     init(from dto: RankingResponseDTO) {
         self.id = dto.id
         self.ranking = dto.ranking
