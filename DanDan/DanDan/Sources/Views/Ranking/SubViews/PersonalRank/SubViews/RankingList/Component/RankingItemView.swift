@@ -56,7 +56,8 @@ struct RankingItemView: View {
                 .font(.PR.caption1)
                 .foregroundStyle(.gray2)
         }
-        .padding(.vertical, isMyRank ? 20 : 16)
+        /// 레이아웃을 맞추기 위하여 패딩에 +1.5씩 더 줌 - strokeBorder가 영역 내부로 그려지기 때문
+        .padding(.vertical, isMyRank ? 21.5 : 16)
         .background(isMyRank ? Color.lightGreen : rank.backgroundColor)
         .cornerRadius(12)
         .overlay(

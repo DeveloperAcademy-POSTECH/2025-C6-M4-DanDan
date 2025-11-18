@@ -110,7 +110,8 @@ extension RankingViewModel {
             userImage: UIImage?,
             userWeekScore: Int,
             userTeam: String,
-            backgroundColor: Color
+            backgroundColor: Color,
+            rankDiff: Int? = nil
         ) {
             self.id = id
             self.ranking = ranking
@@ -119,6 +120,7 @@ extension RankingViewModel {
             self.userWeekScore = userWeekScore
             self.userTeam = userTeam
             self.backgroundColor = backgroundColor
+            self.rankDiff = rankDiff
         }
     }
 }
