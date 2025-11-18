@@ -33,7 +33,7 @@ struct ZoneInfoView: View {
                 }
             }
         }
-        .presentationDetents([.fraction(0.25)])
+        .presentationDetents([.fraction(0.20)])
         .presentationDragIndicator(.visible)
     }
 }
