@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct RankingItemView: View {
-    let rank: RankingViewModel.RankingItemData
+    let rank: RankingItemData
     let isMyRank: Bool
     let displayRank: Int
-    let myRankDiff: Int
+    let rankDiff: Int
     
     // TODO: UT 후 수정
     private var mappedTeamName: String {
@@ -27,9 +27,10 @@ struct RankingItemView: View {
             Text("\(displayRank)")
                 .font(.PR.title2)
                 .padding(.horizontal, 24)
+                .foregroundStyle(.darkGreen)
                 .overlay() {
                     if isMyRank {
-                        RankingChangeIndicatorView(rankDiff: myRankDiff)
+                        RankingChangeIndicatorView(rankDiff: rankDiff)
                             .offset(y: 21)
                     }
                 }
@@ -38,12 +39,13 @@ struct RankingItemView: View {
 
             Text(rank.userName)
                 .font(isMyRank ? .PR.title2 : .PR.body3)
+                .foregroundStyle(.steelBlack)
                 .lineLimit(1)
                 .padding(.leading, 12)
 
             Spacer()
             
-//            // TODO: UT 후 수정
+            // TODO: UT 후 수정
             Text(mappedTeamName)
                 .padding(.trailing, 5)
                 .font(.PR.body4)

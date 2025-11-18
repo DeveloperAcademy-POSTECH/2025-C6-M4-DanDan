@@ -16,25 +16,26 @@ class RankingViewModel: ObservableObject {
     @Published var userInfo: [UserInfo] = []
     @Published var rankedUsers: [UserStatus] = []
     @Published var teamRankings: [TeamRanking] = []
+    @Published var rankingItems: [RankingItemData] = []
+    @Published var myTeamRankings: [MyTeamRankingData] = []
+    @Published var myRanking: MyRankingData?
     @Published var myRankDiff: Int? = nil
+    @Published var myTeamRankDiff: Int? = nil
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
 
     // TODO: 팀명 확정 후 수정
     @Published var teams: [Team] = [
         Team(id: UUID(), teamName: "파랑팀", teamColor: "A"),
         Team(id: UUID(), teamName: "노랑팀", teamColor: "B"),
     ]
-
-    @Published var rankingItems: [RankingItemData] = []
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
-
+    
     private var cancellables = Set<AnyCancellable>()
     private let rankingService = RankingService.shared
     private let rankingManager = RankingManager.shared
     private let navigationManager = NavigationManager.shared
     private let tokenManager = TokenManager()
 
-    // TODO: 더미 데이터 - 현재 유저
     var currentUserId: UUID = UUID()
 
     init() {
@@ -86,40 +87,15 @@ extension RankingViewModel {
         }
         return items.filter { $0.userTeam == myTeam }
     }
-}
+    
+    func teamOnlyRanking(from items: [RankingItemData], myUserId: UUID) -> [RankingItemData] {
+        guard
+            let myTeam = items.first(where: { $0.id == myUserId })?.userTeam
+        else { return items }
 
-// MARK: - View 전용 모델 및 데이터 변환
-
-extension RankingViewModel {
-
-    // 뷰 전용 단순 데이터
-    struct RankingItemData: Identifiable {
-        let id: UUID
-        let ranking: Int
-        let userName: String
-        var userImage: UIImage?
-        let userWeekScore: Int
-        let userTeam: String
-        let backgroundColor: Color
-        var rankDiff: Int?
-
-        init(
-            id: UUID = UUID(),
-            ranking: Int,
-            userName: String,
-            userImage: UIImage?,
-            userWeekScore: Int,
-            userTeam: String,
-            backgroundColor: Color
-        ) {
-            self.id = id
-            self.ranking = ranking
-            self.userName = userName
-            self.userImage = userImage
-            self.userWeekScore = userWeekScore
-            self.userTeam = userTeam
-            self.backgroundColor = backgroundColor
-        }
+        return items
+            .filter { $0.userTeam == myTeam }
+            .sorted { $0.ranking < $1.ranking }
     }
 }
 
@@ -145,7 +121,32 @@ extension RankingViewModel {
 // MARK: - 개인 랭킹 서버 연동
 
 extension RankingViewModel {
-
+    
+    /// 현재 유저의 랭킹 정보를 가져옵니다.
+    func fetchMyRanking() {
+        Task {
+            do {
+                let myRanking = try await rankingService.requestMyRanking()
+                self.myRanking = myRanking
+            } catch {
+                errorMessage = "유저 랭킹을 불러오지 못했습니다: \(error.localizedDescription)"
+                print("❌ fetchMyRanking 실패: \(error)")
+            }
+        }
+    }
+    
+    func fetchMyTeamRanking() {
+        Task {
+            do {
+                let myTeamRankings = try await rankingService.requestMyTeamRanking()
+                self.myTeamRankings = myTeamRankings
+            } catch {
+                errorMessage = "유저 랭킹을 불러오지 못했습니다: \(error.localizedDescription)"
+                print("❌ fetchMyRanking 실패: \(error)")
+            }
+        }
+    }
+    
     /// 서버에서 완성된 랭킹 데이터를 그대로 받아 ViewModel 상태를 업데이트합니다.
     func fetchRanking() {
         isLoading = true
@@ -213,6 +214,28 @@ extension RankingViewModel {
 
                     self.saveMyPreviousRank(myNewRank)
                 }
+                
+                if let myTeam = newRanking.first(where: { $0.id == self.currentUserId })?.userTeam {
+                    
+                    // 내 팀만 필터링
+                    let teamRanking = newRanking.filter { $0.userTeam == myTeam }
+                                        
+                    // 팀 랭킹에서 내 위치 찾기
+                    if let index = teamRanking.firstIndex(where: { $0.id == self.currentUserId }) {
+
+                        let myTeamRank = index + 1
+
+                        let prevTeamRank = self.loadMyPreviousTeamRank()
+
+                        if let prevTeamRank {
+                            self.myTeamRankDiff = prevTeamRank - myTeamRank
+                        } else {
+                            self.myTeamRankDiff = nil
+                        }
+
+                        self.saveMyPreviousTeamRank(myTeamRank)
+                    }
+                }
 
                 self.rankingItems = newRanking
             }
@@ -223,20 +246,75 @@ extension RankingViewModel {
 // MARK: - UserDefaults 저장 및 불러오기
 
 extension RankingViewModel {
+    
+    private func formattedToday() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
+    }
+    
     /// 이전 내 순위를 UserDefaults에 저장합니다.
     private func saveMyPreviousRank(_ rank: Int) {
+        let today = formattedToday()
+        
+        // 이미 오늘 저장된 값이 있으면 덮어쓰기 금지
+        if let storedDate = UserDefaults.standard.string(forKey: "myPreviousRankDate"),
+           storedDate == today {
+            return
+        }
+        
         UserDefaults.standard.set(rank, forKey: "myPreviousRank")
+        UserDefaults.standard.set(today, forKey: "myPreviousRankDate")
         UserDefaults.standard.set(currentUserId.uuidString, forKey: "myUserId")
     }
 
     /// 이전 내 순위를 UserDefaults에서 불러옵니다.
     private func loadMyPreviousRank() -> Int? {
-        guard let savedId = UserDefaults.standard.string(forKey: "myUserId"),
-              savedId == currentUserId.uuidString else {
-            // 저장된 ID가 다르면 다른 계정 → 비교 무효
+        let today = formattedToday()
+        
+        // 날짜 체크 → 오늘 저장한 값이면 비교할 필요 없음
+        guard let storedDate = UserDefaults.standard.string(forKey: "myPreviousRankDate"),
+              storedDate != today else {
             return nil
         }
+        
+        // 유저 ID 체크 (다른 계정이면 무효)
+        guard let savedId = UserDefaults.standard.string(forKey: "myUserId"),
+              savedId == currentUserId.uuidString else {
+            return nil
+        }
+        
         let rank = UserDefaults.standard.integer(forKey: "myPreviousRank")
+        return rank == 0 ? nil : rank
+    }
+    
+    /// 이전 내 팀내 순위를 UserDefaults에 저장합니다.
+    private func saveMyPreviousTeamRank(_ rank: Int) {
+        let today = formattedToday()
+        let storedDate = UserDefaults.standard.string(forKey: "myPreviousTeamRankDate")
+        
+        // 이미 오늘 저장했다면 저장하지 않음 (중복 저장 방지)
+        if storedDate == today { return }
+        
+        UserDefaults.standard.set(rank, forKey: "myPreviousTeamRank")
+        UserDefaults.standard.set(today, forKey: "myPreviousTeamRankDate")
+        UserDefaults.standard.set(currentUserId.uuidString, forKey: "myTeamRankUserId")
+    }
+
+    /// 이전 팀내 순위를 UserDefaults에서 불러옵니다.
+    private func loadMyPreviousTeamRank() -> Int? {
+        let today = formattedToday()
+        guard let storedDate = UserDefaults.standard.string(forKey: "myPreviousTeamRankDate"),
+              storedDate != today else {
+            return nil
+        }
+        
+        guard let savedId = UserDefaults.standard.string(forKey: "myTeamRankUserId"),
+              savedId == currentUserId.uuidString else {
+            return nil
+        }
+        
+        let rank = UserDefaults.standard.integer(forKey: "myPreviousTeamRank")
         return rank == 0 ? nil : rank
     }
 }

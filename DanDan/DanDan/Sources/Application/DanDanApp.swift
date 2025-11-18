@@ -15,10 +15,17 @@ struct DanDanApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    // 앱 시작 시 지오펜싱 등록 및 오프라인 큐 처리 시도
+                    RegionMonitoringManager.shared.startMonitoringZones(zones: zones)
+                    OfflineZoneCompletionQueue.shared.processQueueIfPossible()
+                }
         }
         .onChange(of: scenePhase) { newPhase in
             guard newPhase == .active else { return }
             handleDailySyncIfNeeded()
+            // 활성화 시 미전송 작업 재처리
+            OfflineZoneCompletionQueue.shared.processQueueIfPossible()
         }
     }
 

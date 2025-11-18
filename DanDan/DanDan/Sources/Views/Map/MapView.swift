@@ -27,7 +27,8 @@ struct MapToggleView: View {
                         conquestStatuses: conquestStatuses,
                         teams: teams,
                         refreshToken: refreshToken,
-                        userStatus: StatusManager.shared.userStatus
+                        userStatus: StatusManager.shared.userStatus,
+                        period: StatusManager.shared.currentPeriod
                     )
                 } else {
                     TrackingMapScreen( // 3D 부분 지도뷰
@@ -108,7 +109,7 @@ struct MapToggleView: View {
             .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
             .padding(.trailing, 20)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            .padding(.top, 114)
+            .padding(.top, 158)
         }
     }
 }

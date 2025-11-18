@@ -40,9 +40,6 @@ struct AvatarCircle: View {
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
-        .overlay(
-            Circle().stroke(Color.white, lineWidth: 1)
-        )
         .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
     }
 }

@@ -47,6 +47,5 @@ struct NavRow: View {
             print("개인정보 처리방침 탭")
         }
     }
-    .previewLayout(.sizeThatFits)
     .background(Color.white)
 }

@@ -8,34 +8,40 @@
 import SwiftUI
 
 struct PersonalRankView: View {
-    let rankingItems: [RankingViewModel.RankingItemData]
+    let rankingItems: [RankingItemData]
     let myUserId: UUID
     let rankingFilter: (
-            [RankingViewModel.RankingItemData],
+            [RankingItemData],
             String,
             UUID
-    ) -> [RankingViewModel.RankingItemData]
+    ) -> [RankingItemData]
     let fetchRanking: () -> Void
     let myRankDiff: Int
+    let myTeamRankDiff: Int
 
     @State private var selectedFilter: String = "전체"
     
-    private var filteredItems: [RankingViewModel.RankingItemData] {
+    private var filteredItems: [RankingItemData] {
         rankingFilter(rankingItems, selectedFilter, myUserId)
+    }
+    
+    /// 선택한 필터에 따라 적절한 diff 전달
+    private var currentRankDiff: Int {
+        selectedFilter == "전체" ? myRankDiff : myTeamRankDiff
     }
     
     var body: some View {
         VStack(spacing: 0) {
             InstructionSectionView(selectedFilter: $selectedFilter)
                 .padding(.top, 45)
+                .padding(.horizontal, 20)
 
             RankingListView(
                 rankingItems: filteredItems,
                 myUserId: myUserId,
-                myRankDiff: myRankDiff
+                rankDiff: currentRankDiff,
             )
         }
-        .padding(.horizontal, 20)
         .onAppear() {
             fetchRanking()
         }

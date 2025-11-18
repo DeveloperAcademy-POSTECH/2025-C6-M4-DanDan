@@ -27,19 +27,19 @@ struct RankingView: View {
                     myUserId: viewModel.currentUserId,
                     rankingFilter: viewModel.filteredRankingItems,
                     fetchRanking: viewModel.fetchRanking,
-                    myRankDiff: viewModel.myRankDiff ?? 0
+                    myRankDiff: viewModel.myRankDiff ?? 0,
+                    myTeamRankDiff: viewModel.myTeamRankDiff ?? 0
                 )
             } else {
                 TeamRankView(
                     fetchTeamRanking: viewModel.fetchTeamRanking,
-                    myUserId: viewModel.currentUserId,
+                    fetchMyRanking: viewModel.fetchMyRanking,
+                    userTeamName: viewModel.myRanking?.teamName ?? "",
                     teamRankings: viewModel.teamRankings
                 )
             }
         }
         .padding(.top, 45)
-
-        Spacer()
     }
 }
 

@@ -20,7 +20,7 @@ struct ProfileEditName: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isNicknameTooLong ? Color.red : Color.clear, lineWidth: 2)
+                    .stroke(isNicknameTooLong ? .steelRed : Color.clear, lineWidth: 2)
                     .padding(.horizontal, 20)
             )
             .onChange(of: text) { _, newValue in
@@ -29,7 +29,7 @@ struct ProfileEditName: View {
 
             Text("닉네임은 7자 이하로 설정해주세요")
                 .font(.PR.body4)
-                .foregroundColor(.red)
+                .foregroundColor(.steelRed)
                 .frame(height: 20)
                 .opacity(isNicknameTooLong ? 1 : 0)
         }

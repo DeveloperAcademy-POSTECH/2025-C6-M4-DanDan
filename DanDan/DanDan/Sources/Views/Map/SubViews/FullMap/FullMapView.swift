@@ -519,14 +519,17 @@ struct FullMapScreen: View {
     let teams: [Team]
     let refreshToken: UUID
     let userStatus: UserStatus
+    let period: ConquestPeriod
     
     init(
         conquestStatuses: [ZoneConquestStatus],
         teams: [Team],
         refreshToken: UUID,
-        userStatus: UserStatus = StatusManager.shared.userStatus
+        userStatus: UserStatus = StatusManager.shared.userStatus,
+        period: ConquestPeriod
     ) {
         self.conquestStatuses = conquestStatuses
+        self.period = period
         self.teams = teams
         self.refreshToken = refreshToken
         self.userStatus = userStatus
@@ -578,16 +581,15 @@ struct FullMapScreen: View {
             }
         }
         .overlay(alignment: .topLeading) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 4) {
                     if viewModel.teams.count >= 2 {
                         ScoreBoard(
                             leftTeamName: viewModel.teams[1].teamName,
                             rightTeamName: viewModel.teams[0].teamName,
-                            leftTeamScore: viewModel.teams[1]
-                                .conqueredZones,
-                            rightTeamScore: viewModel.teams[0]
-                                .conqueredZones
+                            leftTeamScore: viewModel.teams[1].conqueredZones,
+                            rightTeamScore: viewModel.teams[0].conqueredZones,
+                            ddayText: viewModel.ddayText
                         )
                     } else {
                         // 로딩 중일 때는 기본값 표시
@@ -595,13 +597,16 @@ struct FullMapScreen: View {
                             leftTeamName: "—",
                             rightTeamName: "—",
                             leftTeamScore: 0,
-                            rightTeamScore: 0
+                            rightTeamScore: 0,
+                            ddayText: viewModel.ddayText
                         )
                     }
                     
-                    TodayMyScore(score: viewModel.userDailyScore) // 오늘 내 점수
+                    Spacer()
+                    
+                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
                 }
-                
+
                 SegmentedControl(
                     leftTitle: "전체",
                     rightTitle: "개인",
@@ -611,9 +616,10 @@ struct FullMapScreen: View {
                 .padding(.leading, -20)
             }
             .padding(.top, 60)
-            .padding(.leading, 14)
+            .padding(.horizontal, 20)
             .task {
                 await viewModel.loadMapInfo()
+                viewModel.startDDayTimer(period: period)
             }
         }
 //        .overlay(alignment: .bottomLeading) {
@@ -677,65 +683,3 @@ struct FullMapScreen: View {
     }
 }
 
-//
-// #if DEBUG
-//    #Preview("FullMap · Overall vs Personal") {
-//        let demoTeams: [Team] = [
-//            .init(id: UUID(), teamName: "white", teamColor: "SubA"),
-//            .init(id: UUID(), teamName: "blue", teamColor: "SubB"),
-//        ]
-//        // zones 중 일부에 더미 승자 배정
-//        let demoStatuses: [ZoneConquestStatus] = zones.prefix(10).enumerated()
-//            .map { idx, z in
-//                let winner = (idx % 2 == 0) ? "white" : "blue"
-//                return ZoneConquestStatus(
-//                    zoneId: z.zoneId,
-//                    teamId: idx % 2,
-//                    teamName: winner,
-//                    teamScore: 10 + idx
-//                )
-//            }
-//
-//        VStack(spacing: 12) {
-//            Text("Overall")
-//                .font(.PR.caption2)
-//                .foregroundColor(.gray2)
-//            FullMapView(
-//                zoneStatuses: viewModel.zoneStatuses,
-//                conquestStatuses: demoStatuses,
-//                teams: demoTeams,
-//                mode: .overall
-//            )
-//            .frame(height: 220)
-//            .clipShape(RoundedRectangle(cornerRadius: 12))
-//
-//            Text("Personal (임의로 짝수 구역만 완료로 가정)")
-//                .font(.PR.caption2)
-//                .foregroundColor(.gray2)
-//            FullMapView(
-//                conquestStatuses: demoStatuses,
-//                teams: demoTeams,
-//                mode: .personal
-//            )
-//            .frame(height: 220)
-//            .clipShape(RoundedRectangle(cornerRadius: 12))
-//        }
-//        .padding()
-//        .task {
-//            // 짝수 zoneId만 완료로 가정 (미리보기용 사이드 이펙트)
-//            for status in demoStatuses {
-//                if status.zoneId % 2 == 0 {
-//                    StatusManager.shared.setZoneChecked(
-//                        zoneId: status.zoneId,
-//                        checked: true
-//                    )
-//                } else {
-//                    StatusManager.shared.setZoneChecked(
-//                        zoneId: status.zoneId,
-//                        checked: false
-//                    )
-//                }
-//            }
-//        }
-//    }
-// #endif

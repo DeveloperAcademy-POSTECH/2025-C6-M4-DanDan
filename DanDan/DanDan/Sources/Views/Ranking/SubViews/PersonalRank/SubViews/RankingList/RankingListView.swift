@@ -8,19 +8,19 @@
 import SwiftUI
 
 struct RankingListView: View {
-    let rankingItems: [RankingViewModel.RankingItemData]
+    let rankingItems: [RankingItemData]
     let myUserId: UUID
-    let myRankDiff: Int
+    let rankDiff: Int
 
-    private var sortedItems: [RankingViewModel.RankingItemData] {
+    private var sortedItems: [RankingItemData] {
         rankingItems.sorted { $0.ranking < $1.ranking }
     }
 
-    private var topThreeItems: [RankingViewModel.RankingItemData] {
+    private var topThreeItems: [RankingItemData] {
         Array(sortedItems.prefix(3))
     }
 
-    private var remainingItems: [RankingViewModel.RankingItemData] {
+    private var remainingItems: [RankingItemData] {
         Array(sortedItems.dropFirst(3))
     }
 
@@ -42,8 +42,9 @@ struct RankingListView: View {
                         rank: item,
                         isMyRank: item.id == myUserId,
                         displayRank: index + 4,  // 상위 3개 이후라 +4 (index는 0부터 시작)
-                        myRankDiff: myRankDiff
+                        rankDiff: rankDiff
                     )
+                    .padding(.horizontal, 20)
                 }
             }
         }

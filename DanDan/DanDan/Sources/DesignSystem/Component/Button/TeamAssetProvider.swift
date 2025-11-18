@@ -26,11 +26,11 @@ enum TeamAssetProvider {
     static func scoreLottieName(for teamRaw: String) -> String {
         switch normalizedTeam(teamRaw) {
         case "blue":
-            return "lottie_score_blue"
+            return "score_blue"
         case "yellow":
-            return "lottie_score_yellow"
+            return "score_yellow"
         default:
-            return "lottie_score_blue"
+            return "score_blue"
         }
     }
 }
