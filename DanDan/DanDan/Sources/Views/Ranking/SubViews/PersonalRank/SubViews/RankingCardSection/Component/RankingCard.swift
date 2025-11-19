@@ -54,7 +54,6 @@ struct RankingCard: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            dump(color)
             ZStack {
                 color
 

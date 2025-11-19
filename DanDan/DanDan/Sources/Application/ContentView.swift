@@ -13,12 +13,16 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack(path: $navigationManager.path) {
-            navigationManager.getRootView()
-                .navigationDestination(for: AppDestination.self) { $0.view()
-                }
+            
+            if gamePhase.showWeeklyAward {
+                WeeklyAwardView()
+            } else {
+                navigationManager.getRootView()
+                    .navigationDestination(for: AppDestination.self) { $0.view() }
+            }
         }
-        .fullScreenCover(isPresented: $gamePhase.showWeeklyAward) {
-            WeeklyAwardView()
+        .task {
+            await gamePhase.checkWeeklyAwardCondition()
         }
     }
 }

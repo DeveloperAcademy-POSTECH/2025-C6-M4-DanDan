@@ -10,6 +10,7 @@ import SwiftUI
 
 struct WeeklyAwardView: View {
     @StateObject private var viewModel = WeeklyAwardViewModel()
+    @State private var isLoading = true
     @State private var isAnimationFinished = false
     
     private var trophyAnimationName: String {
@@ -25,6 +26,10 @@ struct WeeklyAwardView: View {
     
     var body: some View {
         ZStack {
+            if isLoading {
+                LoadingLottieView(animationName: "loading")
+                    .ignoresSafeArea()
+            }
             // 애니메이션이 끝난 후 나타나는 UI
             if isAnimationFinished {
                 VStack {
@@ -49,31 +54,44 @@ struct WeeklyAwardView: View {
                 }
                 .padding()
                 .transition(.opacity)
-                .task {
-                    await viewModel.fetchConquestResults()
+            }
+        }
+        .task {
+            await viewModel.fetchConquestResults()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                withAnimation {
+                    isLoading = false
                 }
             }
         }
         // confetti + trophy
         .background(
-            LottieOnceView(
-                name: trophyAnimationName,
-                onCompleted: {
-                    withAnimation(.easeOut(duration: 0.4)) {
-                        isAnimationFinished = true
-                    }
+            Group {
+                if !isLoading {
+                    LottieOnceView(
+                        name: trophyAnimationName,
+                        onCompleted: {
+                            withAnimation(.easeOut(duration: 0.4)) {
+                                isAnimationFinished = true
+                            }
+                        }
+                    )
+                    .offset(y: -110)
+                    .ignoresSafeArea()
+                    .scaleEffect(0.35)
                 }
-            )
-            .offset(y: -110)
-            .ignoresSafeArea()
-            .scaleEffect(0.35)
+            }
         )
         // light effect
         .background(
-            LottieLoopView(name: "trophy_light_effect")
-                .offset(y: -90)
-                .ignoresSafeArea()
-                .opacity(isAnimationFinished ? 1 : 0)
+            Group {
+                if !isLoading {
+                    LottieLoopView(name: "trophy_light_effect")
+                        .offset(y: -90)
+                        .ignoresSafeArea()
+                        .opacity(isAnimationFinished ? 1 : 0)
+                }
+            }
         )
     }
 }
