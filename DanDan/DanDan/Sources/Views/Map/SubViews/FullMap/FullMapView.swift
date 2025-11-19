@@ -99,7 +99,7 @@ struct FullMapView: UIViewRepresentable {
         
         func updatePositions(for mapView: MKMapView) {
             // Convert each zone centroid to view-space point
-            positioned = zones.map { z in
+            let mapped: [PositionedStation] = zones.map { z in
                 let coord = parent.centroid(of: z.coordinates)
                 let pt = mapView.convert(coord, toPointTo: mapView)
                 let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[z.zoneId] == true
@@ -112,6 +112,8 @@ struct FullMapView: UIViewRepresentable {
                     needsClaim: isChecked && !isClaimed
                 )
             }
+            // y가 클수록(화면 아래쪽) 위에 보이도록 렌더 순서를 정렬
+            positioned = mapped.sorted { $0.point.y < $1.point.y }
         }
         
         // MARK: - MKMapViewDelegate
@@ -495,8 +497,8 @@ struct FullMapView: UIViewRepresentable {
             let swiftUIView = ZStack {
                 ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .position(x: item.point.x, y: item.point.y - 100)
-                        .zIndex(1)
+                        .position(x: item.point.x - 20, y: item.point.y - 40)
+                        .zIndex(Double(item.point.y))
                 }
             }
             .frame(width: canvasSize.width, height: canvasSize.height)
@@ -623,7 +625,7 @@ struct FullMapScreen: View {
             }
         }
 //        .overlay(alignment: .bottomLeading) {
-        // #if DEBUG
+//#if DEBUG
 //            ScrollView(.horizontal, showsIndicators: false) {
 //                HStack(spacing: 8) {
 //                    ForEach(1...15, id: \.self) { id in
@@ -673,7 +675,7 @@ struct FullMapScreen: View {
 //                // 부모 갱신 토큰 변화도 반영
 //                effectiveToken = newValue
 //            }
-        // #endif
+//#endif
 //        }
 //        .overlay(alignment: .topTrailing) {
         // #if DEBUG
