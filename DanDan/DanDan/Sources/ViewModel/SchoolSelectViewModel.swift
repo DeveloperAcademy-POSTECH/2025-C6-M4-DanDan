@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 @MainActor
-class SchoolSelectViewModel: ObservableObject {
+class TeamInputViewModel: ObservableObject {
     private let authService = GuestAuthService()
 
     @Published var userName: String = ""

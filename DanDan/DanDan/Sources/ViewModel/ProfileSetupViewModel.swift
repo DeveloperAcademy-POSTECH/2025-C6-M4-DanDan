@@ -16,9 +16,9 @@ class ProfileSetupViewModel: ObservableObject {
     private let navigationManager = NavigationManager.shared
 
     /// 프로필 설정 화면으로 이동합니다.
-    func tapSchoolSelectionButton() {
+    func tapTeamInputButton() {
         navigationManager.navigate(
-            to: .schoolSelection(
+            to: .teamInput(
                 nickname: nickname,
                 image: profileImage
             )
