@@ -204,7 +204,7 @@ struct TrackingMapView: UIViewRepresentable {
             mapView: map,
             zones: zones,
             validRange: 1 ... 15,
-            threshold: 120
+            threshold: 200
         )
         
         // 선과 정류소 버튼 표시
