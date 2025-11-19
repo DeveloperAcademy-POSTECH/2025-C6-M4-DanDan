@@ -92,7 +92,7 @@ struct TrackingMapView: UIViewRepresentable {
         
         func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
             let isFollowing =
-            (mode == .follow || mode == .followWithHeading)
+                (mode == .follow || mode == .followWithHeading)
             
             guard let binding = isTracking else { return }
             
@@ -109,7 +109,7 @@ struct TrackingMapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
 //            if let circle = overlay as? MKCircle {
 //                let r = MKCircleRenderer(overlay: circle)
-//#if DEBUG
+            // #if DEBUG
 //                let title = circle.title ?? ""
 //                // start: 빨강, end: 파랑. in은 실선, out은 점선
 //                if title.contains("debug-circle-start") {
@@ -123,7 +123,7 @@ struct TrackingMapView: UIViewRepresentable {
 //                if title.hasSuffix("-out") {
 //                    r.lineDashPattern = [6, 6]
 //                }
-//#endif
+            // #endif
 //                return r
 //            }
             if let line = overlay as? ColoredPolyline {
@@ -173,7 +173,6 @@ struct TrackingMapView: UIViewRepresentable {
         return _createMap(context: context)
     }
     
-    
     // MKMapView 구성(지도 옵션/오버레이/어노테이션)
     private func _createMap(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
@@ -204,15 +203,15 @@ struct TrackingMapView: UIViewRepresentable {
         context.coordinator.signsManager = SignsManager(
             mapView: map,
             zones: zones,
-            validRange: 1...15,
+            validRange: 1 ... 15,
             threshold: 120
         )
         
         // 선과 정류소 버튼 표시
         MapElementInstaller.installOverlays(for: zones, on: map)
-#if DEBUG
+        #if DEBUG
         MapElementInstaller.installDebugGateCircles(for: zones, on: map)
-#endif
+        #endif
         MapElementInstaller.installStations(
             for: zones,
             statuses: conquestStatuses,
@@ -263,7 +262,8 @@ struct TrackingMapView: UIViewRepresentable {
 struct TrackingMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
     @State private var onRestoreTracking = false
-    @State private var isTracking = true  // 버튼 색상 전환용 상태
+    @State private var isTracking = true // 버튼 색상 전환용 상태
+    @State private var hidePendingCount = false   // 정복 버튼 xN 텍스트를 숨기기 위한 플래그
     @ObservedObject private var status = StatusManager.shared
     
     let conquestStatuses: [ZoneConquestStatus]
@@ -311,35 +311,12 @@ struct TrackingMapScreen: View {
                     
                     Spacer()
                     
-                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
+                    TodayMyScore(score: viewModel.userDailyScore) // 오늘 내 점수
                 }
                 .padding(.vertical, 58)
                 .padding(.horizontal, 20)
-                
-                // ScoreBoard 아래에 고정되는 정복 보상 버튼(집계)
-                let pendingZoneIds: [Int] = zones
-                    .map(\.zoneId)
-                    .filter { id in
-                        let checked = status.userStatus.zoneCheckedStatus[id] == true
-                        let claimed = StatusManager.shared.isRewardClaimed(zoneId: id)
-                        return checked && !claimed
-                    }
-                
-                if !pendingZoneIds.isEmpty {
-                    HStack(spacing: 10) {
-                        ConqueredButton(zoneId: pendingZoneIds.first ?? 0) { _ in
-                            ZoneConquerActionHandler.handleConquer(zoneIds: pendingZoneIds)
-                        }
-                        if pendingZoneIds.count >= 2 {
-                            Text("x\(pendingZoneIds.count)")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.white)
-                                .shadow(color: .black.opacity(0.35), radius: 4, x: 0, y: 2)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                }
-                
+                 
+                // 트래킹 버튼(오른쪽 상단 고정)
                 TrackingButton(
                     isTracking: $isTracking,
                     restoreTracking: {
@@ -347,6 +324,43 @@ struct TrackingMapScreen: View {
                     }
                 )
             }
+            
+            // ScoreBoard 아래 왼쪽: 정복 버튼(집계)
+            let pendingZoneIds: [Int] = zones
+                .map(\.zoneId)
+                .filter { id in
+                    let checked = status.userStatus.zoneCheckedStatus[id] == true
+                    let claimed = StatusManager.shared.isRewardClaimed(zoneId: id)
+                    return checked && !claimed
+                }
+            
+            if !pendingZoneIds.isEmpty {
+                HStack(spacing: 0) {
+                    let content = HStack(spacing: 0) {
+                        ConqueredButton(zoneId: pendingZoneIds.first ?? 0) { _ in
+                            hidePendingCount = true    // 버튼 탭 시 곧바로 xN 텍스트 숨김
+                            ZoneConquerActionHandler.handleConquer(zoneIds: pendingZoneIds)
+                        }
+                        if pendingZoneIds.count >= 2 && !hidePendingCount {
+                            Text("x\(pendingZoneIds.count)")
+                                .font(.PR.title2)
+                                .foregroundColor(.steelBlack)
+                        }
+                    }
+                    content
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 150)
+            }
+            else {
+                // pendingZoneIds가 비워지면 다음 사이클을 위해 xN 표시 플래그를 초기화
+                EmptyView()
+                    .onAppear {
+                        hidePendingCount = false
+                    }
+            }
+
         }
         .task {
             await viewModel.loadMapInfo()
