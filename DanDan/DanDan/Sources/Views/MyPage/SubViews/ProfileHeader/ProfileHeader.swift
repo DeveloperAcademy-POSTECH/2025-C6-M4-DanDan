@@ -51,7 +51,7 @@ struct ProfileHeader: View {
             // TODO: - 컴포넌트화 필요
             VStack(alignment: .leading, spacing: 24) {
                 
-                VStack(spacing: 4) {
+                VStack(alignment: .leading,spacing: 4) {
                     Text(displayName)
                         .font(.pretendard(.semiBold, size: 22))
                         .foregroundColor(.steelBlack)
