@@ -11,6 +11,7 @@ import UIKit
 @MainActor
 class TeamInputViewModel: ObservableObject {
     private let authService = GuestAuthService()
+    private let navigationManager = NavigationManager.shared
 
     @Published var userName: String = ""
     @Published var teamName: String = ""
@@ -34,5 +35,9 @@ class TeamInputViewModel: ObservableObject {
         } catch {
             message = "❌ 게스트 등록 실패: \(error.localizedDescription)"
         }
+    }
+    
+    func goToTeamAssignment() {
+        navigationManager.replaceRoot(with: .teamAssignment)
     }
 }

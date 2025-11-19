@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+enum School: String, CaseIterable, Identifiable {
+    case daedongMiddle = "대동중학교"
+    //    case pohangSteelMiddle = "포항제철중학교"
+    case semyeongHigh = "세명고등학교"
+    case pohangIdongHigh = "포항이동고등학교"
+    
+    var id: String { rawValue }
+}
+
 private struct SchoolOptionRow: View {
     let title: String
     let isSelected: Bool

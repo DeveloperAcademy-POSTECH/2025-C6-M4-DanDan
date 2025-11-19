@@ -7,15 +7,6 @@
 
 import SwiftUI
 
-enum School: String, CaseIterable, Identifiable {
-    case daedongMiddle = "대동중학교"
-    //    case pohangSteelMiddle = "포항제철중학교"
-    case semyeongHigh = "세명고등학교"
-    case pohangIdongHigh = "포항이동고등학교"
-    
-    var id: String { rawValue }
-}
-
 enum Region {
     case north
     case south
@@ -27,9 +18,6 @@ struct TeamInputView: View {
     
     @State private var selected: Region? = nil
     @State private var showConfirm = false
-    
-    // TODO: 뷰모델에서 정의하고 불러와서 사용
-    private let navigationManager = NavigationManager.shared
     
     private var needsCustomBackButton: Bool {
         if #available(iOS 26.0, *) { return false } else { return true }
@@ -99,7 +87,7 @@ struct TeamInputView: View {
                             StatusManager.shared.userStatus.userTeam = viewModel.teamName
                         }
                         
-                        navigationManager.replaceRoot(with: .teamAssignment)
+                        viewModel.goToTeamAssignment()
                     }
                 }
             }
