@@ -21,6 +21,7 @@ struct MyPageView: View {
             ProfileHeader(
                 profileImage: viewModel.profileImage,
                 displayName: viewModel.displayName,
+                teamName: viewModel.teamRegionName,
                 winCount: viewModel.winCount,
                 totalScore: viewModel.totalScore,
                 onTap: { viewModel.tapProfileEditButton() }
