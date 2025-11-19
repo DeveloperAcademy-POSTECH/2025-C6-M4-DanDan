@@ -411,7 +411,12 @@ struct FullMapView: UIViewRepresentable {
         config.showsTraffic = false
         map.preferredConfiguration = config
         
-        let region = bounds.region
+        var region = bounds.region
+        
+        // 지도 아래로 내리기
+        let shift = region.span.latitudeDelta * 0.1
+        region.center.latitude += shift
+        
         map.setRegion(region, animated: true)
         map.delegate = context.coordinator
         context.coordinator.mapView = map
