@@ -10,7 +10,6 @@
 import Foundation
 import MapKit
 
-#if DEBUG
 enum DebugGateOverlay {
     /// 모든 구역의 시작/종료 게이트 원(내/외부)을 MKCircle로 생성
     static func makeCircles(for zones: [Zone]) -> [MKCircle] {
@@ -38,6 +37,27 @@ enum DebugGateOverlay {
         return overlays
     }
     
+    /// 게이트를 '선(폴리라인)'으로 생성
+    /// - 중복 제거: 각 구역의 '시작' 선만 추가
+    /// - 시작/끝 숨김: 첫 구역의 시작선, 마지막 구역의 끝선은 추가하지 않음
+    static func makeGateLines(for zones: [Zone]) -> [MKPolyline] {
+        var lines: [MKPolyline] = []
+        for (idx, z) in zones.enumerated() {
+            let bearing = computeBearingDeg(from: z.zoneStartPoint, to: z.zoneEndPoint)
+            let startGate = Gate(center: z.zoneStartPoint, bearingDeg: bearing, b_along: 20)
+            
+            // 중복 방지: '시작' 선만 추가, 단 첫 구역(idx == 0)은 생략하여 시작선 숨김
+            if idx > 0 {
+                lines.append(makeGateLine(center: startGate.center,
+                                          aPerp: startGate.a_perp,
+                                          bearingDeg: bearing,
+                                          title: "debug-gate-start"))
+            }
+            // '끝' 선은 추가하지 않음 → 마지막 구역의 끝선도 자연스럽게 숨김
+        }
+        return lines
+    }
+    
     private static func computeBearingDeg(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
         let lat1 = from.latitude * .pi/180
         let lon1 = from.longitude * .pi/180
@@ -57,7 +77,34 @@ enum DebugGateOverlay {
         c.title = title
         return c
     }
+    
+    /// 진행방향에 수직인 게이트 선분 생성
+    private static func makeGateLine(center: CLLocationCoordinate2D, aPerp: Double, bearingDeg: Double, title: String) -> MKPolyline {
+        // 수직 각도 = bearing + 90°
+        let perp1 = bearingDeg + 90.0
+        let perp2 = bearingDeg - 90.0
+        let p1 = offsetCoordinate(from: center, distanceMeters: aPerp, bearingDeg: perp1)
+        let p2 = offsetCoordinate(from: center, distanceMeters: aPerp, bearingDeg: perp2)
+        var coords = [p1, p2]
+        let line = MKPolyline(coordinates: &coords, count: coords.count)
+        line.title = title
+        return line
+    }
+    
+    /// 거리/방위로 좌표 이동
+    private static func offsetCoordinate(from: CLLocationCoordinate2D, distanceMeters: CLLocationDistance, bearingDeg: Double) -> CLLocationCoordinate2D {
+        let R = 6_378_137.0 // WGS84
+        let brng = bearingDeg * .pi / 180.0
+        let lat1 = from.latitude * .pi / 180.0
+        let lon1 = from.longitude * .pi / 180.0
+        let dr = distanceMeters / R
+        
+        let lat2 = asin(sin(lat1) * cos(dr) + cos(lat1) * sin(dr) * cos(brng))
+        let lon2 = lon1 + atan2(sin(brng) * sin(dr) * cos(lat1),
+                                cos(dr) - sin(lat1) * sin(lat2))
+        return .init(latitude: lat2 * 180.0 / .pi,
+                     longitude: lon2 * 180.0 / .pi)
+    }
 }
-#endif
 
 

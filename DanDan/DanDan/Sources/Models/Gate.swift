@@ -11,7 +11,7 @@ import CoreLocation
 struct Gate {
     let center: CLLocationCoordinate2D
     let bearingDeg: Double
-    let a_perp: Double = 80
+    let a_perp: Double = 120
     let b_along: Double
     let inScale: Double = 1.0
     let outScale: Double = 1.25
