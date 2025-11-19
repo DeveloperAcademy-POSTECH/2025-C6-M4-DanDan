@@ -1,5 +1,5 @@
 //
-//  MapToggleView.swift
+//  MapView.swift
 //  DanDan
 //
 //  Created by soyeonsoo on 11/2/25.
@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-struct MapToggleView: View {
+struct MapView: View {
     @State private var isFullMap = false
     @StateObject private var locationService = LocationService()
     @State private var tracker: ZoneTrackerManager?
@@ -95,10 +95,10 @@ struct MapToggleView: View {
                     isFullMap.toggle()
                 }
             } label: {
-                Image(systemName: "globe.central.south.asia.fill")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(isFullMap ? .primaryGreen : .steelBlack)
-                    .frame(width: 56, height: 56)
+                Image(systemName: isFullMap ? "arrow.down.left.and.arrow.up.right.rectangle.fill" : "arrow.down.right.and.arrow.up.left.rectangle.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.steelBlack)
+                    .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
             .background(.ultraThinMaterial, in: Circle())
@@ -109,8 +109,7 @@ struct MapToggleView: View {
             .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
             .padding(.trailing, 20)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            .padding(.top, 158)
+            .padding(.top, 150)
         }
     }
 }
-

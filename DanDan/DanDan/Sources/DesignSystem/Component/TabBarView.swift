@@ -18,7 +18,7 @@ struct TabBarView: View {
                 RankingView()
             }
             Tab("지도", systemImage: "map.fill", value: .main){
-                MapToggleView(
+                MapView(
                     conquestStatuses: viewModel.conquestStatuses,
                     teams: viewModel.teams
                 )

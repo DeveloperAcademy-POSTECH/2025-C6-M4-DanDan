@@ -11,13 +11,16 @@ import SwiftUI
 // 트래킹 3D 지도
 struct TrackingMapView: UIViewRepresentable {
     @ObservedObject var viewModel: MapScreenViewModel
+    @Binding var isTracking: Bool // 트래킹 버튼 색 상태
+    @Binding var onRestoreTracking: Bool
+
     let zoneStatuses: [ZoneStatus]
     var conquestStatuses: [ZoneConquestStatus]
     var teams: [Team]
-    var refreshToken: UUID = .init() // 외부 상태 변경 시 강제 update 트리거(렌더러만 갱신)
+    var refreshToken: UUID = .init() // 외부 상태 변경 시 강제 update 트리거(렌더러만 갱신)\
     
     // MARK: - Constants
-
+    
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표, 표시 범위(경계/마진) 정의
     private let bounds = MapBounds(
         southWest: .init(latitude: 35.998605, longitude: 129.316145),
@@ -34,19 +37,21 @@ struct TrackingMapView: UIViewRepresentable {
     }
     
     // MARK: - Coordinator
-
+    
     final class Coordinator: NSObject, MKMapViewDelegate, CLLocationManagerDelegate {
         let manager = CLLocationManager()
         weak var mapView: MKMapView?
         var viewModel: MapScreenViewModel?
-                
+        
         var zoneStatuses: [ZoneStatus] = []
         var conquestStatuses: [ZoneConquestStatus] = []
         var teams: [Team] = []
         var strokeProvider = ZoneStrokeProvider(zoneStatuses: []) // 구역별 선 색상 계산기
-		
+        
         private var lastHeading: CLLocationDirection = 0
         var signsManager: SignsManager?
+        
+        var isTracking: Binding<Bool>?
         
         override init() {
             super.init()
@@ -64,40 +69,6 @@ struct TrackingMapView: UIViewRepresentable {
             }
         }
         
-        // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
-        
-        // 사용자의 위치에 따라 카메라 중심 이동
-//        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//            guard let mapView = mapView,
-//                  let location = locations.last else { return }
-//            DispatchQueue.main.async {
-//                let camera = MKMapCamera(
-//                    lookingAtCenter: location.coordinate,
-//                    fromDistance: 500,
-//                    pitch: 80,
-//                    heading: mapView.camera.heading
-//                )
-//                mapView.setCamera(camera, animated: true)
-//            }
-//        }
-        
-        // 유저의 방향(heading) 변경에 따라 지도 회전
-//        func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-//            guard let mapView = mapView else { return }
-//            DispatchQueue.main.async {
-//                let currentCenter = mapView.camera.centerCoordinate
-//                let camera = MKMapCamera(
-//                    lookingAtCenter: currentCenter,
-//                    fromDistance: 500,
-//                    pitch: 80,
-//                    heading: newHeading.trueHeading
-//                )
-//                mapView.setCamera(camera, animated: true)
-//            }
-//        }
-        
-        // 테스트용 주석 처리 부분 여기까지
-        
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             guard let location = locations.last else { return }
             let heading = manager.heading?.trueHeading ?? lastHeading
@@ -113,15 +84,32 @@ struct TrackingMapView: UIViewRepresentable {
             }
         }
         
+        /// 스크롤 후 다시 트래킹 모드로 전환
+        func restoreTrackingMode() {
+            guard let mapView = mapView else { return }
+            mapView.userTrackingMode = .followWithHeading
+        }
+        
+        func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
+            let isFollowing =
+            (mode == .follow || mode == .followWithHeading)
+            
+            guard let binding = isTracking else { return }
+            
+            DispatchQueue.main.async {
+                binding.wrappedValue = isFollowing
+            }
+        }
+        
         // 사인 관련 계산/표시는 SignsManager로 이동
         
         // MARK: - MKMapViewDelegate
-
+        
         /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let circle = overlay as? MKCircle {
                 let r = MKCircleRenderer(overlay: circle)
-                #if DEBUG
+#if DEBUG
                 let title = circle.title ?? ""
                 // start: 빨강, end: 파랑. in은 실선, out은 점선
                 if title.contains("debug-circle-start") {
@@ -135,7 +123,7 @@ struct TrackingMapView: UIViewRepresentable {
                 if title.hasSuffix("-out") {
                     r.lineDashPattern = [6, 6]
                 }
-                #endif
+#endif
                 return r
             }
             if let line = overlay as? ColoredPolyline {
@@ -185,14 +173,14 @@ struct TrackingMapView: UIViewRepresentable {
             
             let swiftUIView = ZStack {
                 // TODO: 제거 예정
-//                ZoneStation(
-//                    zone: ann.zone,
-//                    statusesForZone: ann.statusesForZone,
-//                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
-//                    loadZoneTeamScores: { zoneId in
-//                        Task {await self.viewModel!.loadZoneTeamScores(for: zoneId) }
-//                    }
-//                )
+                //                ZoneStation(
+                //                    zone: ann.zone,
+                //                    statusesForZone: ann.statusesForZone,
+                //                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
+                //                    loadZoneTeamScores: { zoneId in
+                //                        Task {await self.viewModel!.loadZoneTeamScores(for: zoneId) }
+                //                    }
+                //                )
                 if isChecked && !isClaimed {
                     ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                         .offset(y: -120)
@@ -216,14 +204,15 @@ struct TrackingMapView: UIViewRepresentable {
         }
         return _createMap(context: context)
     }
-
+    
+    
     // MKMapView 구성(지도 옵션/오버레이/어노테이션)
     private func _createMap(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
         
         // MARK: - 테스트용 (자유롭게 움직이기) 주석 처리 부분
-
-        map.isScrollEnabled = false
+        
+        //        map.isScrollEnabled = false
         map.isZoomEnabled = false
         map.isRotateEnabled = false
         map.isPitchEnabled = false
@@ -238,6 +227,7 @@ struct TrackingMapView: UIViewRepresentable {
         
         map.delegate = context.coordinator
         context.coordinator.mapView = map
+        context.coordinator.isTracking = $isTracking
         context.coordinator.conquestStatuses = conquestStatuses
         context.coordinator.teams = teams
         context.coordinator.zoneStatuses = zoneStatuses
@@ -249,12 +239,12 @@ struct TrackingMapView: UIViewRepresentable {
             validRange: 1...15,
             threshold: 120
         )
-
+        
         // 선과 정류소 버튼 표시
         MapElementInstaller.installOverlays(for: zones, on: map)
-        #if DEBUG
+#if DEBUG
         MapElementInstaller.installDebugGateCircles(for: zones, on: map)
-        #endif
+#endif
         MapElementInstaller.installStations(
             for: zones,
             statuses: conquestStatuses,
@@ -282,6 +272,13 @@ struct TrackingMapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
+        if onRestoreTracking {
+            context.coordinator.restoreTrackingMode()
+            DispatchQueue.main.async {
+                self.onRestoreTracking = false
+            }
+        }
+        
         // 변경된 상태 주입
         context.coordinator.zoneStatuses = zoneStatuses
         context.coordinator.conquestStatuses = conquestStatuses
@@ -300,15 +297,6 @@ struct TrackingMapView: UIViewRepresentable {
                 let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
                 
                 let swiftUIView = ZStack {
-                    // TODO: 제거 예정
-//                    ZoneStation(
-//                        zone: ann.zone,
-//                        statusesForZone: ann.statusesForZone,
-//                        zoneTeamScores: self.viewModel.zoneTeamScores,
-//                        loadZoneTeamScores: { zoneId in
-//                            Task { await self.viewModel.loadZoneTeamScores(for: zoneId) }
-//                        }
-//                    )
                     if isChecked && !isClaimed {
                         ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
                             .offset(y: -120)
@@ -326,7 +314,9 @@ struct TrackingMapView: UIViewRepresentable {
 
 struct TrackingMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
-
+    @State private var onRestoreTracking = false
+    @State private var isTracking = true  // 버튼 색상 전환용 상태
+    
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
     let userStatus: UserStatus
@@ -334,12 +324,14 @@ struct TrackingMapScreen: View {
     let refreshToken: UUID
     
     // MARK: - Body
-
+    
     var body: some View {
         ZStack(alignment: .top) {
             // 3D 부분 지도
             TrackingMapView(
                 viewModel: viewModel,
+                isTracking: $isTracking,
+                onRestoreTracking: $onRestoreTracking,
                 zoneStatuses: viewModel.zoneStatuses,
                 conquestStatuses: conquestStatuses,
                 teams: teams,
@@ -347,32 +339,41 @@ struct TrackingMapScreen: View {
             )
             .ignoresSafeArea()
             
-            HStack(spacing: 2) {
-                if viewModel.teams.count >= 2 {
-                    ScoreBoard(
-                        leftTeamName: viewModel.teams[1].teamName,
-                        rightTeamName: viewModel.teams[0].teamName,
-                        leftTeamScore: viewModel.teams[1].conqueredZones,
-                        rightTeamScore: viewModel.teams[0].conqueredZones,
-                        ddayText: viewModel.ddayText
-                    )
-                } else {
-                    // 로딩 중일 때는 기본값 표시
-                    ScoreBoard(
-                        leftTeamName: "—",
-                        rightTeamName: "—",
-                        leftTeamScore: 0,
-                        rightTeamScore: 0,
-                        ddayText: viewModel.ddayText
-                    )
+            VStack{
+                HStack(spacing: 2) {
+                    if viewModel.teams.count >= 2 {
+                        ScoreBoard(
+                            leftTeamName: viewModel.teams[1].teamName,
+                            rightTeamName: viewModel.teams[0].teamName,
+                            leftTeamScore: viewModel.teams[1].conqueredZones,
+                            rightTeamScore: viewModel.teams[0].conqueredZones,
+                            ddayText: viewModel.ddayText
+                        )
+                    } else {
+                        // 로딩 중일 때는 기본값 표시
+                        ScoreBoard(
+                            leftTeamName: "—",
+                            rightTeamName: "—",
+                            leftTeamScore: 0,
+                            rightTeamScore: 0,
+                            ddayText: viewModel.ddayText
+                        )
+                    }
+                    
+                    Spacer()
+                    
+                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
                 }
+                .padding(.vertical, 58)
+                .padding(.horizontal, 20)
                 
-                Spacer()
-                
-                TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
+                TrackingButton(
+                    isTracking: $isTracking,
+                    restoreTracking: {
+                        onRestoreTracking = true
+                    }
+                )
             }
-            .padding(.top, 60)
-            .padding(.horizontal, 20)
         }
         .task {
             await viewModel.loadMapInfo()
