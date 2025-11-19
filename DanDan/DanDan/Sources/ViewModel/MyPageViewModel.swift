@@ -33,6 +33,16 @@ class MyPageViewModel: ObservableObject {
     var weekScore: Int { userStatus.userWeekScore }
     var teamRank: Int { userStatus.rank }
     var teamName: String { userStatus.userTeam }
+    var teamRegionName: String {
+        switch userStatus.userTeam.lowercased() {
+        case "blue":
+            return "북구"
+        case "yellow":
+            return "남구"
+        default:
+            return userStatus.userTeam
+        }
+    }
 
     var currentWeekText: String {
         guard let period = currentPeriod else { return "-" }

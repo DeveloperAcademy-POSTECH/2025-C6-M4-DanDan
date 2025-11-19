@@ -10,6 +10,7 @@ import SwiftUI
 struct ProfileHeader: View {
     let profileImage: Image
     let displayName: String
+    let teamName: String
     let winCount: Int
     let totalScore: Int
     
@@ -49,9 +50,18 @@ struct ProfileHeader: View {
             
             // TODO: - 컴포넌트화 필요
             VStack(alignment: .leading, spacing: 24) {
-                Text(displayName)
-                    .font(.pretendard(.semiBold, size: 22))
-                    .foregroundColor(.steelBlack)
+                
+                VStack(spacing: 4) {
+                    Text(displayName)
+                        .font(.pretendard(.semiBold, size: 22))
+                        .foregroundColor(.steelBlack)
+                        .frame(height: 22)
+                    
+                    Text("포항시 \(teamName)")
+                        .font(.PR.caption4)
+                        .foregroundColor(.gray3)
+                        .frame(height: 20)
+                }
 
                 HStack(spacing: 24) {
                     HStack(spacing: 8) {
