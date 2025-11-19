@@ -28,6 +28,7 @@ struct WeeklyAwardView: View {
         ZStack {
             if isLoading {
                 LoadingLottieView(animationName: "loading")
+                    .ignoresSafeArea()
             }
             // 애니메이션이 끝난 후 나타나는 UI
             if isAnimationFinished {
