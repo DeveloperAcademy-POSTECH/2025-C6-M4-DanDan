@@ -23,6 +23,7 @@ final class ProfileEditViewModel: ObservableObject {
     // 변경 추적 플래그
     @Published var didRemoveImage: Bool = false
     @Published var didPickNewImage: Bool = false
+    @Published var hasServerImage: Bool = false
 
     // 초기 상태 스냅샷
     private var initialNickname: String = ""
@@ -34,13 +35,18 @@ final class ProfileEditViewModel: ObservableObject {
     // 버튼 활성화, BackButton 제한
     var isSaveEnabled: Bool {
         let canPut = !nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isNicknameTooLong
-        let canDelete = didRemoveImage
+        let canDelete = didRemoveImage && hasServerImage
         return canPut || canDelete
     }
 
     // Alert 활성화
     var hasUnsavedChanges: Bool {
         nickname != initialNickname || didRemoveImage || didPickNewImage
+    }
+    
+    // UI에서 삭제 버튼 노출 제어
+    var canDeleteImage: Bool {
+        hasServerImage || didPickNewImage
     }
 
     // MARK: - Init
@@ -55,7 +61,11 @@ final class ProfileEditViewModel: ObservableObject {
             // 닉네임 반영
             nickname = resp.data.user.userName
 
-            // 프로필 이미지 로드 (URL 존재 시), 없으면 nil 유지 → AvatarEditButton에서 기본 ZStack 노출
+            // 서버 보유 여부는 profileImageKey 기준으로 판별 (기본 URL만 있는 경우는 삭제 불가)
+            let serverHasCustomImage = resp.data.user.profileImageKey != nil
+            hasServerImage = serverHasCustomImage
+
+            // 프로필 이미지 로드 (URL 존재 시), 없으면 nil 유지 → AvatarEditButton에서 기본 아바타 노출
             if let urlString = resp.data.user.profileUrl, let url = URL(string: urlString) {
                 do {
                     let (data, _) = try await URLSession.shared.data(from: url)
@@ -67,9 +77,7 @@ final class ProfileEditViewModel: ObservableObject {
                     print("⚠️ Profile image load failed:", error)
                     profileImage = nil
                 }
-            } else {
-                profileImage = nil
-            }
+            } else { profileImage = nil }
 
             // 초기 상태 스냅샷 저장 (최초 1회)
             if initialNickname.isEmpty && initialProfileImage == nil {
@@ -105,20 +113,22 @@ final class ProfileEditViewModel: ObservableObject {
             return
         }
 
-        // 4) 이름 수정 + 사진 삭제: PUT(이름만) → DELETE(이미지)
+        // 4) 이름 수정 + 사진 삭제: PUT(이름만) → (서버 이미지가 있을 때만) DELETE(이미지)
         if didRemoveImage && nameChanged && profileImage == nil {
             _ = try await MultipartUploadHelper.uploadProfileUpdate(
                 userId: userId,
                 name: nickname,
                 image: nil
             )
-            _ = try await MultipartUploadHelper.deleteProfileImage(userId: userId)
+            if hasServerImage {
+                _ = try await MultipartUploadHelper.deleteProfileImage(userId: userId)
+            }
             navigationManager.pop()
             return
         }
 
-        // 3) 사진만 삭제
-        if didRemoveImage && profileImage == nil {
+        // 3) 사진만 삭제 (서버 이미지가 있을 때만 서버 삭제)
+        if didRemoveImage && profileImage == nil && hasServerImage {
             _ = try await MultipartUploadHelper.deleteProfileImage(userId: userId)
             navigationManager.pop()
             return

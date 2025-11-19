@@ -26,6 +26,7 @@ struct ProfileEditView: View {
                 
                 ProfileEditImage(
                     image: viewModel.profileImage,
+                    canDelete: viewModel.canDeleteImage,
                     onPickImage: { image in
                         viewModel.setNewImage(image)
                     },

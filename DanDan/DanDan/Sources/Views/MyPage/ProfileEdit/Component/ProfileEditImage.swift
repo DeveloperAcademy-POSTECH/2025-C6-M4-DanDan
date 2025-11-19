@@ -11,6 +11,7 @@ import UIKit
 
 struct ProfileEditImage: View {
     let image: UIImage?
+    let canDelete: Bool
     let onPickImage: (UIImage) -> Void
     let onRemoveImage: () -> Void
     @State private var selectedItem: PhotosPickerItem?
@@ -34,7 +35,7 @@ struct ProfileEditImage: View {
                 Button("앨범에서 선택") {
                     showPicker = true
                 }
-                if image != nil {
+                if image != nil && canDelete {
                     Button("프로필 사진 삭제", role: .destructive) {
                         onRemoveImage()
                     }

@@ -23,12 +23,9 @@ struct AvatarEditButton: View {
                             .resizable()
                             .scaledToFill()
                     } else {
-                        ZStack {
-                            Circle().fill(Color.lightGreen)
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 52, weight: .regular))
-                                .foregroundStyle(.gray4)
-                        }
+                        Image("default_avatar")
+                            .resizable()
+                            .scaledToFill()
                     }
                 }
                 .frame(width: diameter, height: diameter)
