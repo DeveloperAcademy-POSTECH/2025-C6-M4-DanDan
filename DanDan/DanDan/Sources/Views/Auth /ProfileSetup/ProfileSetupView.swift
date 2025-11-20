@@ -33,7 +33,7 @@ struct ProfileSetupView: View {
             PrimaryButton(
                 "다음",
                 action: {
-                    viewModel.tapSchoolSelectionButton()
+                    viewModel.tapTeamInputButton()
                 },
                 isEnabled: !viewModel.nickname.trimmingCharacters(in: .whitespaces).isEmpty && !isNicknameTooLong,
                 horizontalPadding: 20,
