@@ -22,6 +22,6 @@ struct ZoneListPanelView: View {
         .frame(maxHeight: .infinity)
         
         // TODO: 탭바 위에 리스트 보이게 하기 - 하지만 해피는 지금이 이쁘다 생각함
-        .padding(.bottom, 82)
+        .padding(.bottom, 24)
     }
 }
