@@ -29,7 +29,7 @@ struct MyPageView: View {
             
             WeeklyActivityCard(
                 currentWeekText: viewModel.currentWeekText,
-                weekDistanceKmIntText: viewModel.weekDistanceKmIntText,
+                totalDistanceKm: viewModel.totalDistanceKmText,
                 weekScore: viewModel.weekScore,
                 teamRank: viewModel.teamRank,
                 teamName: viewModel.teamName

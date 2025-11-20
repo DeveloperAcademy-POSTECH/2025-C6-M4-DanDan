@@ -45,9 +45,14 @@ struct CompletedSeasonCard: View {
                         Text("거리")
                             .font(.PR.body4)
                             .foregroundColor(.gray2)
-                        Text("\(Int(record.distanceKm ?? 0))km")
-                            .font(.PR.title2)
-                            .foregroundColor(.steelBlack)
+                        HStack(spacing: 0){
+                            Text(String(format: "%.1f", record.distanceKm ?? 0))
+                                .font(.PR.title2)
+                                .foregroundStyle(.steelBlack)
+                            Text("km")
+                                .font(.PR.body2)
+                                .foregroundStyle(.steelBlack)
+                        }
                     }
                     VStack(spacing: 8) {
                         Text("점수")
@@ -110,3 +115,4 @@ struct CompletedSeasonCard: View {
 //        range: "2025.10.20 ~ 2025.10.26"
 //    )
 // }
+
