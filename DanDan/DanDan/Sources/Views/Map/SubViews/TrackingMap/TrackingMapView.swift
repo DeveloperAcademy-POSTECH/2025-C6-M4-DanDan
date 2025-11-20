@@ -363,7 +363,7 @@ struct TrackingMapScreen: View {
 
         }
         .task {
-            await viewModel.loadMapInfo(updateScore: false)
+            await viewModel.loadMapInfo(updateScore: true)
             viewModel.startDDayTimer(period: period)
         }
         .onReceive(NotificationCenter.default.publisher(for: ZoneConquerActionHandler.didUpdateScoreNotification)) { _ in
