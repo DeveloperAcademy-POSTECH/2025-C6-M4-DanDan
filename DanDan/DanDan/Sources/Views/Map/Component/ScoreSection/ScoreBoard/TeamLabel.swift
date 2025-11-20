@@ -25,19 +25,19 @@ struct TeamLabel: View {
             HStack(spacing: 8) {
                 Text(mappedTeamName)
                     .font(.PR.caption5)
-                    .foregroundStyle(.steelBlack)
+                    .foregroundStyle(.black1)
                 Text("\(score)")
                     .font(.PR.caption5)
-                    .foregroundStyle(.gray1)
+                    .foregroundStyle(.black1)
             }
         case .right:
             HStack(spacing: 8) {
                 Text("\(score)")
                     .font(.PR.caption5)
-                    .foregroundStyle(.gray1)
+                    .foregroundStyle(.black1)
                 Text(mappedTeamName)
                     .font(.PR.caption5)
-                    .foregroundStyle(.steelBlack)
+                    .foregroundStyle(.black1)
             }
         }
     }

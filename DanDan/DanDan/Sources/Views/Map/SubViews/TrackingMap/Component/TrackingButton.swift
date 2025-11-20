@@ -17,6 +17,7 @@ struct TrackingButton: View {
         } label: {
             Image(systemName: "location.fill")
                 .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.steelBlack)
                 .foregroundStyle(isTracking ? .primaryGreen : .steelBlack)
                 .frame(width: 44, height: 44)
         }

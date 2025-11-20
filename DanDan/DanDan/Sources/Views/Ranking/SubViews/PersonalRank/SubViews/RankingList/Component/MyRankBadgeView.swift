@@ -14,7 +14,7 @@ struct MyRankBadgeView: View {
             .font(.pretendard(.extraBold, size: 10))
             .foregroundStyle(.white)
             .frame(width: 16, height: 16)
-            .background(Circle().fill(Color.darkGreen))
+            .background(Circle().fill(Color.black1))
                 .overlay(
                     Circle()
                         .stroke(Color.white, lineWidth: 1)

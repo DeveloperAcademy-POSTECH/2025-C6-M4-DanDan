@@ -28,7 +28,12 @@ struct ZoneInfoView: View {
                     ZoneInfoTitle(zoneId: zone.zoneId, zoneName: zone.zoneName,  distance: zone.distance,)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button { dismiss() } label: { Image(systemName: "xmark") }
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.gray3)
+                    }
                 }
             }
         }

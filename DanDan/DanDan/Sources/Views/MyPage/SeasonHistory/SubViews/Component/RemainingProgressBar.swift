@@ -26,7 +26,7 @@ struct RemainingProgressBar: View {
             // 오른쪽 남은 시간 텍스트
             Text(trailingText)
                 .font(.PR.caption4)
-                .foregroundStyle(.gray3)
+                .foregroundStyle(.gray2)
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {

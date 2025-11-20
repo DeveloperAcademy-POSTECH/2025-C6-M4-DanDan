@@ -35,7 +35,7 @@ struct TeamAssignmentView: View {
                 // 디버그 폴백
                 Text("팀 정보를 불러오는 중… (\(team))")
                     .font(.PR.body2)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.white1)
                     .padding(.top, 80)
             }
             

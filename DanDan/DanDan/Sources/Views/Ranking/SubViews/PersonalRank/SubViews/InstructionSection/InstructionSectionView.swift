@@ -14,6 +14,7 @@ struct InstructionSectionView: View {
         HStack {
             Text("개인 랭킹")
                 .font(.PR.title1)
+                .foregroundStyle(.steelBlack)
 
             Spacer()
 

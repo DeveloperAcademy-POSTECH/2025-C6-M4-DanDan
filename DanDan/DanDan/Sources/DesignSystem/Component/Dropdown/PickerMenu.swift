@@ -26,8 +26,10 @@ struct PickerMenu: View {
                     HStack(spacing: 4) {
                         Text(option)
                             .font(.PR.caption4)
+                            .foregroundColor(.darkGreen)
                         Image(systemName: "chevron.down")
                             .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.darkGreen)
                     }
                     .opacity(0)
                 }

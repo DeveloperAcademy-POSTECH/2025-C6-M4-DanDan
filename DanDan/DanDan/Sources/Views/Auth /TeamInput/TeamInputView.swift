@@ -47,7 +47,7 @@ struct TeamInputView: View {
                 isEnabled: selected != nil,
                 horizontalPadding: 20,
                 background: .primaryGreen,
-                foreground: .white
+                foreground: .white1
             )
             .padding(.bottom, 20)
         }
