@@ -514,6 +514,7 @@ struct FullMapView: UIViewRepresentable {
 struct FullMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
     
+    @State private var showZoneList = false
     @State private var isRightSelected = false
     @State private var effectiveToken: UUID = .init()
     @State private var selectedZone: Zone?
@@ -592,6 +593,11 @@ struct FullMapScreen: View {
                             rightTeamScore: viewModel.teams[0].conqueredZones,
                             ddayText: viewModel.ddayText
                         )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                showZoneList.toggle()
+                            }
+                        }
                     } else {
                         // 로딩 중일 때는 기본값 표시
                         ScoreBoard(
@@ -601,20 +607,35 @@ struct FullMapScreen: View {
                             rightTeamScore: 0,
                             ddayText: viewModel.ddayText
                         )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                showZoneList.toggle()
+                            }
+                        }
                     }
-                    
+
                     Spacer()
                     
                     TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
                 }
-
-                SegmentedControl(
-                    leftTitle: "전체",
-                    rightTitle: "개인",
-                    frameMaxWidth: 172,
-                    isRightSelected: $isRightSelected
-                )
-                .padding(.leading, -20)
+                
+                ZStack(alignment: .topLeading) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        SegmentedControl(
+                            leftTitle: "전체",
+                            rightTitle: "개인",
+                            frameMaxWidth: 172,
+                            isRightSelected: $isRightSelected
+                        )
+                        .zIndex(-1)
+                        .padding(.leading, -20)
+                    }
+                    if showZoneList {
+                        ZoneListPanelView()
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                            .padding(.top, 8)
+                    }
+                }
             }
             .padding(.top, 60)
             .padding(.horizontal, 20)
