@@ -32,6 +32,7 @@ struct MyPageUser: Decodable {
 struct MyPageCurrentWeek: Decodable {
     let userWeekScore: Int
     let ranking: Int
+    let totalDistanceKm: Double
     let weekIndex: Int
     let startDate: String
     let endDate: String

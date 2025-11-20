@@ -12,9 +12,9 @@ extension String {
     var teamDisplayName: String {
         switch self {
         case "Blue", "blue":
-            return "파랑팀"
+            return "북구팀"
         case "Yellow", "yellow":
-            return "노랑팀"
+            return "남구팀"
         default:
             return self
         }

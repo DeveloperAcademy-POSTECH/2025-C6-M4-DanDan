@@ -25,7 +25,7 @@ final class SignsManager {
 		mapView: MKMapView,
 		zones: [Zone],
 		validRange: ClosedRange<Int> = 1...15,
-		threshold: CLLocationDistance = 120
+		threshold: CLLocationDistance = 200
 	) {
 		self.mapView = mapView
 		self.zones = zones

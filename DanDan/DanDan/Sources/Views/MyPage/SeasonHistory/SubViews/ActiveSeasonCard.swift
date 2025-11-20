@@ -44,9 +44,14 @@ struct ActiveSeasonCard: View {
                         Text("거리")
                             .font(.PR.body4)
                             .foregroundStyle(.gray2)
-                        Text("\(Int(viewModel.currentDistanceKm))km")
-                            .font(.PR.title2)
-                            .foregroundStyle(.steelBlack)
+                        HStack(spacing: 0){
+                            Text(String(format: "%.1f", viewModel.currentDistanceKm))
+                                .font(.PR.title2)
+                                .foregroundStyle(.steelBlack)
+                            Text("km")
+                                .font(.PR.body2)
+                                .foregroundStyle(.steelBlack)
+                        }
                     }
                     VStack(spacing: 8) {
                         Text("점수")
@@ -102,3 +107,4 @@ struct ActiveSeasonCard: View {
 // #Preview {
 //    ActiveSeasonCard(viewModel: SeasonHistoryViewModel(autoRefresh: false))
 // }
+

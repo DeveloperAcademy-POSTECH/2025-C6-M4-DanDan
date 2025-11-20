@@ -68,6 +68,13 @@ class StatusManager: ObservableObject {
         userStatus.userDailyScore += 1
         userStatus.userWeekScore += 1
     }
+    
+    /// 사용자의 일일/주간 점수를 지정된 수치만큼 증가시킵니다.
+    func incrementDailyScore(by amount: Int) {
+        guard amount > 0 else { return }
+        userStatus.userDailyScore += amount
+        userStatus.userWeekScore += amount
+    }
 
     /// 사용자가 오늘 해당 구간을 지나갔다면, 체크 상태로 저장합니다.
     /// - Parameters:

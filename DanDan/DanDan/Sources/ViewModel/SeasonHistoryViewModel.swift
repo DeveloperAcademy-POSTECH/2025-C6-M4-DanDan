@@ -52,7 +52,7 @@ final class SeasonHistoryViewModel: ObservableObject {
 
                 self.currentWeekScore = cw.userWeekScore
                 self.currentTeamRank = cw.ranking
-                self.currentDistanceKm = cw.distanceKm ?? 0
+                self.currentDistanceKm = cw.totalDistanceKm ?? 0
                 self.currentTeamName = cw.userTeam
             } else {
                 self.hasCurrentWeek = false
@@ -228,4 +228,5 @@ private extension Date {
         return calendar.date(byAdding: DateComponents(day: 1, second: -1), to: start)!
     }
 }
+
 
