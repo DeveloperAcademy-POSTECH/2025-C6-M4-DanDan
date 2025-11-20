@@ -40,9 +40,6 @@ struct WeeklyActivityCard: View {
                     Text("거리")
                         .font(.PR.caption4)
                         .foregroundColor(.gray3)
-                    Text("\(weekDistanceKmIntText)km")
-                        .font(.PR.title2)
-                        .foregroundColor(.steelBlack)
                     HStack(spacing: 0){
                         Text("\(weekDistanceKmIntText)")
                             .font(.PR.title2)
