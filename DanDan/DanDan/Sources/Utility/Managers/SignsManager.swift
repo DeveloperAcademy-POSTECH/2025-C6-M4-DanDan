@@ -69,16 +69,14 @@ final class SignsManager {
 		let diff = deltaDeg(heading, zoneBearing)
 		let isForward = diff <= 90
 		
-		let destinationZoneId = isForward ? (nearest.zoneId + 1) : (nearest.zoneId - 1)
-		guard validRange.contains(destinationZoneId) else { return nil }
+		// 유효 범위를 벗어나면 클램프하여 항상 목적지 결정
+		let rawNextId = isForward ? (nearest.zoneId + 1) : (nearest.zoneId - 1)
+		let clampedNextId = min(max(rawNextId, validRange.lowerBound), validRange.upperBound)
 		
+		// 진행 방향에 맞는 경계 좌표 사용
 		let boundaryCoord = isForward ? nearest.zoneEndPoint : nearest.zoneStartPoint
-		let boundaryLoc = CLLocation(latitude: boundaryCoord.latitude, longitude: boundaryCoord.longitude)
-		let distanceToBoundary = location.distance(from: boundaryLoc)
 		
-		guard distanceToBoundary <= threshold else { return nil }
-		
-		return SignTarget(destinationZoneId: destinationZoneId, coordinate: boundaryCoord)
+		return SignTarget(destinationZoneId: clampedNextId, coordinate: boundaryCoord)
 	}
 	
 	private func removeSignIfNeeded() {
