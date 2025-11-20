@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WeeklyActivityCard: View {
     let currentWeekText: String
-    let weekDistanceKmIntText: String
+    let totalDistanceKm: String
     let weekScore: Int
     let teamRank: Int
     let teamName: String
@@ -40,9 +40,14 @@ struct WeeklyActivityCard: View {
                     Text("거리")
                         .font(.PR.caption4)
                         .foregroundColor(.gray3)
-                    Text("\(weekDistanceKmIntText)km")
-                        .font(.PR.title2)
-                        .foregroundColor(.steelBlack)
+                    HStack(spacing: 0){
+                        Text("\(totalDistanceKm)")
+                            .font(.PR.title2)
+                            .foregroundStyle(.steelBlack)
+                        Text("km")
+                            .font(.PR.body2)
+                            .foregroundStyle(.steelBlack)
+                    }
                 }
 
                 VStack(spacing: 12) {
@@ -80,3 +85,4 @@ struct WeeklyActivityCard: View {
 // #Preview {
 //    WeeklyActivityCard(viewModel: MyPageViewModel())
 // }
+
