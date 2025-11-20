@@ -13,6 +13,7 @@ import MapKit
 class MapScreenViewModel: ObservableObject {
     @Published var teams: [MainMapTeam] = []
     @Published var zoneStatuses: [ZoneStatus] = []
+    @Published var zoneStatusDetail: [ZoneStatusDetail] = []
     @Published var userDailyScore: Int = 0
     @Published var startDate: String = ""
     @Published var endDate: String = ""
@@ -63,6 +64,16 @@ class MapScreenViewModel: ObservableObject {
             zoneTeamScores[zoneId] = data.teamScores
         } catch {
             print("❌ (\(zoneId)) 구역 팀 점수 불러오기 실패: \(error)")
+        }
+    }
+    
+    /// 구역별 점령 상태를 불러옵니다.
+    func loadZoneStatusDetail() async {
+        do {
+            let data = try await service.fetchZoneStatusDetail()
+            zoneStatusDetail = data
+        } catch {
+            print("❌ 구역별 정령 상태 불러오기 실패: \(error)")
         }
     }
     

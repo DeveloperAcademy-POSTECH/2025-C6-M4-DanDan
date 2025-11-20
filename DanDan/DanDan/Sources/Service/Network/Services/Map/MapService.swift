@@ -119,4 +119,30 @@ final class MapService {
         let decoded = try JSONDecoder().decode(ZoneTeamScoresResponseDTO.self, from: data)
         return decoded.data
     }
+    
+    /// 구역별 점령 상태 조회 API
+    func fetchZoneStatusDetail() async throws -> [ZoneStatusDetail] {
+        guard
+            let url = URL(
+                string:
+                    "https://www.singyupark.cloud:8443/api/v1/conquest/zones/status-detail"
+            )
+        else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        guard 200..<300 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        
+        let decoded = try JSONDecoder().decode(ZoneStatusDetailResponseDTO.self, from: data)
+        
+        return decoded.data
+    }
 }

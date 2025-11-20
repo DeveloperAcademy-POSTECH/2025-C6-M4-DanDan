@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ZoneStatusRowView: View {
-    let zone: ZoneStatusTest
+    let zone: ZoneStatusDetail
     
     var body: some View {
         HStack {
@@ -17,7 +17,7 @@ struct ZoneStatusRowView: View {
                 .foregroundStyle(.darkGreen)
                 .padding(.trailing, 12)
             
-            Text("\(zone.name)")
+            Text("\(zone.zoneName)")
                 .font(.PR.body4)
                 .foregroundStyle(.gray1)
             
@@ -28,7 +28,7 @@ struct ZoneStatusRowView: View {
                     .font(.PR.caption5)
                     .foregroundColor(.steelBlack)
                 
-                Text("\(zone.blueScore) : \(zone.yellowScore)")
+                Text("\(zone.teamScores[0].totalScore) : \(zone.teamScores[1].totalScore)")
                     .font(.PR.caption5)
                     .foregroundColor(.steelBlack)
             }
@@ -36,18 +36,7 @@ struct ZoneStatusRowView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 22)
-        .background(.subA20)
+        .background(zone.leadingTeamName == "Blue" ? .subA20: .subB20)
         .cornerRadius(12)
     }
-}
-
-#Preview {
-    ZoneStatusRowView(
-        zone: ZoneStatusTest(
-            id: 1,
-            name: "상생누리길 1",
-            blueScore: 73,
-            yellowScore: 23
-        )
-    )
 }

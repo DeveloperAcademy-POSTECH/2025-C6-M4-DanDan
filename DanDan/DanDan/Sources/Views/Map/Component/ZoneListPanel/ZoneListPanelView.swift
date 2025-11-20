@@ -8,33 +8,20 @@
 import SwiftUI
 
 struct ZoneListPanelView: View {
+    let zoneStatusDetail: [ZoneStatusDetail]
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 4) {
-                ForEach(sampleZones) { zone in
+                ForEach(zoneStatusDetail) { zone in
                     ZoneStatusRowView(zone: zone)
                 }
             }
         }
-        .frame(maxHeight: .infinity)   // 원하는 높이로 조절 가능
+        .frame(width: 263)
+        .frame(maxHeight: .infinity)
+        
+        // TODO: 탭바 위에 리스트 보이게 하기 - 하지만 해피는 지금이 이쁘다 생각함
+        .padding(.bottom, 82)
     }
 }
-
-#Preview {
-    ZoneListPanelView()
-}
-
-
-struct ZoneStatusTest: Identifiable {
-    let id: Int
-    let name: String
-    let blueScore: Int
-    let yellowScore: Int
-}
-
-let sampleZones: [ZoneStatusTest] = [
-    .init(id: 1, name: "상생누리길 1", blueScore: 73, yellowScore: 23),
-    .init(id: 2, name: "상생누리길 2", blueScore: 16, yellowScore: 23),
-    .init(id: 3, name: "상생누리길 3", blueScore: 17, yellowScore: 23),
-]

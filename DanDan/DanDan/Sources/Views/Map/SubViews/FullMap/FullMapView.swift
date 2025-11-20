@@ -552,6 +552,7 @@ struct FullMapScreen: View {
             // 팀 정보 보정 후 맵 데이터 로드
             await StatusManager.shared.ensureUserTeamLoaded()
             await viewModel.loadMapInfo()
+            await viewModel.loadZoneStatusDetail()
         }
         .sheet(item: $viewModel.selectedZone) { z in
             ZoneInfoView(
@@ -627,13 +628,12 @@ struct FullMapScreen: View {
                             frameMaxWidth: 172,
                             isRightSelected: $isRightSelected
                         )
-                        .zIndex(-1)
                         .padding(.leading, -20)
                     }
+                    
                     if showZoneList {
-                        ZoneListPanelView()
+                        ZoneListPanelView(zoneStatusDetail: viewModel.zoneStatusDetail)
                             .transition(.move(edge: .top).combined(with: .opacity))
-                            .padding(.top, 8)
                     }
                 }
             }
