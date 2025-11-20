@@ -43,6 +43,14 @@ struct WeeklyActivityCard: View {
                     Text("\(weekDistanceKmIntText)km")
                         .font(.PR.title2)
                         .foregroundColor(.steelBlack)
+                    HStack(spacing: 0){
+                        Text("\(weekDistanceKmIntText)")
+                            .font(.PR.title2)
+                            .foregroundStyle(.steelBlack)
+                        Text("km")
+                            .font(.PR.body2)
+                            .foregroundStyle(.steelBlack)
+                    }
                 }
 
                 VStack(spacing: 12) {
