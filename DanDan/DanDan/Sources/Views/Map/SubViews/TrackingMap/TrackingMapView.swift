@@ -333,17 +333,14 @@ struct TrackingMapScreen: View {
                     
                     TodayMyScore(score: viewModel.userDailyScore) // 오늘 내 점수
                 }
-                .padding(.vertical, 58)
-                .padding(.horizontal, 20)
-                 
-                // 트래킹 버튼(오른쪽 상단 고정)
-                TrackingButton(
-                    isTracking: $isTracking,
-                    restoreTracking: {
-                        onRestoreTracking = true
-                    }
-                )
+                    
+                if showZoneList {
+                    ZoneListPanelView(zoneStatusDetail: viewModel.zoneStatusDetail)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
             }
+            .padding(.vertical, 58)
+            .padding(.horizontal, 20)
             
             // ScoreBoard 아래 왼쪽: 정복 버튼(집계)
             let pendingZoneIds: [Int] = zones
@@ -384,6 +381,7 @@ struct TrackingMapScreen: View {
         }
         .task {
             await viewModel.loadMapInfo()
+            await viewModel.loadZoneStatusDetail()
             viewModel.startDDayTimer(period: period)
         }
         // 점수/상태 갱신 알림 수신하여 상단 점수 동기화
