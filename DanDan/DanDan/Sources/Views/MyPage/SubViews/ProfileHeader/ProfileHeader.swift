@@ -33,7 +33,7 @@ struct ProfileHeader: View {
 
                     Image(systemName: "pencil")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(.steelWhite)
                         .frame(
                             width: UIScreen.main.bounds.width * 0.07,
                             height: UIScreen.main.bounds.width * 0.07

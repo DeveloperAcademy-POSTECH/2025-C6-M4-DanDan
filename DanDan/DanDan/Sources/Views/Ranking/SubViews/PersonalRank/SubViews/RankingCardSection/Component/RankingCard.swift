@@ -68,7 +68,6 @@ struct RankingCard: View {
                                 .offset(x: 3, y: -4)
                         }
                     }
-                    .padding(.bottom, 10)
                     .shadow(color: .black.opacity(0.15), radius: 3, x: 0, y: 2)
             }
             .padding(.bottom, 10)
@@ -105,7 +104,7 @@ struct RankingCard: View {
 //            }
         }
         .frame(width: 110, height: 140)
-        .background(Color.white1)
+        .background(Color.steelWhite)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.20), radius: 2, x: 0, y: 2)
         .overlay(alignment: .top) {
