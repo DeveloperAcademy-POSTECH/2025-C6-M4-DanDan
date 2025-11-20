@@ -94,6 +94,52 @@ final class ZoneConquerActionHandler {
             }
         }
     }
+    
+    /// 여러 구역을 한 번에 정복 처리합니다. 완료 후 한 번만 점수 업데이트 이벤트를 보냅니다.
+    static func handleConquer(zoneIds: [Int]) {
+        let uniqueIds = Array(Set(zoneIds))
+        guard !uniqueIds.isEmpty else { return }
+        
+        let group = DispatchGroup()
+        var succeeded: [Int] = []
+        
+        for id in uniqueIds {
+            group.enter()
+            ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
+                guard ok else {
+                    print("🚨 postChecked failed: \(id)")
+                    group.leave()
+                    return
+                }
+                ZoneCheckedService.shared.acquireScore(zoneId: id) { ok2 in
+                    if ok2 {
+                        succeeded.append(id)
+                    } else {
+                        print("🚨 acquireScore failed: \(id)")
+                    }
+                    group.leave()
+                }
+            }
+        }
+        
+        group.notify(queue: .main) {
+            let count = succeeded.count
+            guard count > 0 else { return }
+            
+            // 점수는 한 번에 올림
+            StatusManager.shared.incrementDailyScore(by: count)
+            
+            // 로티 연출 타이밍을 고려해 보상 수령 상태를 약간 지연 반영
+            DispatchQueue.main.asyncAfter(deadline: .now() + claimAnimationHoldDuration) {
+                for id in succeeded {
+                    StatusManager.shared.setRewardClaimed(zoneId: id, claimed: true)
+                }
+            }
+            
+            // UI 동기화를 위한 알림은 한 번만
+            NotificationCenter.default.post(name: didUpdateScoreNotification, object: nil)
+        }
+    }
 }
 
 // SwiftUI 버튼을 얹기 위한 MKAnnotation

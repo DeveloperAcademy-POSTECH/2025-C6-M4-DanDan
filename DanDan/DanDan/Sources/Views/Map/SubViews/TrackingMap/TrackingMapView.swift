@@ -92,7 +92,7 @@ struct TrackingMapView: UIViewRepresentable {
         
         func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
             let isFollowing =
-            (mode == .follow || mode == .followWithHeading)
+                (mode == .follow || mode == .followWithHeading)
             
             guard let binding = isTracking else { return }
             
@@ -107,25 +107,25 @@ struct TrackingMapView: UIViewRepresentable {
         
         /// 오버레이(폴리라인) 렌더러 - 구역별 색/굵기 등 스타일 지정
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            if let circle = overlay as? MKCircle {
-                let r = MKCircleRenderer(overlay: circle)
-#if DEBUG
-                let title = circle.title ?? ""
-                // start: 빨강, end: 파랑. in은 실선, out은 점선
-                if title.contains("debug-circle-start") {
-                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
-                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.08)
-                } else {
-                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
-                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.08)
-                }
-                r.lineWidth = 2
-                if title.hasSuffix("-out") {
-                    r.lineDashPattern = [6, 6]
-                }
-#endif
-                return r
-            }
+//            if let circle = overlay as? MKCircle {
+//                let r = MKCircleRenderer(overlay: circle)
+            // #if DEBUG
+//                let title = circle.title ?? ""
+//                // start: 빨강, end: 파랑. in은 실선, out은 점선
+//                if title.contains("debug-circle-start") {
+//                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
+//                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.08)
+//                } else {
+//                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
+//                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.08)
+//                }
+//                r.lineWidth = 2
+//                if title.hasSuffix("-out") {
+//                    r.lineDashPattern = [6, 6]
+//                }
+            // #endif
+//                return r
+//            }
             if let line = overlay as? ColoredPolyline {
                 let renderer = MKPolylineRenderer(overlay: line)
                 renderer.strokeColor = strokeProvider.stroke(for: line.zoneId, isOutline: line.isOutline)
@@ -151,46 +151,14 @@ struct TrackingMapView: UIViewRepresentable {
                 
                 let swiftUIView = ZoneSigns(zoneId: ann.destinationZoneId)
                 view.setSwiftUIView(swiftUIView)
-                view.contentSize = CGSize(width: 80, height: 80)
+                view.contentSize = CGSize(width: 120, height: 120)
                 view.centerOffset = CGPoint(x: 0, y: -60)
                 view.canShowCallout = false
                 return view
             }
-            guard let ann = annotation as? StationAnnotation else { return nil }
-            
-            let id = "station-hosting"
-            let view: HostingAnnotationView
-            if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id) as? HostingAnnotationView {
-                view = reused
-                view.annotation = ann
-            } else {
-                view = HostingAnnotationView(annotation: ann, reuseIdentifier: id)
-            }
-            
-            // 정복 조건(오늘 체크했고, 보상 미수령) 판단 후 뷰 구성
-            let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
-            let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
-            
-            let swiftUIView = ZStack {
-                // TODO: 제거 예정
-                //                ZoneStation(
-                //                    zone: ann.zone,
-                //                    statusesForZone: ann.statusesForZone,
-                //                    zoneTeamScores: viewModel?.zoneTeamScores ?? [:],
-                //                    loadZoneTeamScores: { zoneId in
-                //                        Task {await self.viewModel!.loadZoneTeamScores(for: zoneId) }
-                //                    }
-                //                )
-                if isChecked && !isClaimed {
-                    ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                        .offset(y: -120)
-                }
-            }
-            view.setSwiftUIView(swiftUIView)
-            view.contentSize = CGSize(width: 160, height: 190)
-            view.centerOffset = CGPoint(x: 10, y: -36)
-            view.canShowCallout = false
-            return view
+            // 트래킹 지도에서는 정복 버튼을 지도 어노테이션으로 표시하지 않음
+            if annotation is StationAnnotation { return nil }
+            return nil
         }
     }
     
@@ -204,7 +172,6 @@ struct TrackingMapView: UIViewRepresentable {
         }
         return _createMap(context: context)
     }
-    
     
     // MKMapView 구성(지도 옵션/오버레이/어노테이션)
     private func _createMap(context: Context) -> MKMapView {
@@ -236,15 +203,15 @@ struct TrackingMapView: UIViewRepresentable {
         context.coordinator.signsManager = SignsManager(
             mapView: map,
             zones: zones,
-            validRange: 1...15,
-            threshold: 120
+            validRange: 1 ... 15,
+            threshold: 200
         )
         
         // 선과 정류소 버튼 표시
         MapElementInstaller.installOverlays(for: zones, on: map)
-#if DEBUG
+        #if DEBUG
         MapElementInstaller.installDebugGateCircles(for: zones, on: map)
-#endif
+        #endif
         MapElementInstaller.installStations(
             for: zones,
             statuses: conquestStatuses,
@@ -288,26 +255,6 @@ struct TrackingMapView: UIViewRepresentable {
         // 렌더러 색 갱신 + 정류소 데이터 최신화
         DispatchQueue.main.async {
             MapOverlayRefresher.refreshColors(on: uiView, with: context.coordinator.strokeProvider)
-            
-            for annotation in uiView.annotations {
-                guard let ann = annotation as? StationAnnotation,
-                      let view = uiView.view(for: ann) as? HostingAnnotationView else { continue }
-                
-                let isChecked = StatusManager.shared.userStatus.zoneCheckedStatus[ann.zone.zoneId] == true
-                let isClaimed = StatusManager.shared.isRewardClaimed(zoneId: ann.zone.zoneId)
-                
-                let swiftUIView = ZStack {
-                    if isChecked && !isClaimed {
-                        ConqueredButton(zoneId: ann.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
-                            .offset(y: -120)
-                    }
-                }
-                
-                view.setSwiftUIView(swiftUIView)
-                view.contentSize = CGSize(width: 160, height: 190)
-                view.centerOffset = CGPoint(x: 10, y: -36)
-                view.canShowCallout = false
-            }
         }
     }
 }
@@ -315,7 +262,9 @@ struct TrackingMapView: UIViewRepresentable {
 struct TrackingMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
     @State private var onRestoreTracking = false
-    @State private var isTracking = true  // 버튼 색상 전환용 상태
+    @State private var isTracking = true // 버튼 색상 전환용 상태
+    @State private var hidePendingCount = false   // 정복 버튼 xN 텍스트를 숨기기 위한 플래그
+    @ObservedObject private var status = StatusManager.shared
     
     let conquestStatuses: [ZoneConquestStatus]
     let teams: [Team]
@@ -362,11 +311,12 @@ struct TrackingMapScreen: View {
                     
                     Spacer()
                     
-                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
+                    TodayMyScore(score: viewModel.userDailyScore) // 오늘 내 점수
                 }
                 .padding(.vertical, 58)
                 .padding(.horizontal, 20)
-                
+                 
+                // 트래킹 버튼(오른쪽 상단 고정)
                 TrackingButton(
                     isTracking: $isTracking,
                     restoreTracking: {
@@ -374,10 +324,51 @@ struct TrackingMapScreen: View {
                     }
                 )
             }
+            
+            // ScoreBoard 아래 왼쪽: 정복 버튼(집계)
+            let pendingZoneIds: [Int] = zones
+                .map(\.zoneId)
+                .filter { id in
+                    let checked = status.userStatus.zoneCheckedStatus[id] == true
+                    let claimed = StatusManager.shared.isRewardClaimed(zoneId: id)
+                    return checked && !claimed
+                }
+            
+            if !pendingZoneIds.isEmpty {
+                HStack(spacing: 0) {
+                    let content = HStack(spacing: 0) {
+                        ConqueredButton(zoneId: pendingZoneIds.first ?? 0) { _ in
+                            hidePendingCount = true    // 버튼 탭 시 곧바로 xN 텍스트 숨김
+                            ZoneConquerActionHandler.handleConquer(zoneIds: pendingZoneIds)
+                        }
+                        if pendingZoneIds.count >= 2 && !hidePendingCount {
+                            Text("x\(pendingZoneIds.count)")
+                                .font(.PR.title2)
+                                .foregroundColor(.steelBlack)
+                        }
+                    }
+                    content
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 150)
+            }
+            else {
+                // pendingZoneIds가 비워지면 다음 사이클을 위해 xN 표시 플래그를 초기화
+                EmptyView()
+                    .onAppear {
+                        hidePendingCount = false
+                    }
+            }
+
         }
         .task {
             await viewModel.loadMapInfo()
             viewModel.startDDayTimer(period: period)
+        }
+        // 점수/상태 갱신 알림 수신하여 상단 점수 동기화
+        .onReceive(NotificationCenter.default.publisher(for: ZoneConquerActionHandler.didUpdateScoreNotification)) { _ in
+            viewModel.userDailyScore = StatusManager.shared.userStatus.userDailyScore
         }
         //        .overlay(alignment: .topTrailing) {
         //#if DEBUG
