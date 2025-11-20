@@ -244,6 +244,9 @@ struct FullMapView: UIViewRepresentable {
                 if let zId = lastZoneId ?? nearestZoneId(to: coord),
                    let zone = zones.first(where: { $0.zoneId == zId })
                 {
+                    /// 16번 구역은 선택 금지
+                    guard zone.zoneId != 16 else { return }
+                    
                     setHighlightedZone(zId, on: mapView)
                     let center = parent.centroid(of: zone.coordinates)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -269,9 +272,13 @@ struct FullMapView: UIViewRepresentable {
             if gesture.state == .ended {
                 let location = gesture.location(in: mapView)
                 let coord = mapView.convert(location, toCoordinateFrom: mapView)
+                
                 if let nearest = nearestZoneId(to: coord),
                    let zone = zones.first(where: { $0.zoneId == nearest })
                 {
+                    /// 16번 구역은 무시
+                    guard zone.zoneId != 16 else { return }
+                    
                     setHighlightedZone(nearest, on: mapView)
                     let center = parent.centroid(of: zone.coordinates)
                     UISelectionFeedbackGenerator().selectionChanged()
