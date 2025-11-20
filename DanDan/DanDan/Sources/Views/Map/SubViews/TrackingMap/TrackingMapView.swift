@@ -214,7 +214,7 @@ struct TrackingMapView: UIViewRepresentable {
         
         //        map.isScrollEnabled = false
         map.isZoomEnabled = false
-        map.isRotateEnabled = false
+//        map.isRotateEnabled = false
         map.isPitchEnabled = false
         map.showsCompass = false
         
@@ -339,7 +339,7 @@ struct TrackingMapScreen: View {
             )
             .ignoresSafeArea()
             
-            VStack{
+            VStack {
                 HStack(spacing: 2) {
                     if viewModel.teams.count >= 2 {
                         ScoreBoard(

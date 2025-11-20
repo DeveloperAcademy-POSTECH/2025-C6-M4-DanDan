@@ -38,7 +38,7 @@ struct FullMapView: UIViewRepresentable {
     var refreshToken: UUID = .init()
     
     // MARK: - Constants
-
+    
     /// 실제 철길숲 남서쪽과 북동쪽 경계 좌표
     private let bounds = MapBounds(
         southWest: .init(latitude: 35.998605, longitude: 129.316145),
@@ -64,12 +64,12 @@ struct FullMapView: UIViewRepresentable {
         var teams: [Team] = []
         var strokeProvider = ZoneStrokeProvider(zoneStatuses: []) // 구역별 선 색상 계산기
         var mode: Mode = .overall
-
+        
         var parent: FullMapView
         
         // 시트 종료 알림
         static let sheetDismissedNotification = Notification.Name("FullMapView.Coordinator.sheetDismissed")
-
+        
         // Holds all stations with their view-space positions
         struct PositionedStation: Identifiable {
             let id: Int // zoneId
@@ -78,9 +78,9 @@ struct FullMapView: UIViewRepresentable {
             let point: CGPoint
             let needsClaim: Bool
         }
-
+        
         var positioned: [PositionedStation] = []
-
+        
         init(parent: FullMapView) {
             self.parent = parent
             super.init()
@@ -117,7 +117,7 @@ struct FullMapView: UIViewRepresentable {
         }
         
         // MARK: - MKMapViewDelegate
-
+        
         /// 오버레이(폴리라인/디버그 원) 렌더러 - 구역별 색/굵기 등 스타일 지정
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let poly = overlay as? HighlightedPolygon {
@@ -160,24 +160,24 @@ struct FullMapView: UIViewRepresentable {
                 r.lineJoin = .round
                 return r
             }
-//            if let circle = overlay as? MKCircle {
-//                let r = MKCircleRenderer(overlay: circle)
-//                #if DEBUG
-//                let title = circle.title ?? ""
-//                if title.contains("debug-circle-start") {
-//                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
-//                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.06)
-//                } else {
-//                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
-//                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.06)
-//                }
-//                r.lineWidth = 2
-//                if title.hasSuffix("-out") {
-//                    r.lineDashPattern = [6, 6]
-//                }
-//                #endif
-//                return r
-//            }
+            //            if let circle = overlay as? MKCircle {
+            //                let r = MKCircleRenderer(overlay: circle)
+            //                #if DEBUG
+            //                let title = circle.title ?? ""
+            //                if title.contains("debug-circle-start") {
+            //                    r.strokeColor = UIColor.systemRed.withAlphaComponent(0.9)
+            //                    r.fillColor = UIColor.systemRed.withAlphaComponent(0.06)
+            //                } else {
+            //                    r.strokeColor = UIColor.systemBlue.withAlphaComponent(0.9)
+            //                    r.fillColor = UIColor.systemBlue.withAlphaComponent(0.06)
+            //                }
+            //                r.lineWidth = 2
+            //                if title.hasSuffix("-out") {
+            //                    r.lineDashPattern = [6, 6]
+            //                }
+            //                #endif
+            //                return r
+            //            }
             
             if let line = overlay as? ColoredPolyline {
                 let renderer = MKPolylineRenderer(overlay: line)
@@ -192,9 +192,9 @@ struct FullMapView: UIViewRepresentable {
                     )
                 case .personal:
                     let checked =
-                        StatusManager.shared.userStatus.zoneCheckedStatus[
-                            line.zoneId
-                        ] == true
+                    StatusManager.shared.userStatus.zoneCheckedStatus[
+                        line.zoneId
+                    ] == true
                     if checked {
                         let teamName = StatusManager.shared.userStatus.userTeam
                         let personalColor: UIColor
@@ -221,7 +221,7 @@ struct FullMapView: UIViewRepresentable {
         }
         
         // MARK: - Drag handling
-
+        
         /// 드래그 종료 지점 좌표를 뷰모델에 전달하여 최근접 구역 선택
         @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
             guard let mapView else { return }
@@ -262,7 +262,7 @@ struct FullMapView: UIViewRepresentable {
         }
         
         // MARK: - Tap handling
-
+        
         /// 탭한 지점 좌표를 뷰모델에 전달하여 최근접 구역 선택
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
             guard let mapView else { return }
@@ -286,11 +286,11 @@ struct FullMapView: UIViewRepresentable {
                 }
             }
         }
-
+        
         /// 어노테이션 뷰 - single canvas host for all stations/conquer buttons
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
             guard annotation is CanvasAnnotation else { return nil }
-          
+            
             let id = "canvas-hosting-full"
             let view: HostingAnnotationView
             if let reused = mapView.dequeueReusableAnnotationView(withIdentifier: id) as? HostingAnnotationView {
@@ -299,11 +299,11 @@ struct FullMapView: UIViewRepresentable {
             } else {
                 view = HostingAnnotationView(annotation: annotation, reuseIdentifier: id)
             }
-
+            
             // Ensure positions are up-to-date for current map bounds
             updatePositions(for: mapView)
             let canvasSize = mapView.bounds.size
-
+            
             let swiftUIView = ZStack {
                 // Conquer buttons
                 ForEach(positioned.filter { $0.needsClaim }) { item in
@@ -312,8 +312,8 @@ struct FullMapView: UIViewRepresentable {
                         .zIndex(1)
                 }
             }
-            .frame(width: canvasSize.width, height: canvasSize.height)
-
+                .frame(width: canvasSize.width, height: canvasSize.height)
+            
             view.setSwiftUIView(swiftUIView)
             view.contentSize = canvasSize
             view.centerOffset = .zero
@@ -323,7 +323,7 @@ struct FullMapView: UIViewRepresentable {
         }
         
         // MARK: - Highlight helpers
-
+        
         private var highlightedOuter: HighlightedPolyline?
         private var highlightedInner: HighlightedPolyline?
         private var highlightedFill: HighlightedPolygon?
@@ -384,9 +384,9 @@ struct FullMapView: UIViewRepresentable {
             setHighlightedZone(nil, on: mapView)
         }
     }
-
+    
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
-
+    
     func makeUIView(context: Context) -> MKMapView {
         if !Thread.isMainThread {
             var created: MKMapView!
@@ -411,7 +411,12 @@ struct FullMapView: UIViewRepresentable {
         config.showsTraffic = false
         map.preferredConfiguration = config
         
-        let region = bounds.region
+        var region = bounds.region
+        
+        // 지도 아래로 내리기
+        let shift = region.span.latitudeDelta * 0.1
+        region.center.latitude += shift
+        
         map.setRegion(region, animated: true)
         map.delegate = context.coordinator
         context.coordinator.mapView = map
@@ -424,9 +429,9 @@ struct FullMapView: UIViewRepresentable {
         context.coordinator.viewModel = viewModel
         
         MapElementInstaller.installOverlays(for: zones, on: map)
-        #if DEBUG
+#if DEBUG
         MapElementInstaller.installDebugGateCircles(for: zones, on: map)
-        #endif
+#endif
         // Add a single canvas annotation at the map center
         let center = bounds.center
         map.addAnnotation(CanvasAnnotation(coordinate: center))
@@ -453,7 +458,7 @@ struct FullMapView: UIViewRepresentable {
             for overlay in uiView.overlays {
                 guard let line = overlay as? ColoredPolyline,
                       let renderer = uiView.renderer(for: overlay)
-                      as? MKPolylineRenderer
+                        as? MKPolylineRenderer
                 else { continue }
                 switch mode {
                 case .overall:
@@ -465,9 +470,9 @@ struct FullMapView: UIViewRepresentable {
                     renderer.strokeColor = stroke
                 case .personal:
                     let checked =
-                        StatusManager.shared.userStatus.zoneCheckedStatus[
-                            line.zoneId
-                        ] == true
+                    StatusManager.shared.userStatus.zoneCheckedStatus[
+                        line.zoneId
+                    ] == true
                     if checked {
                         let teamName = StatusManager.shared.userStatus.userTeam
                         let personalColor: UIColor
@@ -486,14 +491,14 @@ struct FullMapView: UIViewRepresentable {
                 }
                 renderer.setNeedsDisplay()
             }
-
+            
             // Refresh the single canvas annotation's view for all stations/conquer buttons
             guard let canvas = uiView.annotations.first(where: { $0 is CanvasAnnotation }),
                   let view = uiView.view(for: canvas) as? HostingAnnotationView else { return }
-          
+            
             context.coordinator.updatePositions(for: uiView)
             let canvasSize = uiView.bounds.size
-          
+            
             let swiftUIView = ZStack {
                 ForEach(context.coordinator.positioned.filter { $0.needsClaim }) { item in
                     ConqueredButton(zoneId: item.zone.zoneId) { ZoneConquerActionHandler.handleConquer(zoneId: $0) }
@@ -501,7 +506,7 @@ struct FullMapView: UIViewRepresentable {
                         .zIndex(Double(item.point.y))
                 }
             }
-            .frame(width: canvasSize.width, height: canvasSize.height)
+                .frame(width: canvasSize.width, height: canvasSize.height)
             view.setSwiftUIView(swiftUIView)
             view.contentSize = canvasSize
             view.centerOffset = .zero
@@ -538,15 +543,55 @@ struct FullMapScreen: View {
     }
     
     var body: some View {
-        FullMapView(
-            viewModel: viewModel,
-            zoneStatuses: viewModel.zoneStatuses,
-            conquestStatuses: conquestStatuses,
-            teams: teams,
-            mode: isRightSelected ? .personal : .overall,
-            refreshToken: effectiveToken
-        )
-        .ignoresSafeArea()
+        ZStack(alignment: .top) {
+            // 2D 전체 지도
+            FullMapView(
+                viewModel: viewModel,
+                zoneStatuses: viewModel.zoneStatuses,
+                conquestStatuses: conquestStatuses,
+                teams: teams,
+                mode: isRightSelected ? .personal : .overall,
+                refreshToken: effectiveToken
+            )
+            .ignoresSafeArea()
+            
+            VStack(alignment: .leading) {
+                HStack(spacing: 2) {
+                    if viewModel.teams.count >= 2 {
+                        ScoreBoard(
+                            leftTeamName: viewModel.teams[1].teamName,
+                            rightTeamName: viewModel.teams[0].teamName,
+                            leftTeamScore: viewModel.teams[1].conqueredZones,
+                            rightTeamScore: viewModel.teams[0].conqueredZones,
+                            ddayText: viewModel.ddayText
+                        )
+                    } else {
+                        // 로딩 중일 때는 기본값 표시
+                        ScoreBoard(
+                            leftTeamName: "—",
+                            rightTeamName: "—",
+                            leftTeamScore: 0,
+                            rightTeamScore: 0,
+                            ddayText: viewModel.ddayText
+                        )
+                    }
+                    
+                    Spacer()
+                    
+                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
+                }
+                
+                SegmentedControl(
+                    leftTitle: "전체",
+                    rightTitle: "개인",
+                    frameMaxWidth: 172,
+                    isRightSelected: $isRightSelected
+                )
+                .padding(.leading, -20)
+            }
+            .padding(.vertical, 58)
+            .padding(.horizontal, 20)
+        }
         .task {
             // 팀 정보 보정 후 맵 데이터 로드
             await StatusManager.shared.ensureUserTeamLoaded()
@@ -581,106 +626,113 @@ struct FullMapScreen: View {
                 NotificationCenter.default.post(name: FullMapView.Coordinator.sheetDismissedNotification, object: nil)
             }
         }
-        .overlay(alignment: .topLeading) {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 4) {
-                    if viewModel.teams.count >= 2 {
-                        ScoreBoard(
-                            leftTeamName: viewModel.teams[1].teamName,
-                            rightTeamName: viewModel.teams[0].teamName,
-                            leftTeamScore: viewModel.teams[1].conqueredZones,
-                            rightTeamScore: viewModel.teams[0].conqueredZones,
-                            ddayText: viewModel.ddayText
-                        )
-                    } else {
-                        // 로딩 중일 때는 기본값 표시
-                        ScoreBoard(
-                            leftTeamName: "—",
-                            rightTeamName: "—",
-                            leftTeamScore: 0,
-                            rightTeamScore: 0,
-                            ddayText: viewModel.ddayText
-                        )
-                    }
-                    
-                    Spacer()
-                    
-                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
-                }
-
-                SegmentedControl(
-                    leftTitle: "전체",
-                    rightTitle: "개인",
-                    frameMaxWidth: 172,
-                    isRightSelected: $isRightSelected
-                )
-                .padding(.leading, -20)
-            }
-            .padding(.top, 60)
-            .padding(.horizontal, 20)
-            .task {
-                await viewModel.loadMapInfo()
-                viewModel.startDDayTimer(period: period)
-            }
-        }
-//        .overlay(alignment: .bottomLeading) {
-//#if DEBUG
-//            ScrollView(.horizontal, showsIndicators: false) {
-//                HStack(spacing: 8) {
-//                    ForEach(1...15, id: \.self) { id in
-//                        Button(action: {
-//                            // 로컬 먼저 반영 (개인 지도 즉시 표시)
-//                            StatusManager.shared.setZoneChecked(
-//                                zoneId: id,
-//                                checked: true
-//                            )
-//                            effectiveToken = UUID()
-//                            // 서버 전송은 후행, 실패해도 로컬 상태 유지
-//                            ZoneCheckedService.shared.postChecked(
-//                                zoneId: id
-//                            ) { ok in
-//                                if !ok {
-//                                    print(
-//                                        "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
-//                                    )
-//                                }
-//                            }
-//                        }) {
-//                            Text("#\(id)")
-//                                .font(.PR.caption2)
-//                                .foregroundColor(.white)
-//                                .padding(.vertical, 6)
-//                                .padding(.horizontal, 10)
-//                                .background(Color.black.opacity(0.6))
-//                                .clipShape(Capsule())
-//                        }
-//                    }
-//                }
-//                .padding(.horizontal, 12)
-//                .padding(.vertical, 10)
-//            }
-//            .background(
-//                Color.black.opacity(0.15)
-//                    .blur(radius: 2)
-//            )
-//            .clipShape(RoundedRectangle(cornerRadius: 12))
-//            .padding(.leading, 16)
-//            .padding(.bottom, 120)
-//            .onAppear {
-//                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
-//                effectiveToken = refreshToken
-//            }
-//            .onChange(of: refreshToken) { newValue in
-//                // 부모 갱신 토큰 변화도 반영
-//                effectiveToken = newValue
-//            }
-//#endif
-//        }
-//        .overlay(alignment: .topTrailing) {
-        // #if DEBUG
-//            ZoneDebugOverlay()
-        // #endif
-//        }
+        
+        
+        
+        
+    //        .overlay(alignment: .topLeading) {
+    //            VStack(alignment: .leading, spacing: 6) {
+    //                HStack(spacing: 4) {
+    //                    if viewModel.teams.count >= 2 {
+    //                        ScoreBoard(
+    //                            leftTeamName: viewModel.teams[1].teamName,
+    //                            rightTeamName: viewModel.teams[0].teamName,
+    //                            leftTeamScore: viewModel.teams[1].conqueredZones,
+    //                            rightTeamScore: viewModel.teams[0].conqueredZones,
+    //                            ddayText: viewModel.ddayText
+    //                        )
+    //                    } else {
+    //                        // 로딩 중일 때는 기본값 표시
+    //                        ScoreBoard(
+    //                            leftTeamName: "—",
+    //                            rightTeamName: "—",
+    //                            leftTeamScore: 0,
+    //                            rightTeamScore: 0,
+    //                            ddayText: viewModel.ddayText
+    //                        )
+    //                    }
+    //
+    //                    Spacer()
+    //
+    //                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
+    //                }
+    //
+    //                SegmentedControl(
+    //                    leftTitle: "전체",
+    //                    rightTitle: "개인",
+    //                    frameMaxWidth: 172,
+    //                    isRightSelected: $isRightSelected
+    //                )
+    //                .padding(.leading, -20)
+    //            }
+    //            .padding(.top, 60)
+    //            .padding(.horizontal, 20)
+    //            .task {
+    //                await viewModel.loadMapInfo()
+    //                viewModel.startDDayTimer(period: period)
+    //            }
+    //        }
+    
+    
+    
+    //        .overlay(alignment: .bottomLeading) {
+    //#if DEBUG
+    //            ScrollView(.horizontal, showsIndicators: false) {
+    //                HStack(spacing: 8) {
+    //                    ForEach(1...15, id: \.self) { id in
+    //                        Button(action: {
+    //                            // 로컬 먼저 반영 (개인 지도 즉시 표시)
+    //                            StatusManager.shared.setZoneChecked(
+    //                                zoneId: id,
+    //                                checked: true
+    //                            )
+    //                            effectiveToken = UUID()
+    //                            // 서버 전송은 후행, 실패해도 로컬 상태 유지
+    //                            ZoneCheckedService.shared.postChecked(
+    //                                zoneId: id
+    //                            ) { ok in
+    //                                if !ok {
+    //                                    print(
+    //                                        "[DEBUG] 서버 전송 실패: zoneId=\(id) — 로컬 상태는 유지"
+    //                                    )
+    //                                }
+    //                            }
+    //                        }) {
+    //                            Text("#\(id)")
+    //                                .font(.PR.caption2)
+    //                                .foregroundColor(.white)
+    //                                .padding(.vertical, 6)
+    //                                .padding(.horizontal, 10)
+    //                                .background(Color.black.opacity(0.6))
+    //                                .clipShape(Capsule())
+    //                        }
+    //                    }
+    //                }
+    //                .padding(.horizontal, 12)
+    //                .padding(.vertical, 10)
+    //            }
+    //            .background(
+    //                Color.black.opacity(0.15)
+    //                    .blur(radius: 2)
+    //            )
+    //            .clipShape(RoundedRectangle(cornerRadius: 12))
+    //            .padding(.leading, 16)
+    //            .padding(.bottom, 120)
+    //            .onAppear {
+    //                // 최초 진입 시, 부모에서 전달받은 토큰을 채택
+    //                effectiveToken = refreshToken
+    //            }
+    //            .onChange(of: refreshToken) { newValue in
+    //                // 부모 갱신 토큰 변화도 반영
+    //                effectiveToken = newValue
+    //            }
+    //#endif
+    //        }
+    //        .overlay(alignment: .topTrailing) {
+    // #if DEBUG
+    //            ZoneDebugOverlay()
+    // #endif
+    //        }
     }
 }
 
