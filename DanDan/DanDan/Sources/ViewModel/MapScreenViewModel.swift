@@ -32,12 +32,19 @@ class MapScreenViewModel: ObservableObject {
         
     private let service = MapService()
     
-    func loadMapInfo() async {
+    init() {
+        // 초기 진입 시 서버를 호출하지 않더라도 로컬에 저장된 일일 점수를 우선 표시
+        self.userDailyScore = StatusManager.shared.userStatus.userDailyScore
+    }
+    
+    func loadMapInfo(updateScore: Bool = true) async {
         do {
             let response = try await service.fetchMainMapInfo()
             self.teams = response.data.teams
             
-            self.userDailyScore = response.data.userDailyScore
+            if updateScore {
+                self.userDailyScore = response.data.userDailyScore
+            }
             self.startDate = response.data.startDate
             self.endDate = response.data.endDate
             
