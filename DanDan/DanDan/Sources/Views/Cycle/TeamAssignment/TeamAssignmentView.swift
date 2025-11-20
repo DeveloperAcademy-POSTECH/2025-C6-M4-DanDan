@@ -43,11 +43,11 @@ struct TeamAssignmentView: View {
             VStack {
                 switch team {
                 case "blue":
-                    TitleSectionView(title: "당신은 파랑팀입니다!\n세명고등학교", description: description)
+                    TitleSectionView(title: "당신은 파랑팀입니다!\n포항시 북구", description: description)
                         .padding(.top, 50)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 case "yellow":
-                    TitleSectionView(title: "당신은 노랑팀입니다!\n대동중 X 이동고", description: description)
+                    TitleSectionView(title: "당신은 노랑팀입니다!\n포항시 남구", description: description)
                         .padding(.top, 50)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 default:

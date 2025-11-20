@@ -26,8 +26,8 @@ class RankingViewModel: ObservableObject {
 
     // TODO: 팀명 확정 후 수정
     @Published var teams: [Team] = [
-        Team(id: UUID(), teamName: "파랑팀", teamColor: "A"),
-        Team(id: UUID(), teamName: "노랑팀", teamColor: "B"),
+        Team(id: UUID(), teamName: "북구팀", teamColor: "A"),
+        Team(id: UUID(), teamName: "남구팀", teamColor: "B"),
     ]
     
     private var cancellables = Set<AnyCancellable>()

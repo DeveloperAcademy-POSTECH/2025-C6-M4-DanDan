@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "pohang_map_base.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

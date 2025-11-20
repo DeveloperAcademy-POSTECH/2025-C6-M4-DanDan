@@ -40,7 +40,17 @@ struct CurrentWeekDTO: Decodable {
     let startDate: String
     let endDate: String
     let userTeam: String
-    let distanceKm: Double? // 추후 서버 연동 시 사용
+    let totalDistanceKm: Double?
+
+    private enum CodingKeys: String, CodingKey {
+        case userWeekScore
+        case ranking
+        case weekIndex
+        case startDate
+        case endDate
+        case userTeam
+        case totalDistanceKm
+    }
 }
 
 /// 과거 주차 히스토리 아이템 (최신순 정렬)
@@ -53,5 +63,6 @@ struct PastWeekDTO: Decodable {
     let endDate: String?
     let distanceKm: Double?
 }
+
 
 

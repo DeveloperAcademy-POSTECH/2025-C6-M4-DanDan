@@ -328,12 +328,17 @@ struct FullMapView: UIViewRepresentable {
         private var highlightedInner: HighlightedPolyline?
         private var highlightedFill: HighlightedPolygon?
         
+        // 선택 가능한 구역(1~15)으로 제한
+        private var selectableZones: [Zone] {
+            zones.filter { (1...15).contains($0.zoneId) }
+        }
+        
         private func nearestZoneId(to coord: CLLocationCoordinate2D) -> Int? {
-            guard !zones.isEmpty else { return nil }
+            guard !selectableZones.isEmpty else { return nil }
             var bestId: Int?
             var bestDistance: CLLocationDistance = .greatestFiniteMagnitude
             let target = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
-            for z in zones {
+            for z in selectableZones {
                 let c = parent.centroid(of: z.coordinates)
                 let d = target.distance(from: CLLocation(latitude: c.latitude, longitude: c.longitude))
                 if d < bestDistance {

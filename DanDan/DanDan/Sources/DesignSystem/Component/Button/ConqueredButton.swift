@@ -26,6 +26,9 @@ struct ConqueredButton: View {
     }
     
     var body: some View {
+        // 버튼/로띠가 차지할 고정 영역 (부모 HStack 기준 위치가 변하지 않도록)
+        let containerSize = CGSize(width: 120, height: 90)
+
         ZStack {
             if isVisible {
                 Button {
@@ -47,7 +50,7 @@ struct ConqueredButton: View {
                             .frame(width: 80, height: 56)
                             .accessibilityLabel(Text("구역 보상 받기"))
                     }
-                    // 불필요하게 큰 외부 프레임을 제거해 히트 영역을 축소
+                    .frame(width: containerSize.width, height: containerSize.height)
                     .scaleEffect(isFloating ? 1.18 : 1.0)
                     .shadow(color: .black.opacity(0.3),
                             radius: isFloating ? 10 : 6,
@@ -60,12 +63,14 @@ struct ConqueredButton: View {
                 .buttonStyle(.plain)
                 .zIndex(1)
             }
-            
+
             if showScoreLottie {
                 LottieOnceView(name: scoreLottieName)
-                    .frame(width: 100, height: 80)
-                    .zIndex(0)
+                    .frame(width: containerSize.width, height: containerSize.height)
+                    .allowsHitTesting(false)
+                    .zIndex(2)
             }
         }
+        .frame(width: containerSize.width, height: containerSize.height)
     }
 }

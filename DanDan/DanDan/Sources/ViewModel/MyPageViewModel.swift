@@ -54,49 +54,11 @@ class MyPageViewModel: ObservableObject {
         return "\(year)년 \(month)월 \(period.weekIndex)주차"
     }
 
-    // FIXME: - 임시 계산 로직 (추후 폴리라인 세분화 및 거리 계산 방식 개선 예정)
-    // TODO: - 완료된 구역들의 폴리라인 길이를 합산하여 총 거리를 계산 (추후 상세화 예정)
-    var weekDistanceKmText: String {
-        // 현 단계에서는 누적 완료 구역 거리를 주간 카드에도 동일 반영
-        return totalDistanceKmText
-    }
-
-    /// 주간 거리의 정수부 텍스트 (km)
-    var weekDistanceKmIntText: String {
-        let km = totalDistanceMeters / 1000.0
-        return String(Int(km))
-    }
-
-    var totalDistanceMeters: Double {
-        // 완료된 Zone ID 수집
-        let completedZoneIds: Set<Int> = Set(
-            userStatus.zoneCheckedStatus.compactMap { key, value in value ? key : nil }
-        )
-        // 만약 통과한 Zone이 하나도 없으면 계산할 필요 없이 거리 0 반환
-        guard !completedZoneIds.isEmpty else { return 0 }
-
-        return zones
-            // 완료된 Zone만 필터링
-            .filter { completedZoneIds.contains($0.zoneId) }
-            // 각 Zone별 거리 계산
-            .map { zone in
-                let coords = zone.coordinates
-                guard coords.count >= 2 else { return 0.0 }
-                var sum: Double = 0
-                for i in 1 ..< coords.count {
-                    let a = CLLocation(latitude: coords[i-1].latitude, longitude: coords[i-1].longitude)
-                    let b = CLLocation(latitude: coords[i].latitude, longitude: coords[i].longitude)
-                    sum += a.distance(from: b)
-                }
-                return sum
-            }
-            // 모든 Zone의 거리 합산
-            .reduce(0, +)
-    }
-
+    // MARK: - Distance (API 기반)
+    @Published var totalDistanceKm: Double = 0
+    /// 총 주간 이동거리 텍스트 (정수, km) - API 응답 사용
     var totalDistanceKmText: String {
-        let km = totalDistanceMeters / 1000.0
-        return String(format: "%.1f", km)
+        return String(format: "%.1f", totalDistanceKm)
     }
 
     // MARK: - Init
@@ -168,6 +130,7 @@ class MyPageViewModel: ObservableObject {
             userStatus.userTeam = resp.data.user.userTeam
             userStatus.userWeekScore = resp.data.currentWeekActivity.userWeekScore
             userStatus.rank = resp.data.currentWeekActivity.ranking
+            totalDistanceKm = resp.data.currentWeekActivity.totalDistanceKm
 
             // 프로필 이미지 처리: URL이 없으면 로컬 캐시 제거, 있으면 다운로드하여 갱신
             if let urlString = resp.data.user.profileUrl, let url = URL(string: urlString) {
@@ -202,3 +165,4 @@ class MyPageViewModel: ObservableObject {
         }
     }
 }
+
