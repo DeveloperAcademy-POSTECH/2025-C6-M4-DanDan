@@ -380,13 +380,14 @@ struct TrackingMapScreen: View {
 
         }
         .task {
-            await viewModel.loadMapInfo()
             await viewModel.loadZoneStatusDetail()
+            await viewModel.loadMapInfo(updateScore: true)
             viewModel.startDDayTimer(period: period)
         }
-        // 점수/상태 갱신 알림 수신하여 상단 점수 동기화
         .onReceive(NotificationCenter.default.publisher(for: ZoneConquerActionHandler.didUpdateScoreNotification)) { _ in
-            viewModel.userDailyScore = StatusManager.shared.userStatus.userDailyScore
+            Task { @MainActor in
+                await viewModel.loadMapInfo(updateScore: true)
+            }
         }
         //        .overlay(alignment: .topTrailing) {
         //#if DEBUG

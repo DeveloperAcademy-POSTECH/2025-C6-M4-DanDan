@@ -645,6 +645,11 @@ struct FullMapScreen: View {
             Task { @MainActor in
                 await viewModel.loadMapInfo()
             }
+            // 보상 수령 상태는 로티 연출을 고려해 약간 지연 반영되므로,
+            // 약간의 딜레이 후 강제 리프레시 토큰을 갱신하여 버튼 제거를 반영
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                effectiveToken = UUID()
+            }
         }
         // 시트 종료 시 하이라이트 제거 (Equatable 요구 회피: zoneId 기반)
         .onChange(of: viewModel.selectedZone?.zoneId ?? -1) { newValue in
