@@ -26,7 +26,7 @@ struct PrimaryButton: View {
         horizontalPadding: CGFloat = 20,
         verticalPadding: CGFloat = 20,
         background: Color = .primaryGreen,
-        foreground: Color = .white1,
+        foreground: Color = .white1
     ) {
         self.title = title
         self.action = action
@@ -39,22 +39,26 @@ struct PrimaryButton: View {
     }
 
     var body: some View {
+        let currentBackground = isEnabled ? background : Color.lightGreen
+        let currentForeground = isEnabled ? foreground : Color.gray5
+        
         Button(action: action) {
             Text(title)
                 .font(.PR.body2)
                 .frame(height: 22)
                 .padding(.vertical, textPadding)
-                .foregroundColor(foreground)
+                .foregroundColor(currentForeground)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 30)
-                        .fill(background)
+                        .fill(currentBackground)
                 )
-                .opacity(isEnabled ? 1.0 : 0.5)
+                
         }
         .padding(.horizontal, horizontalPadding)
         .padding(.vertical, verticalPadding)
         .buttonStyle(PlainButtonStyle())
+        .allowsHitTesting(isEnabled)
     }
 }
 
