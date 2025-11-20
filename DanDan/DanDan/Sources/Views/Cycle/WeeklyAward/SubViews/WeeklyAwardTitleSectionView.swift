@@ -19,7 +19,7 @@ struct WeeklyAwardTitleSectionView: View {
             
             Text(description)
                 .font(.PR.caption3)
-                .foregroundStyle(.gray2)
+                .foregroundStyle(.steelBlack)
                 .lineSpacing(3)
                 .multilineTextAlignment(.center)
         }

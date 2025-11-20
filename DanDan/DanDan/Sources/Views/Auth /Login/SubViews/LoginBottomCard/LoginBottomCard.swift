@@ -39,7 +39,7 @@ struct LoginBottomCard: View {
                 horizontalPadding: 0,
                 verticalPadding: 10,
                 background: .primaryGreen,
-                foreground: .white
+                foreground: .white1
             )
                         
 //            // MARK: - Naver

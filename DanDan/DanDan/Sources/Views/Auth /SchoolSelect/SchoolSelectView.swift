@@ -58,7 +58,7 @@ struct SchoolSelectView: View {
                 horizontalPadding: 20,
                 verticalPadding: 8,
                 background: .primaryGreen,
-                foreground: .white
+                foreground: .white1
             )
             .padding(.bottom, 24)
         }
