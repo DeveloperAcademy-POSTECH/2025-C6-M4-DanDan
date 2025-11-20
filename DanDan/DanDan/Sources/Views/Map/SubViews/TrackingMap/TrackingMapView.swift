@@ -1,4 +1,4 @@
-//
+
 //  MapView.swift
 //  DanDan
 //
@@ -261,6 +261,7 @@ struct TrackingMapView: UIViewRepresentable {
 
 struct TrackingMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
+    @State private var showZoneList = false
     @State private var onRestoreTracking = false
     @State private var isTracking = true // 버튼 색상 전환용 상태
     @State private var hidePendingCount = false   // 정복 버튼 xN 텍스트를 숨기기 위한 플래그
@@ -288,7 +289,16 @@ struct TrackingMapScreen: View {
             )
             .ignoresSafeArea()
             
-            VStack {
+            // TODO: 이 버튼 레이아웃 조정을 못 하겠어요.. 현재 머리로는 여기서 padding 말고는 생각이 안 나요 ㅜㅜ 추후 수정..!
+            TrackingButton(
+                isTracking: $isTracking,
+                restoreTracking: {
+                    onRestoreTracking = true
+                }
+            )
+            .padding(.top, 204)
+            
+            VStack(alignment: .leading) {
                 HStack(spacing: 2) {
                     if viewModel.teams.count >= 2 {
                         ScoreBoard(
@@ -298,6 +308,11 @@ struct TrackingMapScreen: View {
                             rightTeamScore: viewModel.teams[0].conqueredZones,
                             ddayText: viewModel.ddayText
                         )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                showZoneList.toggle()
+                            }
+                        }
                     } else {
                         // 로딩 중일 때는 기본값 표시
                         ScoreBoard(
@@ -307,23 +322,25 @@ struct TrackingMapScreen: View {
                             rightTeamScore: 0,
                             ddayText: viewModel.ddayText
                         )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                showZoneList.toggle()
+                            }
+                        }
                     }
                     
                     Spacer()
                     
                     TodayMyScore(score: viewModel.userDailyScore) // 오늘 내 점수
                 }
-                .padding(.vertical, 58)
-                .padding(.horizontal, 20)
-                 
-                // 트래킹 버튼(오른쪽 상단 고정)
-                TrackingButton(
-                    isTracking: $isTracking,
-                    restoreTracking: {
-                        onRestoreTracking = true
-                    }
-                )
+                    
+                if showZoneList {
+                    ZoneListPanelView(zoneStatusDetail: viewModel.zoneStatusDetail)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
             }
+            .padding(.vertical, 58)
+            .padding(.horizontal, 20)
             
             // ScoreBoard 아래 왼쪽: 정복 버튼(집계)
             let pendingZoneIds: [Int] = zones
@@ -363,6 +380,7 @@ struct TrackingMapScreen: View {
 
         }
         .task {
+            await viewModel.loadZoneStatusDetail()
             await viewModel.loadMapInfo(updateScore: true)
             viewModel.startDDayTimer(period: period)
         }

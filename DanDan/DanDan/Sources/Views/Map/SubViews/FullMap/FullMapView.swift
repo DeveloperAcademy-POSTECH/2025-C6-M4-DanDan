@@ -524,6 +524,7 @@ struct FullMapView: UIViewRepresentable {
 struct FullMapScreen: View {
     @StateObject private var viewModel = MapScreenViewModel()
     
+    @State private var showZoneList = false
     @State private var isRightSelected = false
     @State private var effectiveToken: UUID = .init()
     @State private var selectedZone: Zone?
@@ -570,6 +571,11 @@ struct FullMapScreen: View {
                             rightTeamScore: viewModel.teams[0].conqueredZones,
                             ddayText: viewModel.ddayText
                         )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                showZoneList.toggle()
+                            }
+                        }
                     } else {
                         // 로딩 중일 때는 기본값 표시
                         ScoreBoard(
@@ -579,6 +585,11 @@ struct FullMapScreen: View {
                             rightTeamScore: 0,
                             ddayText: viewModel.ddayText
                         )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                showZoneList.toggle()
+                            }
+                        }
                     }
                     
                     Spacer()
@@ -586,13 +597,22 @@ struct FullMapScreen: View {
                     TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
                 }
                 
-                SegmentedControl(
-                    leftTitle: "전체",
-                    rightTitle: "개인",
-                    frameMaxWidth: 172,
-                    isRightSelected: $isRightSelected
-                )
-                .padding(.leading, -20)
+                ZStack {
+                    VStack(alignment: .leading, spacing: 6) {
+                        SegmentedControl(
+                            leftTitle: "전체",
+                            rightTitle: "개인",
+                            frameMaxWidth: 172,
+                            isRightSelected: $isRightSelected
+                        )
+                        .padding(.leading, -20)
+                    }
+                    
+                    if showZoneList {
+                        ZoneListPanelView(zoneStatusDetail: viewModel.zoneStatusDetail)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                }
             }
             .padding(.vertical, 58)
             .padding(.horizontal, 20)
@@ -601,6 +621,7 @@ struct FullMapScreen: View {
             // 팀 정보 보정 후 맵 데이터 로드
             await StatusManager.shared.ensureUserTeamLoaded()
             await viewModel.loadMapInfo()
+            await viewModel.loadZoneStatusDetail()
         }
         .sheet(item: $viewModel.selectedZone) { z in
             ZoneInfoView(
@@ -636,6 +657,67 @@ struct FullMapScreen: View {
                 NotificationCenter.default.post(name: FullMapView.Coordinator.sheetDismissedNotification, object: nil)
             }
         }
+//        .overlay(alignment: .topLeading) {
+//            VStack(alignment: .leading, spacing: 6) {
+//                HStack(spacing: 4) {
+//                    if viewModel.teams.count >= 2 {
+//                        ScoreBoard(
+//                            leftTeamName: viewModel.teams[1].teamName,
+//                            rightTeamName: viewModel.teams[0].teamName,
+//                            leftTeamScore: viewModel.teams[1].conqueredZones,
+//                            rightTeamScore: viewModel.teams[0].conqueredZones,
+//                            ddayText: viewModel.ddayText
+//                        )
+//                        .onTapGesture {
+//                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+//                                showZoneList.toggle()
+//                            }
+//                        }
+//                    } else {
+//                        // 로딩 중일 때는 기본값 표시
+//                        ScoreBoard(
+//                            leftTeamName: "—",
+//                            rightTeamName: "—",
+//                            leftTeamScore: 0,
+//                            rightTeamScore: 0,
+//                            ddayText: viewModel.ddayText
+//                        )
+//                        .onTapGesture {
+//                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+//                                showZoneList.toggle()
+//                            }
+//                        }
+//                    }
+//
+//                    Spacer()
+//                    
+//                    TodayMyScore(score: viewModel.userDailyScore)  // 오늘 내 점수
+//                }
+//                
+//                ZStack(alignment: .topLeading) {
+//                    VStack(alignment: .leading, spacing: 6) {
+//                        SegmentedControl(
+//                            leftTitle: "전체",
+//                            rightTitle: "개인",
+//                            frameMaxWidth: 172,
+//                            isRightSelected: $isRightSelected
+//                        )
+//                        .padding(.leading, -20)
+//                    }
+//                    
+//                    if showZoneList {
+//                        ZoneListPanelView(zoneStatusDetail: viewModel.zoneStatusDetail)
+//                            .transition(.move(edge: .top).combined(with: .opacity))
+//                    }
+//                }
+//            }
+//            .padding(.top, 60)
+//            .padding(.horizontal, 20)
+//            .task {
+//                await viewModel.loadMapInfo()
+//                viewModel.startDDayTimer(period: period)
+//            }
+//        }
         
         
         
