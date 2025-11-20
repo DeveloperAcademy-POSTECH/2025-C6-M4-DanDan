@@ -550,7 +550,7 @@ struct FullMapScreen: View {
         .task {
             // 팀 정보 보정 후 맵 데이터 로드
             await StatusManager.shared.ensureUserTeamLoaded()
-            await viewModel.loadMapInfo()
+            await viewModel.loadMapInfo(updateScore: false)
         }
         .sheet(item: $viewModel.selectedZone) { z in
             ZoneInfoView(
@@ -572,7 +572,7 @@ struct FullMapScreen: View {
         // TODO: 임시 Notification 기반 업데이트
         .onReceive(NotificationCenter.default.publisher(for: ZoneConquerActionHandler.didUpdateScoreNotification)) { _ in
             Task { @MainActor in
-                await viewModel.loadMapInfo()
+                await viewModel.loadMapInfo(updateScore: true)
             }
         }
         // 시트 종료 시 하이라이트 제거 (Equatable 요구 회피: zoneId 기반)
@@ -619,7 +619,7 @@ struct FullMapScreen: View {
             .padding(.top, 60)
             .padding(.horizontal, 20)
             .task {
-                await viewModel.loadMapInfo()
+                await viewModel.loadMapInfo(updateScore: false)
                 viewModel.startDDayTimer(period: period)
             }
         }

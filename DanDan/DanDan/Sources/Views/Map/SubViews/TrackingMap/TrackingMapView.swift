@@ -376,8 +376,13 @@ struct TrackingMapScreen: View {
             }
         }
         .task {
-            await viewModel.loadMapInfo()
+            await viewModel.loadMapInfo(updateScore: false)
             viewModel.startDDayTimer(period: period)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: ZoneConquerActionHandler.didUpdateScoreNotification)) { _ in
+            Task { @MainActor in
+                await viewModel.loadMapInfo(updateScore: true)
+            }
         }
         //        .overlay(alignment: .topTrailing) {
         //#if DEBUG
