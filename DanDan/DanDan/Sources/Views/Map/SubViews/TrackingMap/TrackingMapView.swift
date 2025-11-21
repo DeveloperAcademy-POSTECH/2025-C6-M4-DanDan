@@ -212,12 +212,12 @@ struct TrackingMapView: UIViewRepresentable {
         #if DEBUG
         MapElementInstaller.installDebugGateCircles(for: zones, on: map)
         #endif
-        MapElementInstaller.installStations(
-            for: zones,
-            statuses: conquestStatuses,
-            centroidOf: centroid(of:),
-            on: map
-        )
+//        MapElementInstaller.installStations(
+//            for: zones,
+//            statuses: conquestStatuses,
+//            centroidOf: centroid(of:),
+//            on: map
+//        )
         
         // 카메라/영역
         map.setRegion(bounds.region, animated: true)
