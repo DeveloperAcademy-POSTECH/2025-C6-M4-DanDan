@@ -19,7 +19,8 @@ final class SignsManager {
 	private var validRange: ClosedRange<Int>
 	private var threshold: CLLocationDistance
 	
-	private var signAnnotation: SignAnnotation?
+	private var signAnnotations: [SignAnnotation] = []
+	private var installedAllSigns = false
 	
 	init(
 		mapView: MKMapView,
@@ -34,28 +35,7 @@ final class SignsManager {
 	}
 	
 	func update(location: CLLocation, heading: CLLocationDirection) {
-		guard let mapView = mapView else { return }
-		
-		guard let target = decide(location: location, heading: heading) else {
-			removeSignIfNeeded()
-			return
-		}
-		
-		// 동일 목적지/좌표면 생략
-		let boundaryLoc = CLLocation(latitude: target.coordinate.latitude, longitude: target.coordinate.longitude)
-		if let existing = signAnnotation {
-			let sameDest = existing.destinationZoneId == target.destinationZoneId
-			let existingLoc = CLLocation(latitude: existing.coordinate.latitude, longitude: existing.coordinate.longitude)
-			if sameDest && existingLoc.distance(from: boundaryLoc) < 5 {
-				return
-			}
-			mapView.removeAnnotation(existing)
-			signAnnotation = nil
-		}
-		
-		let ann = SignAnnotation(coordinate: target.coordinate, destinationZoneId: target.destinationZoneId)
-		signAnnotation = ann
-		mapView.addAnnotation(ann)
+		ensureAllSignsInstalled()
 	}
 	
 	// MARK: - Pure-ish decision
@@ -80,10 +60,38 @@ final class SignsManager {
 	}
 	
 	private func removeSignIfNeeded() {
-		if let existing = signAnnotation {
-			mapView?.removeAnnotation(existing)
-			signAnnotation = nil
+		guard !signAnnotations.isEmpty else { return }
+		if let mapView = mapView {
+			mapView.removeAnnotations(signAnnotations)
 		}
+		signAnnotations.removeAll()
+		installedAllSigns = false
+	}
+	
+	/// 지도에 모든 경계 표지판을 한 번만 설치
+	private func ensureAllSignsInstalled() {
+		guard let mapView = mapView, !installedAllSigns else { return }
+		
+		// zoneId로 빠르게 찾기 위한 딕셔너리
+		let zoneById: [Int: Zone] = Dictionary(uniqueKeysWithValues: zones.map { ($0.zoneId, $0) })
+		var anns: [SignAnnotation] = []
+		
+		// 각 경계( id -> id+1 )에 대해 표지판 하나씩 설치
+		let lower = validRange.lowerBound
+		let upper = validRange.upperBound
+		if lower < upper {
+			for id in lower..<(upper) {
+				guard let z = zoneById[id] else { continue }
+				let coord = z.zoneEndPoint
+				let ann = SignAnnotation(coordinate: coord, destinationZoneId: id + 1)
+				anns.append(ann)
+			}
+		}
+		
+		guard !anns.isEmpty else { return }
+		signAnnotations = anns
+		mapView.addAnnotations(anns)
+		installedAllSigns = true
 	}
 	
 	// MARK: - Helpers
