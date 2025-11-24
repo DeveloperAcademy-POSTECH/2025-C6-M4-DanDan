@@ -87,12 +87,12 @@ struct TrackingMapView: UIViewRepresentable {
         /// 스크롤 후 다시 트래킹 모드로 전환
         func restoreTrackingMode() {
             guard let mapView = mapView else { return }
-            mapView.userTrackingMode = .followWithHeading
+            mapView.userTrackingMode = .follow
         }
         
         func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
             let isFollowing =
-                (mode == .follow || mode == .followWithHeading)
+                (mode == .follow || mode == .follow)
             
             guard let binding = isTracking else { return }
             
@@ -225,7 +225,8 @@ struct TrackingMapView: UIViewRepresentable {
         
         map.showsUserLocation = true
         
-        map.userTrackingMode = .followWithHeading
+        // 자동 회전 대신 수동으로 30도 스텝 회전 적용
+        map.userTrackingMode = .follow
         map.setCameraZoomRange(
             MKMapView.CameraZoomRange(
                 minCenterCoordinateDistance: 100,
