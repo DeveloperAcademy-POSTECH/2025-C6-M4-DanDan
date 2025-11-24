@@ -32,6 +32,14 @@ final class SeasonHistoryService {
         let response: SeasonHistoryAPIResponse = try await network.requestAsync(endpoint)
         return response.data
     }
+
+    /// 사용자 주차별 구역 점수 조회
+    /// - Parameter periodId: 주차 기간 ID (없으면 현재 기간)
+    func fetchUserZoneScoresAsync(periodId: String? = nil) async throws -> UserZoneScoresDataDTO {
+        let endpoint = SeasonHistoryEndpoint.userZoneScores(periodId: periodId)
+        let response: UserZoneScoresAPIResponse = try await network.requestAsync(endpoint)
+        return response.data
+    }
 }
 
 

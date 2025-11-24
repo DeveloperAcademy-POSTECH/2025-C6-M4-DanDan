@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ActiveSeasonCard: View {
     @ObservedObject var viewModel: SeasonHistoryViewModel
+    @State private var highlightedZoneIdsFromAPI: Set<Int> = []
+    @State private var isLoadingZoneScores: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -79,11 +81,7 @@ struct ActiveSeasonCard: View {
                 .padding(.bottom, 8)
 
             AcquiredZonesMapView(
-                highlightedZoneIds: {
-                    let dict = StatusManager.shared.userStatus.zoneCheckedStatus
-                    let ids = dict.compactMap { $0.value ? $0.key : nil }
-                    return Set(ids)
-                }(),
+                highlightedZoneIds: highlightedZoneIdsFromAPI,
                 highlightColor: {
                     let team = StatusManager.shared.userStatus.userTeam.lowercased()
                     return team == "blue" ? .subA : .subB
@@ -99,6 +97,9 @@ struct ActiveSeasonCard: View {
         )
         .padding(.horizontal, 20)
         .padding(.top, 40)
+        .task {
+            await loadZoneScores()
+        }
     }
 }
 
@@ -107,4 +108,24 @@ struct ActiveSeasonCard: View {
 // #Preview {
 //    ActiveSeasonCard(viewModel: SeasonHistoryViewModel(autoRefresh: false))
 // }
+
+private extension ActiveSeasonCard {
+    func loadZoneScores() async {
+        if isLoadingZoneScores { return }
+        isLoadingZoneScores = true
+        defer { isLoadingZoneScores = false }
+        do {
+            let data = try await SeasonHistoryService.shared.fetchUserZoneScoresAsync(periodId: nil)
+            let ids = data.zoneScores
+                .filter { $0.totalScore > 0 }
+                .map(\.zoneId)
+            highlightedZoneIdsFromAPI = Set(ids)
+        } catch {
+            let dict = StatusManager.shared.userStatus.zoneCheckedStatus
+            let fallbackIds = dict.compactMap { $0.value ? $0.key : nil }
+            highlightedZoneIdsFromAPI = Set(fallbackIds)
+            print("❌ Failed to load user zone-scores: \(error)")
+        }
+    }
+}
 
