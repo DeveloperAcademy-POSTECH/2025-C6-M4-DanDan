@@ -92,7 +92,7 @@ struct TrackingMapView: UIViewRepresentable {
         
         func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
             let isFollowing =
-                (mode == .follow || mode == .followWithHeading)
+            (mode == .follow || mode == .followWithHeading)
             
             guard let binding = isTracking else { return }
             
@@ -212,12 +212,12 @@ struct TrackingMapView: UIViewRepresentable {
         #if DEBUG
         MapElementInstaller.installDebugGateCircles(for: zones, on: map)
         #endif
-        MapElementInstaller.installStations(
-            for: zones,
-            statuses: conquestStatuses,
-            centroidOf: centroid(of:),
-            on: map
-        )
+//        MapElementInstaller.installStations(
+//            for: zones,
+//            statuses: conquestStatuses,
+//            centroidOf: centroid(of:),
+//            on: map
+//        )
         
         // 카메라/영역
         map.setRegion(bounds.region, animated: true)
@@ -225,6 +225,7 @@ struct TrackingMapView: UIViewRepresentable {
         
         map.showsUserLocation = true
         
+        // 자동 회전 대신 수동으로 30도 스텝 회전 적용
         map.userTrackingMode = .followWithHeading
         map.setCameraZoomRange(
             MKMapView.CameraZoomRange(

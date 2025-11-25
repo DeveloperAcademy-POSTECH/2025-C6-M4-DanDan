@@ -18,10 +18,9 @@ struct ProfileImageView: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                Image(systemName: "person.fill")
+                Image("default_avatar")
                     .resizable()
-                    .scaledToFit()
-                    .foregroundColor(.gray)
+                    .scaledToFill()
             }
         }
         .frame(width: isMyRank ? 56 : 48, height: isMyRank ? 56 : 48)
