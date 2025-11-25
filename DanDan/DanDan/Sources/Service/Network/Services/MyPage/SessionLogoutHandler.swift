@@ -24,6 +24,15 @@ enum SessionLogoutHandler {
             StatusManager.shared.resetZoneConquestStatus()
             ZoneScoreManager.shared.resetZoneScore()
             UserManager.shared.reset()
+            // 오프라인 큐/로컬 유틸 캐시 정리
+            OfflineZoneCompletionQueue.shared.reset()
+            // 주간 보상 노출 키 등, 주차별 표시 관련 캐시 제거
+            let defaults = UserDefaults.standard
+            for (key, _) in defaults.dictionaryRepresentation() {
+                if key.hasPrefix("weeklyAwardShown_") {
+                    defaults.removeObject(forKey: key)
+                }
+            }
 
             let navigation = NavigationManager.shared
             navigation.popToRoot()

@@ -81,4 +81,10 @@ final class OfflineZoneCompletionQueue {
             self.queue = arr
         }
     }
+    
+    /// 로그아웃 등 세션 종료 시 큐를 비웁니다.
+    func reset() {
+        queue.removeAll()
+        save()
+    }
 }
