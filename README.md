@@ -1,15 +1,17 @@
-# 2025-C6-M4-DanDan
-> 철길숲 프로젝트<br>
-> ISDS X 포항시 X 단단
-> <!--[🔗 앱스토어/웹 링크](https://example.com)-->
 
-[![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)]()
-[![Xcode](https://img.shields.io/badge/Xcode-15.0-blue.svg)]()
+[![Swift](https://img.shields.io/badge/Swift-6.2.1-orange.svg)]()
+[![Xcode](https://img.shields.io/badge/Xcode-26.1.1-blue.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
+<img width="1920" height="1080" alt="readme" src="https://github.com/user-attachments/assets/09c81221-831a-4c3a-b380-b141ae80114b" />
+<p align="center">
+  <a href="https://apps.apple.com/kr/app/%EC%8A%A4%ED%8B%B8%EC%9B%8C%ED%81%AC/id6755058480" target="_blank">
+    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ko-kr" width="200" alt="Download on the App Store" />
+  </a>
+</p>
 
 ---
-
-
+## 스틸워크 게임하기
+## BACKEND
 ## 프로젝트 기간
 - 전체 기간: `2025.09.01 - 2025.11.28`
 - 개발 기간: `YYYY.MM.DD - YYYY.MM.DD`
@@ -61,46 +63,49 @@
 
 ## Authors
 
+
 <table>
   <tr>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/bear3283">
-        <img src="https://github.com/bear3283.png" width="100"/><br/>
+        <img src="https://github.com/user-attachments/assets/107111de-2abb-4ddf-8046-c2a2d70afef7" width="200"/><br/>
         <b>Bear</b>
       </a>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/sing-u8">
-        <img src="https://github.com/sing-u8.png" width="100"/><br/>
+        <img src="https://github.com/user-attachments/assets/fc55d923-bb04-420b-8080-41ac478661af" width="200"/><br/>
         <b>Brandnew</b>
       </a>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/SingleBungIe">
-        <img src="https://github.com/SingleBungIe.png" width="100"/><br/>
+        <img src="https://github.com/SingleBungIe.png" width="200"/><br/>
         <b>HappyJay</b>
       </a>
     </td>
+     <tr>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/01sys10">
-        <img src="https://github.com/01sys10.png" width="100"/><br/>
+        <img src="https://github.com/user-attachments/assets/2c8f182b-12a2-4a32-a44c-a1c0b658fa5a" width="200"/><br/>
         <b>Noter</b>
       </a>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/hiseyeon">
-        <img src="https://github.com/hiseyeon.png" width="100"/><br/>
+        <img src="https://github.com/user-attachments/assets/1b955dfa-639a-4c1a-9c5e-491ddb4862c4" width="200"/><br/>
         <b>Sena</b>
       </a>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/wish627">
-        <img src="https://github.com/wish627.png" width="100"/><br/>
+        <img src="https://github.com/user-attachments/assets/cd9d332f-f8ef-48f3-b6a8-de62510bb611" width="200"/><br/>
         <b>Wish</b>
       </a>
     </td>
   </tr>
 </table>
+
 
 
 ## 협업 컨벤션
