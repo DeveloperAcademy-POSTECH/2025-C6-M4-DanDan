@@ -1,0 +1,253 @@
+//
+//  MapManager.swift
+//  DanDan
+//
+//  Created by soyeonsoo on 11/9/25.
+//
+
+import MapKit
+import SwiftUI
+
+final class ColoredPolyline: MKPolyline {
+    var color: UIColor = .white
+    var isOutline: Bool = false
+    var zoneId: Int = 0
+}
+
+struct MapElementInstaller {
+    /// 구역 폴리라인(기본/외곽선) 설치
+    static func installOverlays(for zones: [Zone], on map: MKMapView) {
+        for z in zones {
+            let coords = z.coordinates
+
+            // 1) 기본 폴리라인(팀 색칠용)
+            let base = ColoredPolyline(coordinates: coords, count: coords.count)
+            base.zoneId = z.zoneId
+            map.addOverlay(base, level: .aboveRoads)
+
+            // 2) 외곽선 폴리라인(오늘 지나간 구역 하이라이트용)
+            let outline = ColoredPolyline(coordinates: coords, count: coords.count)
+            outline.zoneId = z.zoneId
+            outline.isOutline = true
+            map.addOverlay(outline, level: .aboveRoads)
+        }
+    }
+
+    /// 정류소 어노테이션 설치
+    static func installStations(
+        for zones: [Zone],
+        statuses: [ZoneConquestStatus],
+        centroidOf: ([CLLocationCoordinate2D]) -> CLLocationCoordinate2D,
+        on map: MKMapView
+    ) {
+        for z in zones {
+            let c = centroidOf(z.coordinates)
+            let zoneStatuses = statuses.filter { $0.zoneId == z.zoneId }
+            let ann = StationAnnotation(coordinate: c, zone: z, statusesForZone: zoneStatuses)
+            map.addAnnotation(ann)
+        }
+    }
+    
+    #if DEBUG
+    /// 디버그: 게이트 원(입장/이탈 반경) 오버레이 설치
+    static func installDebugGateCircles(for zones: [Zone], on map: MKMapView) {
+        let circles = DebugGateOverlay.makeCircles(for: zones)
+        for c in circles {
+            map.addOverlay(c, level: .aboveLabels)
+        }
+    }
+    #endif
+}
+
+enum MapOverlayRefresher {
+    static func refreshColors(on mapView: MKMapView, with provider: ZoneStrokeProvider) {
+        for overlay in mapView.overlays {
+            guard let line = overlay as? ColoredPolyline,
+                  let renderer = mapView.renderer(for: overlay) as? MKPolylineRenderer else { continue }
+            renderer.strokeColor = provider.stroke(for: line.zoneId, isOutline: line.isOutline)
+            renderer.setNeedsDisplay()
+        }
+    }
+}
+
+final class ZoneConquerActionHandler {
+    // TODO: 임시 Notification 기반 업데이트
+    static let didUpdateScoreNotification = Notification.Name("ZoneConquerActionHandler.didUpdateScore")
+    /// 로티 재생이 자연스럽게 끝나도록, 보상 수령 상태 반영을 잠시 지연
+    private static let claimAnimationHoldDuration: TimeInterval = 1.2
+
+    static func handleConquer(zoneId: Int) {
+        ZoneCheckedService.shared.postChecked(zoneId: zoneId) { ok in
+            guard ok else { print("🚨 postChecked failed: \(zoneId)"); return }
+            ZoneCheckedService.shared.acquireScore(zoneId: zoneId) { ok2 in
+                if ok2 {
+                    StatusManager.shared.incrementDailyScore()
+                    // LottieOnceView 재생 시간을 보장하기 위해 약간 딜레이 후 상태 반영
+                    DispatchQueue.main.asyncAfter(deadline: .now() + claimAnimationHoldDuration) {
+                        StatusManager.shared.setRewardClaimed(zoneId: zoneId, claimed: true)
+                    }
+                    
+                    NotificationCenter.default.post(name: didUpdateScoreNotification, object: nil)
+                } else {
+                    print("🚨 acquireScore failed: \(zoneId)")
+                }
+            }
+        }
+    }
+    
+    /// 여러 구역을 한 번에 정복 처리합니다. 완료 후 한 번만 점수 업데이트 이벤트를 보냅니다.
+    static func handleConquer(zoneIds: [Int]) {
+        let uniqueIds = Array(Set(zoneIds))
+        guard !uniqueIds.isEmpty else { return }
+        
+        let group = DispatchGroup()
+        var succeeded: [Int] = []
+        
+        for id in uniqueIds {
+            group.enter()
+            ZoneCheckedService.shared.postChecked(zoneId: id) { ok in
+                guard ok else {
+                    print("🚨 postChecked failed: \(id)")
+                    group.leave()
+                    return
+                }
+                ZoneCheckedService.shared.acquireScore(zoneId: id) { ok2 in
+                    if ok2 {
+                        succeeded.append(id)
+                    } else {
+                        print("🚨 acquireScore failed: \(id)")
+                    }
+                    group.leave()
+                }
+            }
+        }
+        
+        group.notify(queue: .main) {
+            let count = succeeded.count
+            guard count > 0 else { return }
+            
+            // 점수는 한 번에 올림
+            StatusManager.shared.incrementDailyScore(by: count)
+            
+            // 로티 연출 타이밍을 고려해 보상 수령 상태를 약간 지연 반영
+            DispatchQueue.main.asyncAfter(deadline: .now() + claimAnimationHoldDuration) {
+                for id in succeeded {
+                    StatusManager.shared.setRewardClaimed(zoneId: id, claimed: true)
+                }
+            }
+            
+            // UI 동기화를 위한 알림은 한 번만
+            NotificationCenter.default.post(name: didUpdateScoreNotification, object: nil)
+        }
+    }
+}
+
+// SwiftUI 버튼을 얹기 위한 MKAnnotation
+final class StationAnnotation: NSObject, MKAnnotation {
+    let coordinate: CLLocationCoordinate2D
+    let zone: Zone
+    let statusesForZone: [ZoneConquestStatus]
+    
+    init(coordinate: CLLocationCoordinate2D, zone: Zone, statusesForZone: [ZoneConquestStatus]) {
+        self.coordinate = coordinate
+        self.zone = zone
+        self.statusesForZone = statusesForZone
+    }
+}
+
+// 목적지 구역 사인 표출용 어노테이션
+final class SignAnnotation: NSObject, MKAnnotation {
+	let coordinate: CLLocationCoordinate2D
+	let destinationZoneId: Int
+	
+	init(coordinate: CLLocationCoordinate2D, destinationZoneId: Int) {
+		self.coordinate = coordinate
+		self.destinationZoneId = destinationZoneId
+	}
+}
+
+final class HostingAnnotationView: MKAnnotationView {
+    private var host: UIHostingController<AnyView>?
+    
+    var contentSize: CGSize = .zero {
+        didSet {
+            self.frame = CGRect(origin: .zero, size: contentSize)
+            setNeedsLayout()
+        }
+    }
+    
+    func setSwiftUIView<Content: View>(_ view: Content) {
+        if host == nil {
+            let controller = UIHostingController(rootView: AnyView(view))
+            controller.view.backgroundColor = .clear
+            controller.view.isUserInteractionEnabled = true
+            host = controller
+            
+            addSubview(controller.view)
+            controller.view.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                controller.view.topAnchor.constraint(equalTo: topAnchor),
+                controller.view.bottomAnchor.constraint(equalTo: bottomAnchor),
+                controller.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+                controller.view.trailingAnchor.constraint(equalTo: trailingAnchor)
+            ])
+        } else {
+            host?.rootView = AnyView(view)
+        }
+        if self.frame.size == .zero {
+            self.frame = CGRect(origin: .zero, size: contentSize)
+        }
+        isUserInteractionEnabled = true
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        host?.view.frame = bounds
+    }
+    
+    // 터치 영역 여유
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let extendedBounds = bounds.insetBy(dx: -18, dy: -18)
+        return extendedBounds.contains(point)
+    }
+}
+
+struct MapBounds {
+    let southWest: CLLocationCoordinate2D
+    let northEast: CLLocationCoordinate2D
+    let margin: Double
+
+    var center: CLLocationCoordinate2D {
+        .init(
+            latitude: (southWest.latitude + northEast.latitude) / 2.0,
+            longitude: (southWest.longitude + northEast.longitude) / 2.0
+        )
+    }
+
+    // 지도에 보여줄 영역 계산
+    var region: MKCoordinateRegion {
+        let spanLat = abs(northEast.latitude - southWest.latitude) * margin
+        let spanLon = abs(northEast.longitude - southWest.longitude) * margin
+        return .init(
+            center: center,
+            span: .init(latitudeDelta: spanLat, longitudeDelta: spanLon)
+        )
+    }
+}
+
+struct ZoneStrokeProvider {
+    let zoneStatuses: [ZoneStatus]
+
+    func stroke(for zoneId: Int, isOutline: Bool) -> UIColor {
+        if isOutline {
+            let checked = StatusManager.shared.userStatus.zoneCheckedStatus[zoneId] == true
+            return checked ? UIColor.white.withAlphaComponent(0.85) : UIColor.clear
+        } else {
+            return ZoneColorResolver.leadingColorOrDefault(
+                for: zoneId,
+                zoneStatuses: zoneStatuses,
+                defaultColor: .primaryGreen
+            )
+        }
+    }
+}

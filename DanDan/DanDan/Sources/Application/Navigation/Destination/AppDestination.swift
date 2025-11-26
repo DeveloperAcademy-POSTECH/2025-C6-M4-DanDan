@@ -1,0 +1,62 @@
+//
+//  AppDestination.swift
+//  DanDan
+//
+//  Created by Jay on 10/25/25.
+//
+
+import SwiftUI
+
+enum AppDestination: Hashable {
+    case onboarding
+    case login
+    case profileSetup
+    case teamInput(nickname: String, image: UIImage?)
+    case teamAssignment
+    case main
+    case ranking
+    case myPage
+    case seasonHistory
+    case profileEdit
+    case settings
+    case termsService
+    case termsPrivacy
+    case weeklyAward
+}
+
+extension AppDestination {
+
+    @ViewBuilder
+    func view() -> some View {
+        switch self {
+        case .onboarding:
+            OnboardingView()
+        case .login:
+            LoginView()
+        case .profileSetup:
+            ProfileSetupView()
+        case .teamInput(let nickname, let image):
+            TeamInputView(nickname: nickname, profileImage: image)
+        case .teamAssignment:
+            TeamAssignmentView()
+        case .main:
+            TabBarView()
+        case .ranking:
+            RankingView()
+        case .myPage:
+            MyPageView()
+        case .seasonHistory:
+            SeasonHistoryView()
+        case .profileEdit:
+            ProfileEditView()
+        case .settings:
+            SettingView()
+        case .termsService:
+            ServiceTermsView()
+        case .termsPrivacy:
+            PrivacyPolicyView()
+        case .weeklyAward:
+            WeeklyAwardView()
+        }
+    }
+}
