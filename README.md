@@ -68,7 +68,7 @@
 
 <!--## 프로젝트 기간
 - 전체 기간: `2025.09.01 - 2025.11.28`
-- 개발 기간: `YYYY.MM.DD - YYYY.MM.DD`--!>
+- 개발 기간: `YYYY.MM.DD - YYYY.MM.DD`-->
 
 
 <!-- ## 주요 기능
@@ -86,64 +86,72 @@
 | 예시2 | 기능 요약 | ![gif](링크) | -->
 
 
-<!-- ## 폴더 구조
-
-```
-📦ProjectName
-┣ 📂Feature
-┃ ┣ 📂SceneA
-┃ ┗ 📂SceneB
-┣ 📂Core
-┣ 📂UI
-┣ 📂Test
-┗ 📂Resources
-``` -->
-
 ## Authors
 
+<div align="center">
 <table>
   <tr>
     <td align="center" style="padding: 10px 30px;">
-        <img src="https://github.com/user-attachments/assets/865515d3-bb94-45d4-81fe-1309e0a39d25" width="200"/><br/>
       <a href="https://github.com/bear3283">
-        PM 성은관
-      </a>
+        <img src="https://github.com/user-attachments/assets/865515d3-bb94-45d4-81fe-1309e0a39d25" width="200" style="border-radius: 12px;"/><br/>
+        <b>PM 성은관</b>
+      </a><br/>
+      <sub style="color: gray;">
+        <a href="mailto:duilwang@naver.com" style="color: gray; text-decoration: none;">✉️ Contact</a>
+      </sub>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/sing-u8">
-        <img src="https://github.com/user-attachments/assets/987fa8b0-2ff0-4c97-8554-e7c735c8fc95" width="200"/><br/>
-        Backend 박신규
-      </a>
+        <img src="https://github.com/user-attachments/assets/987fa8b0-2ff0-4c97-8554-e7c735c8fc95" width="200" style="border-radius: 12px;"/><br/>
+        <b>Backend 박신규</b>
+      </a><br/>
+      <sub style="color: gray;">
+        <a href="mailto:singyu13@gmail.com" style="color: gray; text-decoration: none;">✉️ Contact</a>
+      </sub>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/SingleBungIe">
-        <img src="https://github.com/user-attachments/assets/32e9785f-0db3-4873-8b77-ce20070b9aa1" width="200"/><br/>
-        Frontend 장성태
-      </a>
+        <img src="https://github.com/user-attachments/assets/32e9785f-0db3-4873-8b77-ce20070b9aa1" width="200" style="border-radius: 12px;"/><br/>
+        <b>Frontend 장성태</b>
+      </a><br/>
+      <sub style="color: gray;">
+        <a href="mailto:jst1365@nate.com" style="color: gray; text-decoration: none;">✉️ Contact</a>
+      </sub>
     </td>
   </tr>
   <tr>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/01sys10">
-        <img src="https://github.com/user-attachments/assets/1ceaaf77-174d-40ef-9f7f-01687707423b" width="200"/><br/>
-        Frontend 소연수
-      </a>
+        <img src="https://github.com/user-attachments/assets/1ceaaf77-174d-40ef-9f7f-01687707423b" width="200" style="border-radius: 12px;"/><br/>
+        <b>Frontend 소연수</b>
+      </a><br/>
+      <sub style="color: gray;">
+        <a href="mailto:janu10.sys@gmail.com" style="color: gray; text-decoration: none;">✉️ Contact</a>
+      </sub>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/hiseyeon">
-        <img src="https://github.com/user-attachments/assets/cc70fd1d-2e8a-4044-9e5f-c7a1b9517419" width="200"/><br/>
-        Frontend 황세연
-      </a>
+        <img src="https://github.com/user-attachments/assets/cc70fd1d-2e8a-4044-9e5f-c7a1b9517419" width="200" style="border-radius: 12px;"/><br/>
+        <b>Frontend 황세연</b>
+      </a><br/>
+      <sub style="color: gray;">
+        <a href="mailto:se020122@naver.com" style="color: gray; text-decoration: none;">✉️ Contact</a>
+      </sub>
     </td>
     <td align="center" style="padding: 10px 30px;">
       <a href="https://github.com/wish627">
-        <img src="https://github.com/user-attachments/assets/062b9751-a448-43e5-8f25-826bb04c40be" width="200"/><br/>
-        Design 김소원
-      </a>
+        <img src="https://github.com/user-attachments/assets/062b9751-a448-43e5-8f25-826bb04c40be" width="200" style="border-radius: 12px;"/><br/>
+        <b>Design 김소원</b>
+      </a><br/>
+      <sub style="color: gray;">
+        <a href="mailto:wishful@gmail.com" style="color: gray; text-decoration: none;">✉️ Contact</a>
+      </sub>
     </td>
   </tr>
 </table>
-   
+</div>
+
+
 ## Backend Repository
 
 - [2025-C6-M4-DanDan-BE](https://github.com/DeveloperAcademy-POSTECH/2025-C6-M4-DanDan-BE)
@@ -162,4 +170,4 @@
 
 <!--## License
 
-This project is licensed under the ~~[CHOOSE A LICENSE](https://choosealicense.com). and update this line~~ --!>
+This project is licensed under the ~~[CHOOSE A LICENSE](https://choosealicense.com). and update this line~~ -->
