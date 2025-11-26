@@ -1,7 +1,3 @@
-
-[![Swift](https://img.shields.io/badge/Swift-6.2.1-orange.svg)]()
-[![Xcode](https://img.shields.io/badge/Xcode-26.1.1-blue.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-green.svg)]()
 <img width="1920" height="1080" alt="readme" src="https://github.com/user-attachments/assets/09c81221-831a-4c3a-b380-b141ae80114b" />
 <p align="center">
   <a href="https://apps.apple.com/kr/app/%EC%8A%A4%ED%8B%B8%EC%9B%8C%ED%81%AC/id6755058480" target="_blank">
@@ -9,9 +5,25 @@
   </a>
 </p>
 
----
 ## 스틸워크 게임하기
+
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ccff95c8-f4f0-4002-bb69-8f1bb25658a4" width="220"/>
+  <img src="https://github.com/user-attachments/assets/931b8f49-ba26-47ea-9ba0-af61fc7d3966" width="220"/>
+  <img src="https://github.com/user-attachments/assets/cd32bc98-48ec-4e89-ae6b-7d6ac834648a" width="220"/>
+  <img src="https://github.com/user-attachments/assets/7c45ac08-ab7f-4481-8af6-7eb6d426336b" width="220"/>
+</div>
+
+
 ## BACKEND
+
+## 버전 정보
+
+[![Swift](https://img.shields.io/badge/Swift-6.2.1-F05138?style=for-the-badge&logo=swift&logoColor=white)]()
+[![Xcode](https://img.shields.io/badge/Xcode-16.4-147EFB?style=for-the-badge&logo=xcode&logoColor=white)]()
+[![iOS](https://img.shields.io/badge/iOS-18.0%2B-black?style=for-the-badge&logo=apple&logoColor=white)]()
+
 ## 프로젝트 기간
 - 전체 기간: `2025.09.01 - 2025.11.28`
 - 개발 기간: `YYYY.MM.DD - YYYY.MM.DD`
